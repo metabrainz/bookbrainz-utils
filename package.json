@@ -11,5 +11,13 @@
 		"bookbrainz-import"
 	],
 	"author": "Shivam Tripathi",
-	"license": "ISC"
+	"license": "ISC",
+	"dependencies": {
+		"amqplib": "^0.5.2",
+		"async": "^2.6.0",
+		"bluebird": "^3.5.1",
+		"lodash": "^4.17.10",
+		"winston": "^2.4.2",
+		"yargs": "^11.0.0"
+	}
 }
