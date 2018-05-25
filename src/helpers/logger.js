@@ -21,6 +21,12 @@ import util from 'util';
 import winston from 'winston';
 
 
+/** @module config */
+
+/**
+ * @type {Object} options
+ * Logger configuration options
+ **/
 const options = {
 	console: {
 		colorize: true,
@@ -42,6 +48,13 @@ const options = {
 	}
 };
 
+/**
+ * @type {Object} log
+ * Winston logger Object:
+ * 		Transport added: console
+ * 		Pretty printed using utils.inspect
+ * 		Doesn't exit on error
+ */
 const log = new winston.Logger({
 	exitOnError: false,
 	levels: options.levels,
