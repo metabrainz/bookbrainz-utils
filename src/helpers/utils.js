@@ -17,6 +17,9 @@
  */
 
 
+import _ from 'lodash';
+
+
 /**
  * mergeSets: Merge an array of sets into a single set.
  * @param {Array.<Set>} setArr - Array containing a number of sets.
@@ -41,4 +44,25 @@ export function isNotDefined(value) {
 		return true;
 	}
 	return false;
+}
+
+/**
+ * splitArray: Split an array into given number of parts
+ * @param {Array.<?>} array - Array to be split into parts.
+ * @param {number} parts - Number of parts the given array has to be broken into
+ * @returns {Array.<Array.<?>>} - A nested array containing broken down parts.
+ */
+export function splitArray(array, parts) {
+	if (isNotDefined(array)) {
+		return _.times(parts, []);
+	}
+
+	if (array.length < parts) {
+		return _.chunk(array, 1);
+	}
+
+	const splitSize = Math.ceil(array.length / parts);
+	const returnArray = _.chunk(array, splitSize);
+
+	return returnArray;
 }
