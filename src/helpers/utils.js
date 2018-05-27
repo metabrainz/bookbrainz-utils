@@ -29,3 +29,16 @@ export function mergeSets(setArr) {
 		}
 	}());
 }
+
+/**
+ * isNotDefined: Check if a variable is undefined, null or contains
+ * 		any other falsy value
+ * @param {?} value - The variable to be checked for definition
+ * @returns {boolean} - Boolean value if the variable is not defined or not.
+ */
+export function isNotDefined(value) {
+	if (typeof value === 'undefined' || !value) {
+		return true;
+	}
+	return false;
+}
