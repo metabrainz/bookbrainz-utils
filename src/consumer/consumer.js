@@ -20,7 +20,6 @@
 import * as Error from '../helpers/errors';
 import Promise from 'bluebird';
 import {Queue} from '../queue';
-import consumeRecord from './consumeRecord';
 import {isNotDefined} from '../helpers/utils';
 import log from '../helpers/logger';
 
@@ -29,60 +28,35 @@ import log from '../helpers/logger';
  * consumerPromise - Instance function called to consume from the RMQ queues
  * @param {Object} objArgs - Arguments passed
  * @param {number} objArgs.id - Worker Id
- * @param {Promise} objArgs.init - The connection promise to RMQ
+ * @param {Promise} init - The connection promise to RMQ
  * @returns {Promise} - A never fulfilling promise, as consumer is supposed to
  * 		run forever
  **/
 function consumerPromise({id, init}) {
-	log.notice(`[WORKER::${id}] Running consumer number ${id}`);
-
 	// A never resolving promise as consumer is supposed to run forever
 	return new Promise(() => {
 		const queue = new Queue(init);
 
-		if (id !== 0 && !id) {
+		if (id !== 0 && isNotDefined(id)) {
 			Error.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
 
-		async function messageHandler(msg) {
-			log.notice(`[CONSUMER::${id}] Received object.\
-				\r Running message handler`);
+		log.info(`[WORKER::${id}] Running consumer function.`);
+
+		function messageHandler(msg) {
 			if (typeof msg === 'undefined' || !msg) {
 				log.error('Empty Message received. Skipping.');
 				return;
 			}
-
-			const record = JSON.parse(msg.content.toString());
-			const error = await consumeRecord({workerId: id, ...record});
-
-			switch (error) {
-				case Error.NONE:
-					log.info(
-						`[CONSUMER::${id}] Read message successfully
-						\r${record}`
-					);
-					queue.acknowledge(msg);
-					break;
-				case Error.INVALID_RECORD:
-				case Error.RECORD_ENTITY_NOT_FOUND:
-					log.warning(
-						`[CONSUMER::${id}] ${error} - \
-						\r Skipping the errored record.`
-					);
-					queue.acknowledge(msg);
-					break;
-				case Error.TRANSACTION_ERROR:
-					log.warning(
-						`[CONSUMER::${id}] ${error} Setting up for reinsertion.
-						\r Record for reference:: \n ${record}`
-					);
-					break;
-				default: break;
-			}
+			// TODO : Implement import validation and handling function
+			log.info(
+				`[WORKER::${id}] Read message:: ${msg.content.toString()}`
+			);
+			queue.acknowledge(msg);
 		}
 
 		// Connection related errors would be handled on the queue side
-		return queue.consume(messageHandler);
+		queue.consume(messageHandler);
 	});
 }
 
