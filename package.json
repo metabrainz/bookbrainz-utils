@@ -22,7 +22,7 @@
 		"bookbrainz-import"
 	],
 	"author": "Shivam Tripathi",
-	"license": "ISC",
+	"license": "GPL-2.0+",
 	"dependencies": {
 		"amqplib": "^0.5.2",
 		"async": "^2.6.0",
