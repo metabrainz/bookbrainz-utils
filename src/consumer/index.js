@@ -17,11 +17,11 @@
  */
 
 
-import {Connection} from '../../queue';
+import {Connection} from '../queue';
 import Promise from 'bluebird';
-import asyncCluster from '../../asyncCluster';
+import asyncCluster from '../asyncCluster';
 import consumerPromise from './consumer';
-import log from '../../helpers/logger';
+import log from '../helpers/logger';
 
 
 // Func called by the master(cluster head) before it quits to collect results
