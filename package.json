@@ -19,7 +19,10 @@
 		"url": "https://github.com/bookbrainz/bookbrainz-import.git"
 	},
 	"keywords": [
-		"bookbrainz-import"
+		"bookbrainz",
+		"book",
+		"data",
+		"import"
 	],
 	"author": "Shivam Tripathi",
 	"license": "GPL-2.0+",
