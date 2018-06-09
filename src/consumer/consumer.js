@@ -17,11 +17,11 @@
  */
 
 
-import * as Error from '../../helpers/errors';
+import * as Error from '../helpers/errors';
 import Promise from 'bluebird';
-import {Queue} from '../../queue';
-import {isNotDefined} from '../../helpers/utils';
-import log from '../../helpers/logger';
+import {Queue} from '../queue';
+import {isNotDefined} from '../helpers/utils';
+import log from '../helpers/logger';
 
 
 /**
