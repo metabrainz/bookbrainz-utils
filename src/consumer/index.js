@@ -24,11 +24,8 @@ import consumerPromise from './consumer';
 import log from '../helpers/logger';
 
 
-/**
- * masterExitCallback - Function called upon master exit. Presently serves no
- * 		critical purpose, but added for handling conditions in future where
- * 		we may want to gracefully end the conusmer processes in case of failure.
- **/
+// Func called by the master(cluster head) before it quits to collect results
+//		from each worker process
 function masterExitCallback() {
 	log.info(
 		'[CLUSTER::MASTER] All workers exited.',
@@ -36,14 +33,7 @@ function masterExitCallback() {
 	);
 }
 
-/**
-* workerExitCallback - Func called by the worker before it quits to collect
-* 		results from each thread. Primary intended to shutdown active
-*		RMQ connection.
-* @param {Array<Promise>} results - Array containing promises which would yield
-* 		results from each instanceFunction
-* @returns {Promise} Empty promise
-**/
+// Func called by the worker before it quits to collect results from each thread
 function workerExitCallback(results) {
 	return Promise.all(results)
 		.then((res) => {
@@ -53,12 +43,8 @@ function workerExitCallback(results) {
 		});
 }
 
-/**
- * workerInitFunction - Used to set up queue connection before workers begin
- * 		consuming
- * @param {number} id - Worker ID for the running process
- * @returns {Promise} Promise containing connection object
- */
+// Run before worker function begins it's execution. Return value is passed to
+// 		each instance function as {init} of argument.
 function workerInitFunction(id) {
 	log.info(`[WORKER::${id}] Consumer worker process has begun.`);
 	return Connection.connect();
