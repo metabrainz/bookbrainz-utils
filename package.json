@@ -8,9 +8,6 @@
 		"nodemon": "nodemon --watch './src/' --exec 'npm run build'",
 		"lint": "eslint ./src",
 		"consumer": "node ./lib/consumer/index.js",
-		"importOLWorks": "node ./lib/openLibrary/producer/index.js -d works",
-		"importOLAuthors": "node ./lib/openLibrary/producer/index.js -d authors",
-		"importOLEditions": "node ./lib/openLibrary/producer/index.js -d editions",
 		"precommit": "lint-staged"
 	},
 	"lint-staged": {
