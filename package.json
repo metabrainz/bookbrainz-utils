@@ -11,6 +11,7 @@
 		"importOLWorks": "node ./lib/openLibrary/producer/index.js -d works",
 		"importOLAuthors": "node ./lib/openLibrary/producer/index.js -d authors",
 		"importOLEditions": "node ./lib/openLibrary/producer/index.js -d editions",
+		"consumer": "node ./lib/consumer/index.js",
 		"precommit": "lint-staged"
 	},
 	"lint-staged": {
