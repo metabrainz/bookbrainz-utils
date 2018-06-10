@@ -1,0 +1,20 @@
+{
+  "plugins": [
+    "lodash",
+    "transform-object-rest-spread",
+    "transform-es2015-modules-commonjs",
+    "transform-class-properties",
+    "array-includes"
+  ],
+  "presets": [
+    [
+      "env", {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ],
+    ["babel-preset-stage-2"]
+  ]
+}
+
