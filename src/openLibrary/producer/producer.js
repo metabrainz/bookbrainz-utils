@@ -61,11 +61,22 @@ function readLine({base, id, init}, callback) {
 	rl.on('line', line => {
 		count++;
 		try {
+			// According to details at https://openlibrary.org/developers/dumps
 			const record = line.split('\t');
+
+			const source = 'OPENLIBRARY';
 			const json = JSON.parse(record[4]);
 			const type = record[0].split('/')[2];
+			const originId = record[1];
+			const lastEdited = record[3];
+
 			log.log(`WORKER${id}:: Pushing record ${count}`);
-			queue.push(parser(type, json));
+			queue.push({
+				data: parser(type, json),
+				lastEdited,
+				originId,
+				source
+			});
 		}
 		catch (err) {
 			log.warning(
