@@ -23,6 +23,7 @@ import {Queue} from '../../queue';
 import fs from 'fs';
 import {isNotDefined} from '../../helpers/utils';
 import log from '../../helpers/logger';
+import parser from './parser';
 import readline from 'readline';
 
 
@@ -60,10 +61,11 @@ function readLine({base, id, init}, callback) {
 	rl.on('line', line => {
 		count++;
 		try {
-			const json = JSON.parse(line.split('\t')[4]);
+			const record = line.split('\t');
+			const json = JSON.parse(record[4]);
+			const type = record[0].split('/')[2];
 			log.log(`WORKER${id}:: Pushing record ${count}`);
-			// TODO : parse(json) Implement parser function to process records
-			queue.push(json);
+			queue.push(parser(type, json));
 		}
 		catch (err) {
 			log.warning(
