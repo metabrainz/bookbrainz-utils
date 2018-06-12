@@ -67,15 +67,15 @@ function readLine({base, id, init}, callback) {
 			const source = 'OPENLIBRARY';
 			const json = JSON.parse(record[4]);
 			const type = record[0].split('/')[2];
-			const originId = record[1];
-			const lastEdited = record[3];
+			const data = parser(type, json);
 
 			log.log(`WORKER${id}:: Pushing record ${count}`);
 			queue.push({
-				data: parser(type, json),
-				lastEdited,
-				originId,
-				source
+				data,
+				lastEdited: data.lastEdited,
+				originId: data.originId,
+				source,
+				type
 			});
 		}
 		catch (err) {
