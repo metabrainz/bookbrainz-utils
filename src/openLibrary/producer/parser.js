@@ -17,12 +17,95 @@
  */
 
 
+import franc from 'franc-min';
+import {isNotDefined} from '../../helpers/utils';
+
+
 const WORK = 'work';
 const EDITION = 'edition';
 const AUTHOR = 'author';
 
+
 function processWork(json) {
-	return json;
+	const work = {};
+	work.alias = [];
+	work.metadata = {};
+	work.metadata.relationships = [];
+	work.identifiers = [];
+
+	if (!isNotDefined(json.title)) {
+		let lang = franc(json.title);
+		lang = lang !== 'und' ? lang : 'eng';
+
+		work.alias.push({
+			default: true,
+			language: lang,
+			name: json.title
+		});
+	}
+
+	if (!isNotDefined(json.subtitle)) {
+		let lang = franc(json.subtitle);
+		lang = lang !== 'und' ? lang : 'eng';
+
+		work.alias.push({
+			default: false,
+			language: lang,
+			name: json.subtitle
+		});
+	}
+
+	if (!isNotDefined(json.last_modified) &&
+		!isNotDefined(json.last_modified.value)) {
+		work.lastEdited = json.last_modified.value;
+	}
+
+	if (!isNotDefined(json.key)) {
+		const openLibraryWorkId = json.key.split('/')[2];
+		work.identifiers.push({openLibraryWorkId});
+		work.originId = openLibraryWorkId;
+	}
+
+	if (!isNotDefined(json.authors && (json.authors instanceof Array))) {
+		json.authors.forEach((authorObj) => {
+			if (!isNotDefined(authorObj) && !isNotDefined(authorObj.author)) {
+				work.metadata.relationships.push({
+					authoredBy: authorObj.author.key.split('/')[2]
+				});
+			}
+		});
+	}
+
+	if (!isNotDefined(json.description)) {
+		work.disambiguation = json.description;
+	}
+
+	const remainingFields = [
+		'subjects',
+		'subject_places',
+		'subject_people',
+		// Description left to preserve disambiguation value even after upgrade
+		'description',
+		'subject_times',
+		'cover_edition',
+		'links',
+		'works',
+		'lc_classifications',
+		'first_publish_date',
+		'dewey_number',
+		'first_sentence',
+		'excerpts',
+		'number_of_editions',
+		'remote_ids'
+	];
+
+	remainingFields.forEach(field => {
+		if (!isNotDefined(json[field])) {
+			work.metadata[field] = json[field];
+		}
+	});
+
+	return work;
 }
 
 function processAuthor(json) {
