@@ -27,6 +27,13 @@ const EDITION = 'edition';
 const AUTHOR = 'author';
 
 
+function detectLanguage(name) {
+	let lang = franc(name);
+	lang = lang !== 'und' ? lang : 'eng';
+
+	return lang;
+}
+
 function processWork(json) {
 	const work = {};
 	work.alias = [];
