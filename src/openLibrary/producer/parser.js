@@ -17,6 +17,7 @@
  */
 
 
+import _ from 'lodash';
 import franc from 'franc-min';
 import {isNotDefined} from '../../helpers/utils';
 
@@ -55,8 +56,9 @@ function processWork(json) {
 		});
 	}
 
-	if (!isNotDefined(json.last_modified) &&
-		!isNotDefined(json.last_modified.value)) {
+
+	// Last Edited at source
+	if (!isNotDefined(_.get(json, 'last_modified.value'))) {
 		work.lastEdited = json.last_modified.value;
 	}
 
@@ -66,11 +68,12 @@ function processWork(json) {
 		work.originId = openLibraryWorkId;
 	}
 
-	if (!isNotDefined(json.authors && (json.authors instanceof Array))) {
+	if (!isNotDefined(json.authors) && (json.authors instanceof Array)) {
 		json.authors.forEach((authorObj) => {
-			if (!isNotDefined(authorObj) && !isNotDefined(authorObj.author)) {
+			if (!isNotDefined(authorObj && _.get(authorObj, 'author.key'))) {
 				work.metadata.relationships.push({
-					authoredBy: authorObj.author.key.split('/')[2]
+					type: 'authoredBy',
+					value: authorObj.author.key.split('/')[2]
 				});
 			}
 		});
