@@ -35,6 +35,10 @@ function detectLanguage(name) {
 }
 
 function processWork(json) {
+	if (!isNotDefined(json)) {
+		return null;
+	}
+
 	const work = {};
 	work.alias = [];
 	work.metadata = {};
