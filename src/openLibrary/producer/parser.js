@@ -35,7 +35,7 @@ function detectLanguage(name) {
 }
 
 function processWork(json) {
-	if (!isNotDefined(json)) {
+	if (isNotDefined(json)) {
 		return null;
 	}
 
