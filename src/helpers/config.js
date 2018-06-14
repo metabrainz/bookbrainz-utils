@@ -40,7 +40,7 @@ const FILE = path.join(__dirname, '../../config/config.json');
  */
 export default function config(configKeys) {
 	try {
-		if (configKeys || null) {
+		if (configKeys) {
 			const configContents =
 				JSON.parse(readFileSync(`${FILE}`));
 
