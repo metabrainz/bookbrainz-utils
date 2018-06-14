@@ -258,6 +258,15 @@ function processAuthor(json) {
 	});
 
 
+	// Origin Ids for other sources
+	if (!isNotDefined(json.source_records) &&
+			(json.source_records instanceof Array)) {
+		json.source_records.forEach(record => {
+			creator.metadata.originId.push(record);
+		});
+	}
+
+
 
 	return creator;
 }
