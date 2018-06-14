@@ -56,7 +56,7 @@ export const Connection = {
 		try {
 			const connection = await connectionPromise;
 			return connection.close();
-	}
+		}
 		catch (err) {
 			return Error.raiseError(Error.CONNECTION_CLOSE_ERROR);
 		}
@@ -111,24 +111,24 @@ export class Queue {
 				await channel.assertQueue(QUEUE_NAME, {durable: true});
 
 			if (!queueAssertion) {
-						Error.undefinedValue(
-							'Queue.push:: Could not assert queue.'
-						);
-					}
+				Error.undefinedValue(
+					'Queue.push:: Could not assert queue.'
+				);
+			}
 
 			// try-catch to get specific error message
-					try {
-						channel.sendToQueue(
-							QUEUE_NAME,
+			try {
+				channel.sendToQueue(
+					QUEUE_NAME,
 					/* eslint-disable */
 					new Buffer.from(serializedMessage),
 					/* eslint-enable */
-							{persistent: true}
-						);
-					}
-					catch (err) {
-						Error.raiseError(Error.QUEUE_PUSH_ERROR)(err);
-					}
+					{persistent: true}
+				);
+			}
+			catch (err) {
+				Error.raiseError(Error.QUEUE_PUSH_ERROR)(err);
+			}
 		}
 		catch (err) {
 			Error.raiseError(Error.QUEUE_ERROR)(err);
@@ -158,16 +158,16 @@ export class Queue {
 				await channel.assertQueue(QUEUE_NAME, {durable: true});
 
 			if (!queueAssertion) {
-						Error.undefinedValue(
-							'Queue.pop:: Could not assert queue.'
-						);
-					}
+				Error.undefinedValue(
+					'Queue.pop:: Could not assert queue.'
+				);
+			}
 
 			channel.consume(
-						QUEUE_NAME,
-						messageHandler,
-						{noAck: false}
-					);
+				QUEUE_NAME,
+				messageHandler,
+				{noAck: false}
+			);
 		}
 		catch (err) {
 			Error.raiseError(Error.QUEUE_ERROR)(err);
