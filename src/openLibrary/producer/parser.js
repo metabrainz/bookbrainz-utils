@@ -236,6 +236,28 @@ function processAuthor(json) {
 	}
 
 
+	// Inserting links
+	if (!isNotDefined(json.links) && (json.links instanceof Array)) {
+		json.links.forEach(link => {
+			if (!isNotDefined(link.title && link.url)) {
+				creator.metadata.links.push({
+					title: link.title,
+					url: link.url
+				});
+			}
+		});
+	}
+	const linkKeys = ['wikipedia', 'website', 'website_name'];
+	linkKeys.forEach(linkKey => {
+		if (!isNotDefined(json[linkKey])) {
+			creator.metadata.links.push({
+				title: linkKey,
+				url: json[linkKey]
+			});
+		}
+	});
+
+
 
 	return creator;
 }
