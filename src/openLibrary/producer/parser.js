@@ -304,6 +304,67 @@ function processAuthor(json) {
 	});
 
 
+	// Fields left out: [photograph, create]
+	const metadataFields = [
+		// Unclear what the field below is for
+		'bio',
+		// Unclear what the field below is for
+		'comment',
+		'date',
+		'links',
+		'photos',
+		'remote_ids',
+		'title',
+		'location',
+		// This fields gives random details about the creator
+		'entity_type',
+		'role',
+		'numeration',
+		'ocaid',
+		'body',
+		// Unclear what the field below is for
+		'number_of_pages',
+		'lc_classification',
+		'genres',
+		'languages',
+		'subjects',
+		'publish_country',
+		'title_prefix',
+		'oclc_numbers',
+		'by_statement',
+		'dewey_decimal_class',
+		'subject_place',
+		'notes',
+		'covers',
+		// Can create a new additional publisher import from this
+		'publishers',
+		'publish_places',
+		'publish_date',
+		'publish',
+		// Can create a new  additional edition import from this
+		'edition_name',
+		'pagination',
+		// Keys below can be used to enrich the imported data
+		// Requires some thought as to how to do it
+		'lccn',
+		'tags',
+		'series',
+		'edition_name',
+		// ??
+		'authors',
+		'other_titles',
+		'subtitle',
+		'subject_name',
+		'contributions',
+		'	_date',
+		'marc'
+	];
+
+	metadataFields.forEach(field => {
+		if (!isNotDefined(json[field])) {
+			creator.metadata[field] = json[field];
+		}
+	});
 
 	return creator;
 }
