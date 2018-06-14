@@ -98,7 +98,7 @@ function processWork(json) {
 		work.disambiguation = json.description;
 	}
 
-	const remainingFields = [
+	const metadataFields = [
 		'subjects',
 		'subject_places',
 		'subject_people',
@@ -117,7 +117,7 @@ function processWork(json) {
 		'remote_ids'
 	];
 
-	remainingFields.forEach(field => {
+	metadataFields.forEach(field => {
 		if (!isNotDefined(json[field])) {
 			work.metadata[field] = json[field];
 		}
