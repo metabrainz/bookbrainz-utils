@@ -43,6 +43,7 @@ function processWork(json) {
 	work.alias = [];
 	work.metadata = {};
 	work.metadata.relationships = [];
+	work.metadata.links = [];
 	work.identifiers = [];
 
 	work.entityType = entityTypes.WORK;
@@ -98,15 +99,24 @@ function processWork(json) {
 		work.disambiguation = json.description;
 	}
 
+	if (!isNotDefined(json.links) && (json.links instanceof Array)) {
+		json.links.forEach(link => {
+			if (!isNotDefined(link.title && link.url)) {
+				work.metadata.links.push({
+					title: link.title,
+					url: link.url
+				});
+			}
+		});
+	}
+
 	const metadataFields = [
 		'subjects',
 		'subject_places',
 		'subject_people',
-		// Description left to preserve disambiguation value even after upgrade
 		'description',
 		'subject_times',
 		'cover_edition',
-		'links',
 		'works',
 		'lc_classifications',
 		'first_publish_date',
