@@ -16,6 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+import _ from 'lodash';
 import log from '../helpers/logger';
 import path from 'path';
 import {readFileSync} from 'fs';
@@ -43,11 +44,14 @@ export default function config(configKeys) {
 			const configContents =
 				JSON.parse(readFileSync(`${FILE}`));
 
-			return configKeys.reduce(
-				(content, key) => content[key], configContents);
+			log.info('[CONFIG] Succesfully read configuration file');
+			log.info('[CONFIG] Generating object from config file.');
+
+			return _.get(configContents, configKeys);
 		}
 	}
 	catch (err) {
+		log.error('[ERROR::CONFIG] Please set up ./config/config.json files.');
 		throw new Error('Configuration values not found!');
 	}
 
