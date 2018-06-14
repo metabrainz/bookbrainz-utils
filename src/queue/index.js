@@ -55,12 +55,10 @@ export const Connection = {
 
 		try {
 			const connection = await connectionPromise;
-			connection.close();
-			return true;
+			return connection.close();
 	}
 		catch (err) {
-			Error.raiseError(Error.CONNECTION_CLOSE_ERROR);
-			return false;
+			return Error.raiseError(Error.CONNECTION_CLOSE_ERROR);
 		}
 	}
 };
