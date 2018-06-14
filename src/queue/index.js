@@ -85,32 +85,40 @@ export class Queue {
      * Push a message into the queue
      * @param {string} msg - The string containing message to be pushed into RMQ
      */
-	push(msg) {
+	async push(msg) {
 		if (isNotDefined(msg)) {
 			log.error('Invalid message! Skipping.');
 			return;
 		}
 
+		// Serializing the JSON Object
+		// In this architecture, it is assumed that data is passed as JSON
+		// 		objects are passed from the producers to consumers
 		const serializedMessage = JSON.stringify(msg);
 
 		if (isNotDefined(this.channelPromise)) {
 			Error.undefinedValue('Queue.push:: undefined channel.');
 		}
 
-		this.channelPromise.then(channel => {
-			if (isNotDefined(channel)) {
+		try {
+			const channel = await this.channelPromise;
+
+			if (!channel) {
 				Error.undefinedValue(
 					'Queue.push:: Unable to get channel from promise.'
 				);
 			}
-			channel.assertQueue(QUEUE_NAME, {durable: true})
-				.then(ok => {
-					if (isNotDefined(ok)) {
+
+			const queueAssertion =
+				await channel.assertQueue(QUEUE_NAME, {durable: true});
+
+			if (!queueAssertion) {
 						Error.undefinedValue(
 							'Queue.push:: Could not assert queue.'
 						);
 					}
 
+			// try-catch to get specific error message
 					try {
 						channel.sendToQueue(
 							QUEUE_NAME,
@@ -123,8 +131,10 @@ export class Queue {
 					catch (err) {
 						Error.raiseError(Error.QUEUE_PUSH_ERROR)(err);
 					}
-				});
-		}).catch(Error.raiseError(Error.QUEUE_ERROR));
+		}
+		catch (err) {
+			Error.raiseError(Error.QUEUE_ERROR)(err);
+		}
 	}
 
 	/**
