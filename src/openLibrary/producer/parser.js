@@ -280,6 +280,30 @@ function processAuthor(json) {
 	}
 
 
+	/* eslint-disable */
+	// Supported Identifiers for creators:
+	// 		MusicBrainz Artist ID
+	// 		VIAF
+	// 		ISNI
+	// 		LibraryThing Author
+	// 		Wikidata ID
+	const identifierKeyMapping = {
+		'id_librarything': 'LibraryThingAuthor',
+		'id_wikidata': 'WikidataId',
+		'id_viaf': 'VIAF'
+	};
+	/* eslint-enable */
+
+	Object.keys(identifierKeyMapping).forEach(key => {
+		if (!isNotDefined(json[key])) {
+			creator.identifiers.push({
+				type: identifierKeyMapping[key],
+				value: json[key]
+			});
+		}
+	});
+
+
 
 	return creator;
 }
