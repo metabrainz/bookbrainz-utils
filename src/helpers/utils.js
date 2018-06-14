@@ -22,7 +22,7 @@ import _ from 'lodash';
 
 /**
  * mergeSets: Merge an array of sets into a single set.
- * @param {Array.<Set>} setArr - Array containing a number of sets.
+ * @param {Array<Set>} setArr - Array containing a number of sets.
  * @returns {Set} - Set containing all unique values from the array of sets.
  */
 export function mergeSets(setArr) {
@@ -48,9 +48,9 @@ export function isNotDefined(value) {
 
 /**
  * splitArray: Split an array into given number of parts
- * @param {Array.<?>} array - Array to be split into parts.
+ * @param {Array<?>} array - Array to be split into parts.
  * @param {number} parts - Number of parts the given array has to be broken into
- * @returns {Array.<Array.<?>>} - A nested array containing broken down parts.
+ * @returns {Array<Array<?>>} - A nested array containing broken down parts.
  */
 export function splitArray(array, parts) {
 	if (isNotDefined(array)) {

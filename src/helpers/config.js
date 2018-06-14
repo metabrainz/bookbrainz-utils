@@ -32,7 +32,7 @@ const FILE = path.join(__dirname, '../../config/config.json');
 
 /**
  * Extract the import configuration from the config file.
- * @param {Array.<string>} configKeys - The keys, in nesting order, to reach the
+ * @param {Array<string>} configKeys - The keys, in nesting order, to reach the
  *		relevant config object. For example, to extract OL works, if the JSON
  *		object structure is {"openLibrary": {"works": {...}, ...}, ...}, the
  *		arguments would be ['openLibrary', 'works'].
