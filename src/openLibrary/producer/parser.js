@@ -137,7 +137,10 @@ function processWork(json) {
 }
 
 function processAuthor(json) {
-	return json;
+	if (isNotDefined(json)) {
+		return null;
+	}
+
 }
 
 function processEdition(json) {
