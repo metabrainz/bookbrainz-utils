@@ -200,6 +200,13 @@ function processAuthor(json) {
 	}
 
 
+	// Last modified at the source
+	if (!isNotDefined(_.get(json, 'last_modified.value'))) {
+		creator.lastEdited = json.last_modified.value;
+	}
+
+
+
 	return creator;
 }
 
