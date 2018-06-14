@@ -139,6 +139,8 @@ export class Queue {
      * consume -
      * @param {function} messageHandler - function to be called upon consuming
 	 * 		a message
+	 * @returns {Promise<?>} Returns a promise either error or channel consume
+	 * 		return object
      */
 	async consume(messageHandler) {
 		if (isNotDefined(this.channelPromise)) {
@@ -163,14 +165,14 @@ export class Queue {
 				);
 			}
 
-			channel.consume(
+			return channel.consume(
 				QUEUE_NAME,
 				messageHandler,
 				{noAck: false}
 			);
 		}
 		catch (err) {
-			Error.raiseError(Error.QUEUE_ERROR)(err);
+			return Error.raiseError(Error.QUEUE_ERROR)(err);
 		}
 	}
 
