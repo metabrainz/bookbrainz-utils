@@ -141,6 +141,18 @@ function processAuthor(json) {
 		return null;
 	}
 
+	const creator = {};
+	creator.alias = [];
+	creator.identifiers = [];
+
+	creator.metadata = {};
+	creator.metadata.relationships = [];
+	creator.metadata.links = [];
+	creator.metadata.originId = [];
+	creator.metadata.identifiers = [];
+
+	creator.entityType = entityTypes.CREATOR;
+
 }
 
 function processEdition(json) {
