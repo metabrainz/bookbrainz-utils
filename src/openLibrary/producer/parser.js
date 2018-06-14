@@ -219,6 +219,23 @@ function processAuthor(json) {
 	}
 
 
+	// Creator begin and end dates
+	if (!isNotDefined(json.birth_date)) {
+		creator.beginDate = json.birth_date;
+		creator.type = 'Person';
+	}
+	if (!isNotDefined(json.death_date)) {
+		creator.endDate = json.death_date;
+		creator.type = 'Person';
+	}
+
+
+	// Bio is used for diambiguation, tags can be used too?
+	if (!isNotDefined(_.get(json, 'bio.value'))) {
+		creator.disambiguation = json.bio.value;
+	}
+
+
 
 	return creator;
 }
