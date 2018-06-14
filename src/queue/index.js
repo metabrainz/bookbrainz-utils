@@ -141,34 +141,39 @@ export class Queue {
      * consume -
      * @param {function} messageHandler - function to be called upon consuming
 	 * 		a message
-	 * @returns {Promise} - Channel promise state
      */
-	consume(messageHandler) {
+	async consume(messageHandler) {
 		if (isNotDefined(this.channelPromise)) {
 			Error.undefinedValue('Queue.pop:: undefined channel.');
 		}
 
-		return this.channelPromise.then(channel => {
+		try {
+			const channel = await this.channelPromise;
+
 			if (isNotDefined(channel)) {
 				Error.undefinedValue(
 					'Queue.pop:: Unable to get channel from promise.'
 				);
 			}
-			return channel.assertQueue(QUEUE_NAME, {durable: true})
-				.then((ok) => {
-					if (isNotDefined(ok)) {
+
+			const queueAssertion =
+				await channel.assertQueue(QUEUE_NAME, {durable: true});
+
+			if (!queueAssertion) {
 						Error.undefinedValue(
 							'Queue.pop:: Could not assert queue.'
 						);
 					}
 
-					return channel.consume(
+			channel.consume(
 						QUEUE_NAME,
 						messageHandler,
 						{noAck: false}
 					);
-				});
-		}).catch(Error.raiseError(Error.QUEUE_ERROR));
+		}
+		catch (err) {
+			Error.raiseError(Error.QUEUE_ERROR)(err);
+		}
 	}
 
 	/**
