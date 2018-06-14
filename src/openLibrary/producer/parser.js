@@ -206,6 +206,19 @@ function processAuthor(json) {
 	}
 
 
+	// OriginId for the open library source
+	if (!isNotDefined(json.key)) {
+		const openLibraryCreatorId = json.key.split('/')[2];
+
+		// No identifier for OL creator exists, so only setting up origin Id
+		creator.originId = openLibraryCreatorId;
+
+		creator.metadata.identifiers.push({
+			openLibraryCreatorId
+		});
+	}
+
+
 
 	return creator;
 }
