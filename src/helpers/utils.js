@@ -20,6 +20,13 @@
 import _ from 'lodash';
 
 
+export const CREATOR = 'Creator';
+export const EDITION = 'Edition';
+export const PUBLICATION = 'Publication';
+export const PUBLISHER = 'Publisher';
+export const WORK = 'Work';
+export const entityTypes = {CREATOR, EDITION, PUBLICATION, PUBLISHER, WORK};
+
 /**
  * mergeSets: Merge an array of sets into a single set.
  * @param {Array<Set>} setArr - Array containing a number of sets.
