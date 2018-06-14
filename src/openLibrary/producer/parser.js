@@ -17,9 +17,9 @@
  */
 
 
+import {entityTypes, isNotDefined} from '../../helpers/utils';
 import _ from 'lodash';
 import franc from 'franc-min';
-import {isNotDefined} from '../../helpers/utils';
 
 
 const WORK = 'work';
@@ -45,6 +45,7 @@ function processWork(json) {
 	work.metadata.relationships = [];
 	work.identifiers = [];
 
+	work.entityType = entityTypes.WORK;
 	if (!isNotDefined(json.title)) {
 		let lang = franc(json.title);
 		lang = lang !== 'und' ? lang : 'eng';
