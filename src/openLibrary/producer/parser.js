@@ -153,6 +153,54 @@ function processAuthor(json) {
 
 	creator.entityType = entityTypes.CREATOR;
 
+	// Set up aliases
+	// The first alias (in the logical flow) is made to be default/primary alias
+	let defaultAlias = true;
+	if (!isNotDefined(json.name)) {
+		const lang = detectLanguage(json.name);
+
+		creator.alias.push({
+			default: defaultAlias,
+			language: lang,
+			name: json.name
+		});
+		defaultAlias = false;
+	}
+	if (!isNotDefined(json.personal_name)) {
+		const lang = detectLanguage(json.personal_name);
+
+		creator.alias.push({
+			default: defaultAlias,
+			language: lang,
+			name: json.subtitle
+		});
+		defaultAlias = false;
+	}
+	if (!isNotDefined(json.alternate_names) &&
+			(json.alternate_names instanceof Array)) {
+		json.alternate_names.forEach(name => {
+			if (!isNotDefined(name)) {
+				const lang = detectLanguage(name);
+				creator.alias.push({
+					default: defaultAlias,
+					language: lang,
+					name
+				});
+				defaultAlias = false;
+			}
+		});
+	}
+	if (!isNotDefined(json.fuller_name)) {
+		const lang = detectLanguage(json.fuller_name);
+		creator.alias.push({
+			default: false,
+			language: lang,
+			name: json.fuller_name
+		});
+	}
+
+
+	return creator;
 }
 
 function processEdition(json) {
