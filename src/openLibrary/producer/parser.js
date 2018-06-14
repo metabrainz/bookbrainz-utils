@@ -46,26 +46,29 @@ function processWork(json) {
 	work.identifiers = [];
 
 	work.entityType = entityTypes.WORK;
+
+	// Set up aliases
+	// The first alias (in the logical flow) is made to be default/primary alias
+	let defaultAlias = true;
 	if (!isNotDefined(json.title)) {
-		let lang = franc(json.title);
-		lang = lang !== 'und' ? lang : 'eng';
+		const lang = detectLanguage(json.title);
 
 		work.alias.push({
-			default: true,
+			default: defaultAlias,
 			language: lang,
 			name: json.title
 		});
+		defaultAlias = false;
 	}
-
 	if (!isNotDefined(json.subtitle)) {
-		let lang = franc(json.subtitle);
-		lang = lang !== 'und' ? lang : 'eng';
+		const lang = detectLanguage(json.subtitle);
 
 		work.alias.push({
-			default: false,
+			default: defaultAlias,
 			language: lang,
 			name: json.subtitle
 		});
+		defaultAlias = false;
 	}
 
 
