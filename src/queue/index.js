@@ -179,9 +179,11 @@ export class Queue {
 	/**
      * Acknowledge receiving of a message
      * @param {Object} msg - The message object to be acknowledged
+	 * @returns {Promise<Object>} Returns acknowledgement status wrapped in a
+	 * 		promise
      */
 	acknowledge(msg) {
 		log.debug('Acknowledging message', msg.content.toString());
-		this.channelPromise.then(channel => channel.ack(msg));
+		return this.channelPromise.then(channel => channel.ack(msg));
 	}
 }
