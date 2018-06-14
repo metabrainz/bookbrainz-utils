@@ -267,6 +267,19 @@ function processAuthor(json) {
 	}
 
 
+	// Relationship - hasAuthored
+	if (!isNotDefined(json.works) && (json.works instanceof Array)) {
+		json.works.forEach(work => {
+			if (!isNotDefined(work.key)) {
+				creator.metadata.relationships.push({
+					type: 'hasAuthored',
+					value: work.key
+				});
+			}
+		});
+	}
+
+
 
 	return creator;
 }
