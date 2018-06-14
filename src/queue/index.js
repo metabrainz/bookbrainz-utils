@@ -47,15 +47,21 @@ export const Connection = {
 		}
 		return connection;
 	},
-	shutdown: function shutdown(connectionPromise) {
+	shutdown: async function shutdown(connectionPromise) {
 		if (isNotDefined(connectionPromise)) {
 			Error.undefinedValue('Connection.shutdown:: connectionPromise');
 			return null;
 		}
 
-		return connectionPromise
-			.then(connection => connection.close())
-			.catch(Error.raiseError(Error.CONNECTION_CLOSE_ERROR));
+		try {
+			const connection = await connectionPromise;
+			connection.close();
+			return true;
+	}
+		catch (err) {
+			Error.raiseError(Error.CONNECTION_CLOSE_ERROR);
+			return false;
+		}
 	}
 };
 
