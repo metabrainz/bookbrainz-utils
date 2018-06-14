@@ -68,12 +68,14 @@ function readLine({base, id, init}, callback) {
 			const json = JSON.parse(record[4]);
 			const type = record[0].split('/')[2];
 			const data = parser(type, json);
+			const originId = record[1].split('/')[2];
+			const lastEdited = record[3];
 
 			log.log(`WORKER${id}:: Pushing record ${count}`);
 			queue.push({
 				data,
-				lastEdited: data.lastEdited,
-				originId: data.originId,
+				lastEdited: lastEdited || data.lastEdited,
+				originId: originId || data.originId,
 				source,
 				type
 			});
