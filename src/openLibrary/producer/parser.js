@@ -172,7 +172,7 @@ function processAuthor(json) {
 		creator.alias.push({
 			default: defaultAlias,
 			language: lang,
-			name: json.subtitle
+			name: json.personal_name
 		});
 		defaultAlias = false;
 	}
