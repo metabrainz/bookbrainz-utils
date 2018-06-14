@@ -114,7 +114,9 @@ export class Queue {
 					try {
 						channel.sendToQueue(
 							QUEUE_NAME,
-							new Buffer(serializedMessage),
+					/* eslint-disable */
+					new Buffer.from(serializedMessage),
+					/* eslint-enable */
 							{persistent: true}
 						);
 					}
