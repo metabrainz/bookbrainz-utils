@@ -58,7 +58,7 @@ function getWorkerExitCallback(workerExitCallback) {
  * @param {Object} argsObj - Argument passed to the function
  * @param {number} argsObj.asyncLimit - Maximum limit on instance functions run
  * 		asynchronously
- * @param {Array.<?>} argsObj.clusterArgs - Array containing arguments to be
+ * @param {Array<?>} argsObj.clusterArgs - Array containing arguments to be
  * 		processed in the cluster
  * @param {function} argsObj.instanceFunction - Instance function to be run
  * 		against each clusterArgs

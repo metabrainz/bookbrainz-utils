@@ -31,7 +31,7 @@ import log from '../helpers/logger';
  * 		process exits, with results from each worker passed as arguments
  * @param {number} args.processLimit - Maximum number of worker processes to be
  * 		forked
- * @param {Array.<Array.<?>>} args.workerArgsArr - Array containing clusterArgs
+ * @param {Array<Array<?>>} args.workerArgsArr - Array containing clusterArgs
  * 		chunks, split into number of workers
  * @param {Object} args - Remaining arguments passed
  */

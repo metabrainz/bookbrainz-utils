@@ -26,8 +26,8 @@ import async from 'async';
  * @param {Object} args - Arguments passed
  * @param {function} args.instanceFunction - Instance function to run on each
  * 		clusterArgs
- * @param {Array.<Object>} args.allWorkerArgs - Instance function argument array
- * @returns {Array.<function>} Array of async worker functions
+ * @param {Array<Object>} args.allWorkerArgs - Instance function argument array
+ * @returns {Array<function>} Array of async worker functions
  */
 function getAsyncWorkerFunctions({instanceFunction, allWorkerArgs}) {
 	function asyncWorkerFunction(args) {
@@ -44,7 +44,7 @@ function getAsyncWorkerFunctions({instanceFunction, allWorkerArgs}) {
  * 		asynchronously
  * @param {function} args.instanceFunction - Instance function to process each
  * 		clusterArgs
- * @param {Array.<?>} args.workerArgs - clusterArgs chunk for this worker
+ * @param {Array<?>} args.workerArgs - clusterArgs chunk for this worker
  * @param {function} args.workerExitCallback - Function called back by async
  * 		library after all workerArgs have been processed by the instance funtion
  * @param {function} args.workerInitFunction - Function called before execution
