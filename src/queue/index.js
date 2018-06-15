@@ -107,13 +107,18 @@ export class Queue {
 				);
 			}
 
-			const queueAssertion =
-				await channel.assertQueue(QUEUE_NAME, {durable: true});
+			try {
+				const queueAssertion =
+					await channel.assertQueue(QUEUE_NAME, {durable: true});
 
-			if (!queueAssertion) {
-				Error.undefinedValue(
-					'Queue.push:: Could not assert queue.'
-				);
+				if (!queueAssertion) {
+					Error.undefinedValue(
+						'Queue.push:: Could not assert queue.'
+					);
+				}
+			}
+			catch (err) {
+				Error.raiseError('Queue.push:: Error asserting queue.')(err);
 			}
 
 			// try-catch to get specific error message
