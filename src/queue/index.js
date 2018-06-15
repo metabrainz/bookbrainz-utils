@@ -161,13 +161,18 @@ export class Queue {
 				);
 			}
 
-			const queueAssertion =
-				await channel.assertQueue(QUEUE_NAME, {durable: true});
+			try {
+				const queueAssertion =
+					await channel.assertQueue(QUEUE_NAME, {durable: true});
 
-			if (!queueAssertion) {
-				Error.undefinedValue(
-					'Queue.pop:: Could not assert queue.'
-				);
+				if (!queueAssertion) {
+					Error.undefinedValue(
+						'Queue.consume:: Could not assert queue.'
+					);
+				}
+			}
+			catch (err) {
+				Error.raiseError('Queue.consume:: Error Asserting queue.')(err);
 			}
 
 			return channel.consume(
