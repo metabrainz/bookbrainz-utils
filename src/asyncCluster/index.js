@@ -89,19 +89,19 @@ function asyncCluster({
 		workerInitFunction
 	};
 
-	if (typeof clusterConfig.masterExitCallback !== 'function') {
+	if (!_.isFunction(clusterConfig.masterExitCallback)) {
 		clusterConfig.masterExitCallback = () => {
 			log.info('Master exiting');
 		};
 	}
 
-	if (typeof workerInitFunction !== 'function') {
+	if (!_.isFunction(workerInitFunction)) {
 		clusterConfig.workerInitFunction = () => {
 			log.info('Worker Initialising');
 		};
 	}
 
-	if (typeof instanceFunction !== 'function') {
+	if (!_.isFunction(instanceFunction)) {
 		Error.undefinedValue('AsyncCluster:: Missing instance function');
 	}
 
@@ -113,7 +113,7 @@ function asyncCluster({
 		clusterConfig.workerArgsArr = splitArray(clusterArgs, processLimit);
 	}
 
-	if (typeof workerExitCallback !== 'function') {
+	if (!_.isFunction(workerExitCallback)) {
 		clusterConfig.workerExitCallback = getWorkerExitCallback(
 			(promise) => promise
 		);
