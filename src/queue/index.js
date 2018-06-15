@@ -149,7 +149,7 @@ export class Queue {
      */
 	async consume(messageHandler) {
 		if (isNotDefined(this.channelPromise)) {
-			Error.undefinedValue('Queue.pop:: undefined channel.');
+			Error.undefinedValue('Queue.consume:: undefined channel.');
 		}
 
 		try {
@@ -157,7 +157,7 @@ export class Queue {
 
 			if (isNotDefined(channel)) {
 				Error.undefinedValue(
-					'Queue.pop:: Unable to get channel from promise.'
+					'Queue.consume:: Unable to get channel from promise.'
 				);
 			}
 
