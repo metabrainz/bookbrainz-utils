@@ -36,6 +36,7 @@
 		"babel-preset-flow": "^6.23.0",
 		"bluebird": "^3.5.1",
 		"franc-min": "^4.0.0",
+		"immutable": "^3.8.2",
 		"lodash": "^4.17.10",
 		"validator": "^10.3.0",
 		"winston": "^2.4.2",
