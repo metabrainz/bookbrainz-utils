@@ -1,5 +1,5 @@
 /*
- * Adapted from bookbrainz-site.
+ * Taken from bookbrainz-site.
  * Copyright (C) 2017  Ben Ockmore
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,12 +21,12 @@
 
 import {get, validateDate, validatePositiveInteger, validateUUID} from './base';
 import {
-	validateAliases, validateIdentifiers, validateNameSection
+	validateAliases, validateIdentifiers, validateNameSection,
+	validateSubmissionSection
 } from './common';
 import {Iterable} from 'immutable';
 import _ from 'lodash';
 import type {_IdentifierType} from './types';
-import log from '../../helpers/logger';
 
 
 export function validateEditionSectionDepth(value: ?any): boolean {
@@ -110,52 +110,18 @@ export function validateEditionSection(data: any): boolean {
 	);
 }
 
-export function validateEdition(
-	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
+export function validateForm(
+	formData: any, identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
-	let success = true;
+	const conditions = [
+		validateAliases(get(formData, 'aliasSection', {})),
+		validateIdentifiers(
+			get(formData, 'identifierSection', {}), identifierTypes
+		),
+		validateNameSection(get(formData, 'nameSection', {})),
+		validateEditionSection(get(formData, 'editionSection', {})),
+		validateSubmissionSection(get(formData, 'submissionSection', {}))
+	];
 
-	const {workerId, ...editionValidationObject} = validationObject;
-	if (_.isEmpty(editionValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] Edition Incoming validation object\
-			\r empty`);
-		return false;
-	}
-
-	// Cumulative error messages to be stored in err string
-	let err = '';
-	const aliasSection = get(editionValidationObject, 'aliasSection', {});
-	const identifierSection = get(
-		editionValidationObject, 'identifierSection', {}
-	);
-	const nameSection = get(editionValidationObject, 'nameSection', {});
-	const editionSection = get(editionValidationObject, 'editionSection', {});
-
-	log.info(`[CONSUMER::${workerId}] EDITION - Calling validation functions.`);
-
-	if (!validateAliases(aliasSection)) {
-		err += 'EDITION - Failed validate alias section failed. \n';
-		success = false;
-	}
-
-	if (!validateIdentifiers(identifierSection, identifierTypes)) {
-		err += 'EDITION - Validate identifier section failed. \n';
-		success = false;
-	}
-
-	if (!validateNameSection(nameSection)) {
-		err += 'EDITION - Validate name section failed. \n';
-		success = false;
-	}
-
-	if (!validateEditionSection(editionSection)) {
-		err += 'EDITION - Validate edition section failed. \n';
-		success = false;
-	}
-
-	if (!success) {
-		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
-			\r${JSON.stringify(validationObject, null, 4)}`);
-	}
-	return success;
+	return _.every(conditions);
 }
