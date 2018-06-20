@@ -63,7 +63,7 @@ export function validatePublisherSection(data: any): boolean {
 	);
 }
 
-export function validateForm(
+export function validatePublisher(
 	formData: any, identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
 	const conditions = [

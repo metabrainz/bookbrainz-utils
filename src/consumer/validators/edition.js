@@ -110,7 +110,7 @@ export function validateEditionSection(data: any): boolean {
 	);
 }
 
-export function validateForm(
+export function validateEdition(
 	formData: any, identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
 	const conditions = [
