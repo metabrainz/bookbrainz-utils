@@ -75,7 +75,7 @@ export function validateCreatorSection(data: any): boolean {
 	);
 }
 
-export function validateForm(
+export function validateCreator(
 	formData: any, identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
 	const conditions = [
