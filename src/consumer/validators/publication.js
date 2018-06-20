@@ -36,7 +36,7 @@ export function validatePublicationSection(data: any): boolean {
 	return validatePublicationSectionType(get(data, 'type', null));
 }
 
-export function validateForm(
+export function validatePublication(
 	formData: any, identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
 	const conditions = [
