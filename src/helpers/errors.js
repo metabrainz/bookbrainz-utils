@@ -70,7 +70,7 @@ export const UNDEFINED_VALUE = 'Undefined value found';
 export const SIZE_MISMATCH = 'Array sizes does not match';
 
 /**
- * sizeMismatch: Error function called to catch an error a specific type.
+ * raiseError: Error function called to catch an error of a specific type.
  * @param {string} msg - The error message utility message (usually location).
  * @returns {function} - Takes in error message received and prints msg and err.
  */
