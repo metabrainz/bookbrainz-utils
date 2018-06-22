@@ -18,6 +18,7 @@
 
 
 import * as Error from '../helpers/errors';
+import _ from 'lodash';
 import asyncWorker from './async';
 import cluster from 'cluster';
 import {isNotDefined} from '../helpers/utils';
@@ -41,7 +42,7 @@ export default function runClusters({
 	workerArgsArr,
 	...args
 }) {
-	if (typeof masterExitCallback !== 'function') {
+	if (!_.isFunction(masterExitCallback)) {
 		Error.undefinedValue('Cluster:: Undefined masterExitCallback.');
 	}
 
