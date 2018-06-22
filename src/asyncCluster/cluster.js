@@ -25,7 +25,7 @@ import log from '../helpers/logger';
 
 
 /**
- * Extract the import configuration from the config file.
+ * runClusters - Base master function to initialize and run worker functions
  * @param {Object} argsObj - Arguments passed
  * @param {function} args.masterExitCallback - Function called before the master
  * 		process exits, with results from each worker passed as arguments
