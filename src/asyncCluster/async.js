@@ -38,7 +38,7 @@ function getAsyncWorkerFunctions({instanceFunction, allWorkerArgs}) {
 }
 
 /**
- * Extract the import configuration from the config file.
+ * asyncWorker - Base worker function to run instances of instance function
  * @param {Object} args - Arguments passed
  * @param {number} args.asyncLimit - Number of instanceFunction tasks to run
  * 		asynchronously
