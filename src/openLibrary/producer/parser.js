@@ -55,9 +55,9 @@ function processWork(json) {
 		const lang = detectLanguage(json.title);
 
 		work.alias.push({
-			default: defaultAlias,
 			language: lang,
-			name: json.title
+			name: json.title,
+			primary: defaultAlias
 		});
 		defaultAlias = false;
 	}
@@ -65,9 +65,9 @@ function processWork(json) {
 		const lang = detectLanguage(json.subtitle);
 
 		work.alias.push({
-			default: defaultAlias,
 			language: lang,
-			name: json.subtitle
+			name: json.subtitle,
+			primary: defaultAlias
 		});
 		defaultAlias = false;
 	}
@@ -160,9 +160,9 @@ function processAuthor(json) {
 		const lang = detectLanguage(json.name);
 
 		creator.alias.push({
-			default: defaultAlias,
 			language: lang,
-			name: json.name
+			name: json.name,
+			primary: defaultAlias
 		});
 		defaultAlias = false;
 	}
@@ -170,9 +170,9 @@ function processAuthor(json) {
 		const lang = detectLanguage(json.personal_name);
 
 		creator.alias.push({
-			default: defaultAlias,
 			language: lang,
-			name: json.personal_name
+			name: json.personal_name,
+			primary: defaultAlias
 		});
 		defaultAlias = false;
 	}
@@ -182,9 +182,9 @@ function processAuthor(json) {
 			if (!isNotDefined(name)) {
 				const lang = detectLanguage(name);
 				creator.alias.push({
-					default: defaultAlias,
 					language: lang,
-					name
+					name,
+					primary: defaultAlias
 				});
 				defaultAlias = false;
 			}
@@ -193,9 +193,9 @@ function processAuthor(json) {
 	if (!isNotDefined(json.fuller_name)) {
 		const lang = detectLanguage(json.fuller_name);
 		creator.alias.push({
-			default: false,
 			language: lang,
-			name: json.fuller_name
+			name: json.fuller_name,
+			primary: defaultAlias
 		});
 	}
 
