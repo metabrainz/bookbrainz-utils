@@ -70,6 +70,43 @@ export const UNDEFINED_VALUE = 'Undefined value found';
 export const SIZE_MISMATCH = 'Array sizes does not match';
 
 /**
+ * INVALID_RECORD - Raised when automatic validation tests failed;
+ * @type {string}
+ **/
+export const INVALID_RECORD = 'Record failed automated validation tests.';
+
+/**
+ * RECORD_ENTITY_NOT_FOUND - The type field of imported record is invalid.
+ * @type {string}
+ **/
+export const RECORD_ENTITY_NOT_FOUND = 'Could not ascertain entity record';
+
+/**
+ * NONE - Signify that no error has occurred.
+ * @type {string}
+ **/
+export const NONE = 'No errors occurred';
+
+/**
+ * TRANSACTION_ERROR - Signify that error occurred during DB transaction.
+ * @type {string}
+ **/
+export const TRANSACTION_ERROR = 'Error occurred during DB transaction.';
+
+/**
+ * importErrors - Encapsulate all import errors {INVALID_RECORD,
+ * RECORD_ENTITY_NOT_FOUND,
+ * TRANSACTION_ERROR}.
+ * @type {object}
+ **/
+export const importErrors = {
+	INVALID_RECORD,
+	NONE,
+	RECORD_ENTITY_NOT_FOUND,
+	TRANSACTION_ERROR
+};
+
+/**
  * raiseError: Error function called to catch an error of a specific type.
  * @param {string} msg - The error message utility message (usually location).
  * @returns {function} - Takes in error message received and prints msg and err.
