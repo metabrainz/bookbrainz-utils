@@ -18,6 +18,7 @@
 
 
 import {entityTypes, isNotDefined} from '../../helpers/utils';
+import {identifiers, mapLanguage} from '../../helpers/mapping';
 import _ from 'lodash';
 import franc from 'franc-min';
 
@@ -31,7 +32,7 @@ function detectLanguage(name) {
 	let lang = franc(name);
 	lang = lang !== 'und' ? lang : 'eng';
 
-	return lang;
+	return mapLanguage(lang);
 }
 
 function processWork(json) {
@@ -80,7 +81,10 @@ function processWork(json) {
 
 	if (!isNotDefined(json.key)) {
 		const openLibraryWorkId = json.key.split('/')[2];
-		work.identifiers.push({openLibraryWorkId});
+		work.identifiers.push({
+			type: identifiers.openLibraryWorkId,
+			value: openLibraryWorkId
+		});
 		work.originId = openLibraryWorkId;
 	}
 
@@ -214,7 +218,8 @@ function processAuthor(json) {
 		creator.originId = openLibraryCreatorId;
 
 		creator.metadata.identifiers.push({
-			openLibraryCreatorId
+			type: identifiers.openLibraryCreatorId,
+			value: openLibraryCreatorId
 		});
 	}
 
@@ -288,9 +293,9 @@ function processAuthor(json) {
 	// 		LibraryThing Author
 	// 		Wikidata ID
 	const identifierKeyMapping = {
-		'id_librarything': 'LibraryThingAuthor',
-		'id_wikidata': 'WikidataId',
-		'id_viaf': 'VIAF'
+		'id_librarything': identifiers.libraryThingAuthor,
+		'id_wikidata': identifiers.wikidataIdCreator,
+		'id_viaf': identifiers.VIAFCreator
 	};
 	/* eslint-enable */
 
