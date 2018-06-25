@@ -17,8 +17,6 @@
  */
 
 
-import _ from 'lodash';
-import {entityTypes} from '../../helpers/utils';
 import {validateCreator} from './creator';
 import {validateEdition} from './edition';
 import {validatePublication} from './publication';
@@ -26,131 +24,32 @@ import {validatePublisher} from './publisher';
 import {validateWork} from './work';
 
 
-function getAliasSection(record) {
-	const aliasSection = {};
-	let index = 0;
-	if (record.alias) {
-		record.alias.forEach(element => {
-			if (!element.primary) {
-				aliasSection[`n${index++}`] = element;
-			}
-		});
-	}
-
-	return aliasSection;
+function creator(record) {
+	return true;
 }
 
-function getPrimaryAlias(aliasList) {
-	let primaryAlias = null;
-	if (aliasList && _.isArray(aliasList)) {
-		for (let i in aliasList) {
-			if (aliasList[i].primary) {
-				primaryAlias = aliasList[i];
-				break;
-			}
-		}
-	}
-
-	return primaryAlias;
+function edition(record) {
+	return true;
 }
 
-function getIdentifierSection(record) {
-	const identifierSection = {};
-	let index = 0;
-	if (record.identifiers) {
-		record.identifiers.forEach(element => {
-			identifierSection[`n${index++}`] = element;
-		});
-	}
-
-	return identifierSection;
+function publication(record) {
+	return true;
 }
 
-function getNameSection(record) {
-	const primaryAlias = getPrimaryAlias(record.alias);
-
-	const nameSection = {
-		disambiguation: record.disambiguation,
-		...primaryAlias
-	};
-
-	return nameSection;
+function publisher(record) {
+	return true;
 }
 
-function validateEntity(validationFunction, entityType) {
-	return function validate(validationData) {
-		if (_.isEmpty(validationData)) {
-			return false;
-		}
-		// Construct generic validation object from data set for validation
-		const validationObject = {
-			aliasSection: getAliasSection(validationData),
-			identifierSection: getIdentifierSection(validationData),
-			nameSection: getNameSection(validationData),
-			workerId: validationData.workerId
-		};
-
-		// Add entity specific validation data
-		switch (entityType) {
-			case entityTypes.CREATOR:
-				validationObject.creatorSection = {
-					beginArea: validationData.beginArea,
-					beginDate: validationData.beginDate,
-					endArea: validationData.endArea,
-					endDate: validationData.endDate,
-					ended: validationData.ended,
-					gender: validationData.gender,
-					type: validationData.type
-				};
-				break;
-			case entityTypes.EDITION:
-				validationObject.editionSection = {
-					depth: validationData.depth,
-					format: validationData.format,
-					height: validationData.height,
-					languages: validationData.languages,
-					pages: validationData.pages,
-					publication: validationData.publication,
-					publisher: validationData.publisher,
-					releaseDate: validationData.releaseDate,
-					status: validationData.status,
-					weight: validationData.weight,
-					width: validationData.width
-				};
-				break;
-			case entityTypes.PUBLICATION:
-				validationObject.publicationSection = {
-					type: validationData.type
-				};
-				break;
-			case entityTypes.PUBLISHER:
-				validationObject.publisherSection = {
-					area: validationData.area,
-					beginDate: validationData.beginDate,
-					endDate: validationData.endDate,
-					ended: validationData.ended,
-					type: validationData.type
-				};
-				break;
-			case entityTypes.WORK:
-				validationObject.workSection = {
-					language: validationData.language,
-					type: validationData.type
-				};
-				break;
-			default: break;
-		}
-
-		return validationFunction(validationObject);
-	};
+function work(record) {
+	return true;
 }
 
 const validate = {
-	creator: validateEntity(validateCreator, entityTypes.CREATOR),
-	edition: validateEntity(validateEdition, entityTypes.EDITION),
-	publication: validateEntity(validatePublication, entityTypes.PUBLICATION),
-	publisher: validateEntity(validatePublisher, entityTypes.PUBLISHER),
-	work: validateEntity(validateWork, entityTypes.WORK)
+	creator,
+	edition,
+	publication,
+	publisher,
+	work
 };
 
 export default validate;
