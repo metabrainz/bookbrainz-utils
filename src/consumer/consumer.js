@@ -20,6 +20,7 @@
 import * as Error from '../helpers/errors';
 import Promise from 'bluebird';
 import {Queue} from '../queue';
+import consumeRecord from './consumeRecord';
 import {isNotDefined} from '../helpers/utils';
 import log from '../helpers/logger';
 
@@ -43,20 +44,41 @@ function consumerPromise({id, init}) {
 
 		log.info(`[WORKER::${id}] Running consumer function.`);
 
-		function messageHandler(msg) {
+		async function messageHandler(msg) {
 			if (typeof msg === 'undefined' || !msg) {
 				log.error('Empty Message received. Skipping.');
 				return;
 			}
-			// TODO : Implement import validation and handling function
-			log.info(
-				`[WORKER::${id}] Read message:: ${msg.content.toString()}`
-			);
-			queue.acknowledge(msg);
+
+			const record = JSON.parse(msg.content.toString());
+			const error = await consumeRecord(record);
+
+			switch (error) {
+				case Error.NONE:
+					log.info(
+						`[WORKER::${id}] Read message successfully \n${record}`
+					);
+					queue.acknowledge(msg);
+					break;
+				case Error.INVALID_RECORD:
+				case Error.RECORD_ENTITY_NOT_FOUND:
+					log.error(
+						`[WORKER::${id}] ${error}. Skipping the errored record.`
+					);
+					queue.acknowledge(msg);
+					break;
+				case Error.TRANSACTION_ERROR:
+					log.error(
+						`[WORKER::${id}] ${error}. Setting up for reinsertion.
+						\rRecord for reference:: \n ${record}`
+					);
+					break;
+				default: break;
+			}
 		}
 
 		// Connection related errors would be handled on the queue side
-		queue.consume(messageHandler);
+		return queue.consume(messageHandler);
 	});
 }
 
