@@ -17,26 +17,13 @@
  */
 
 
-import _ from 'lodash';
 import {entityTypes} from '../helpers/utils';
 import {importErrors} from '../helpers/errors';
 import validate from './validators';
 
 
-function getValidationData(record) {
-	if (_.isEmpty(record)) {
-		return null;
-	}
-
-	return {
-		workerId: record.workerId,
-		...record.data
-	};
-}
 function consumeCreator(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.creator(validationData)) {
+	if (!validate.creator(record)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
@@ -44,9 +31,7 @@ function consumeCreator(record) {
 }
 
 function consumeEdition(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.edition(validationData)) {
+	if (!validate.edition(record)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
@@ -54,9 +39,7 @@ function consumeEdition(record) {
 }
 
 function consumePublication(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.publication(validationData)) {
+	if (!validate.publication(record)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
@@ -64,9 +47,7 @@ function consumePublication(record) {
 }
 
 function consumePublisher(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.publisher(validationData)) {
+	if (!validate.publisher(record)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
@@ -74,9 +55,7 @@ function consumePublisher(record) {
 }
 
 function consumeWork(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.work(validationData)) {
+	if (!validate.work(record)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
