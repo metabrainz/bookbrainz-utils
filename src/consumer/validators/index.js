@@ -17,6 +17,8 @@
  */
 
 
+import _ from 'lodash';
+import {sortName} from '../../helpers/utils';
 import {validateCreator} from './creator';
 import {validateEdition} from './edition';
 import {validatePublication} from './publication';
@@ -24,32 +26,80 @@ import {validatePublisher} from './publisher';
 import {validateWork} from './work';
 
 
-function creator(record) {
-	return true;
+function getAliasSection(record) {
+	const aliasSection = {};
+	let index = 0;
+	if (record.alias) {
+		record.alias.forEach(element => {
+			if (!element.primary) {
+				aliasSection[`n${index++}`] = element;
+			}
+		});
+	}
+
+	return aliasSection;
 }
 
-function edition(record) {
-	return true;
+function getPrimaryAlias(aliasList) {
+	let primaryAlias = null;
+	if (aliasList && _.isArray(aliasList)) {
+		for (let i in aliasList) {
+			if (aliasList[i].primary) {
+				primaryAlias = aliasList[i];
+				break;
+			}
+		}
+	}
+
+	return primaryAlias;
 }
 
-function publication(record) {
-	return true;
+function getIdentifierSection(record) {
+	const identifierSection = {};
+	let index = 0;
+	if (record.identifiers) {
+		record.identifiers.forEach(element => {
+			identifierSection[`n${index++}`] = element;
+		});
+	}
+
+	return identifierSection;
 }
 
-function publisher(record) {
-	return true;
+function getNameSection(record) {
+	const primaryAlias = getPrimaryAlias(record.alias);
+
+	const nameSection = {
+		disambiguation: record.disambiguation,
+		language: primaryAlias.language,
+		name: primaryAlias.name,
+		sortName: sortName(primaryAlias.name)
+	};
+
+	return nameSection;
 }
 
-function work(record) {
-	return true;
+function getValidationObject(record) {
+	return {
+		aliasSection: getAliasSection(record),
+		identifierSection: getIdentifierSection(record),
+		nameSection: getNameSection(record)
+	};
+}
+
+function validateEntity(validationFunction) {
+	return function validate(record) {
+		const validationObject = getValidationObject(record);
+		return validationFunction(validationObject);
+	};
 }
 
 const validate = {
-	creator,
-	edition,
-	publication,
-	publisher,
-	work
+	creator: validateEntity(validateCreator),
+	edition: validateEntity(validateEdition),
+	publication: validateEntity(validatePublication),
+	publisher: validatePublisher(validatePublisher),
+	work: validateEntity(validateWork)
 };
 
 export default validate;
