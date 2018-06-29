@@ -62,12 +62,17 @@ function readLine({base, id, init}, callback) {
 		count++;
 		try {
 			// According to details at https://openlibrary.org/developers/dumps
+			// 		➜ type - type of record (/type/edition, /type/work etc.)
+			// 		➜ key - unique key of the record. (/books/OL1M etc.)
+			// 		➜ revision - revision number of the record
+			// 		➜ last_modified - last modified timestamp
+			// 		➜ JSON - the complete record in JSON format
 			const record = line.split('\t');
 
 			const source = 'OPENLIBRARY';
 			const json = JSON.parse(record[4]);
-			const type = record[0].split('/')[2];
-			const data = parser(type, json);
+			const OLType = record[0].split('/')[2];
+			const data = parser(OLType, json);
 			const originId = record[1].split('/')[2];
 			const lastEdited = record[3];
 
@@ -77,7 +82,7 @@ function readLine({base, id, init}, callback) {
 				lastEdited: lastEdited || data.lastEdited,
 				originId: originId || data.originId,
 				source,
-				type
+				type: data.entityType
 			});
 		}
 		catch (err) {
