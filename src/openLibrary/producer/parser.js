@@ -100,7 +100,7 @@ function processWork(json) {
 	}
 
 	if (!isNotDefined(json.description)) {
-		work.disambiguation = json.description;
+		work.disambiguation = json.description.value;
 	}
 
 	if (!isNotDefined(json.links) && (json.links instanceof Array)) {
