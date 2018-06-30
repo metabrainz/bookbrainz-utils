@@ -17,7 +17,7 @@
  */
 
 
-import {entityTypes, isNotDefined} from '../../helpers/utils';
+import {entityTypes, isNotDefined, sortName} from '../../helpers/utils';
 import {identifiers, mapLanguage} from '../../helpers/mapping';
 import _ from 'lodash';
 import franc from 'franc-min';
@@ -53,22 +53,26 @@ function processWork(json) {
 	// The first alias (in the logical flow) is made to be default/primary alias
 	let defaultAlias = true;
 	if (!isNotDefined(json.title)) {
-		const lang = detectLanguage(json.title);
+		const name = json.title;
+		const lang = detectLanguage(name);
 
 		work.alias.push({
 			language: lang,
-			name: json.title,
-			primary: defaultAlias
+			name,
+			primary: defaultAlias,
+			sortName: sortName(name)
 		});
 		defaultAlias = false;
 	}
 	if (!isNotDefined(json.subtitle)) {
-		const lang = detectLanguage(json.subtitle);
+		const name = json.subtitle;
+		const lang = detectLanguage(name);
 
 		work.alias.push({
 			language: lang,
-			name: json.subtitle,
-			primary: defaultAlias
+			name,
+			primary: defaultAlias,
+			sortName: sortName(name)
 		});
 		defaultAlias = false;
 	}
@@ -161,22 +165,26 @@ function processAuthor(json) {
 	// The first alias (in the logical flow) is made to be default/primary alias
 	let defaultAlias = true;
 	if (!isNotDefined(json.name)) {
-		const lang = detectLanguage(json.name);
+		const {name} = json;
+		const lang = detectLanguage(name);
 
 		creator.alias.push({
 			language: lang,
-			name: json.name,
-			primary: defaultAlias
+			name,
+			primary: defaultAlias,
+			sortName: sortName(name)
 		});
 		defaultAlias = false;
 	}
 	if (!isNotDefined(json.personal_name)) {
-		const lang = detectLanguage(json.personal_name);
+		const name = json.personal_name;
+		const lang = detectLanguage(name);
 
 		creator.alias.push({
 			language: lang,
-			name: json.personal_name,
-			primary: defaultAlias
+			name,
+			primary: defaultAlias,
+			sortName: sortName(name)
 		});
 		defaultAlias = false;
 	}
@@ -188,18 +196,21 @@ function processAuthor(json) {
 				creator.alias.push({
 					language: lang,
 					name,
-					primary: defaultAlias
+					primary: defaultAlias,
+					sortName: sortName(name)
 				});
 				defaultAlias = false;
 			}
 		});
 	}
 	if (!isNotDefined(json.fuller_name)) {
-		const lang = detectLanguage(json.fuller_name);
+		const name = json.title;
+		const lang = detectLanguage(name);
 		creator.alias.push({
 			language: lang,
-			name: json.fuller_name,
-			primary: defaultAlias
+			name,
+			primary: defaultAlias,
+			sortName: sortName(name)
 		});
 	}
 
