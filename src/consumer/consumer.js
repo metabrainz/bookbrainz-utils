@@ -34,6 +34,8 @@ import log from '../helpers/logger';
  * 		run forever
  **/
 function consumerPromise({id, init}) {
+	log.notice(`[WORKER::${id}] Running consumer number ${id}`);
+
 	// A never resolving promise as consumer is supposed to run forever
 	return new Promise(() => {
 		const queue = new Queue(init);
@@ -42,9 +44,9 @@ function consumerPromise({id, init}) {
 			Error.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
 
-		log.info(`[WORKER::${id}] Running consumer function.`);
-
 		async function messageHandler(msg) {
+			log.notice(`[CONSUMER::${id}] Received object.\
+				\r Running message handler`);
 			if (typeof msg === 'undefined' || !msg) {
 				log.error('Empty Message received. Skipping.');
 				return;
@@ -56,21 +58,23 @@ function consumerPromise({id, init}) {
 			switch (error) {
 				case Error.NONE:
 					log.info(
-						`[WORKER::${id}] Read message successfully \n${record}`
+						`[CONSUMER::${id}] Read message successfully
+						\r${record}`
 					);
 					queue.acknowledge(msg);
 					break;
 				case Error.INVALID_RECORD:
 				case Error.RECORD_ENTITY_NOT_FOUND:
-					log.error(
-						`[WORKER::${id}] ${error}. Skipping the errored record.`
+					log.warning(
+						`[CONSUMER::${id}] ${error} - \
+						\r Skipping the errored record.`
 					);
 					queue.acknowledge(msg);
 					break;
 				case Error.TRANSACTION_ERROR:
-					log.error(
-						`[WORKER::${id}] ${error}. Setting up for reinsertion.
-						\rRecord for reference:: \n ${record}`
+					log.warning(
+						`[CONSUMER::${id}] ${error} Setting up for reinsertion.
+						\r Record for reference:: \n ${record}`
 					);
 					break;
 				default: break;
