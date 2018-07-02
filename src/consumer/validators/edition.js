@@ -1,5 +1,5 @@
 /*
- * Taken from bookbrainz-site.
+ * Adapted from bookbrainz-site.
  * Copyright (C) 2017  Ben Ockmore
  *
  * This program is free software; you can redistribute it and/or modify
