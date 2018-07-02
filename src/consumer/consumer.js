@@ -51,7 +51,7 @@ function consumerPromise({id, init}) {
 			}
 
 			const record = JSON.parse(msg.content.toString());
-			const error = await consumeRecord(record);
+			const error = await consumeRecord({workerId: id, ...record});
 
 			switch (error) {
 				case Error.NONE:
