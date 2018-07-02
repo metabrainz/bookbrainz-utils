@@ -33,9 +33,10 @@ function getValidationData(record) {
 		...record.data
 	};
 }
-
 function consumeCreator(record) {
-	if (!validate.creator(record)) {
+	const validationData = getValidationData(record);
+
+	if (!validate.creator(validationData)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
@@ -43,7 +44,9 @@ function consumeCreator(record) {
 }
 
 function consumeEdition(record) {
-	if (!validate.edition(record)) {
+	const validationData = getValidationData(record);
+
+	if (!validate.edition(validationData)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
@@ -51,7 +54,9 @@ function consumeEdition(record) {
 }
 
 function consumePublication(record) {
-	if (!validate.publication(record)) {
+	const validationData = getValidationData(record);
+
+	if (!validate.publication(validationData)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
@@ -59,7 +64,9 @@ function consumePublication(record) {
 }
 
 function consumePublisher(record) {
-	if (!validate.publisher(record)) {
+	const validationData = getValidationData(record);
+
+	if (!validate.publisher(validationData)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
@@ -67,7 +74,9 @@ function consumePublisher(record) {
 }
 
 function consumeWork(record) {
-	if (!validate.work(record)) {
+	const validationData = getValidationData(record);
+
+	if (!validate.work(validationData)) {
 		return importErrors.INVALID_RECORD;
 	}
 	// Use bookbrainz-data add import of the given type and return relevant err
