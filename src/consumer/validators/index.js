@@ -71,9 +71,7 @@ function getNameSection(record) {
 
 	const nameSection = {
 		disambiguation: record.disambiguation,
-		language: primaryAlias.language,
-		name: primaryAlias.name,
-		sortName: sortName(primaryAlias.name)
+		...primaryAlias
 	};
 
 	return nameSection;
