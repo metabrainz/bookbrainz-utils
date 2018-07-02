@@ -38,7 +38,7 @@ function consumerPromise({id, init}) {
 	return new Promise(() => {
 		const queue = new Queue(init);
 
-		if (id !== 0 && isNotDefined(id)) {
+		if (id !== 0 && !id) {
 			Error.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
 
