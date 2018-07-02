@@ -17,10 +17,22 @@
  */
 
 
+import _ from 'lodash';
 import {entityTypes} from '../helpers/utils';
 import {importErrors} from '../helpers/errors';
 import validate from './validators';
 
+
+function getValidationData(record) {
+	if (_.isEmpty(record)) {
+		return null;
+	}
+
+	return {
+		workerId: record.workerId,
+		...record.data
+	};
+}
 
 function consumeCreator(record) {
 	if (!validate.creator(record)) {
