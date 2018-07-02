@@ -1,9 +1,5 @@
 /*
-<<<<<<< HEAD
  * Adapted from bookbrainz-site.
-=======
- * Taken from bookbrainz-site.
->>>>>>> feat(consumers/validators): Add validation code taken from bb-site
  * Copyright (C) 2017  Ben Ockmore
  *
  * This program is free software; you can redistribute it and/or modify
@@ -28,6 +24,7 @@ import {
 } from './base';
 import {Iterable} from 'immutable';
 import _ from 'lodash';
+import log from '../../helpers/logger';
 
 
 export function validateMultiple(
@@ -65,12 +62,42 @@ export function validateAliasPrimary(value: any): boolean {
 }
 
 export function validateAlias(value: any): boolean {
-	return (
-		validateAliasName(get(value, 'name')) &&
-		validateAliasSortName(get(value, 'sortName')) &&
-		validateAliasLanguage(get(value, 'language')) &&
-		validateAliasPrimary(get(value, 'primary'))
-	);
+	if (_.isEmpty(value)) {
+		log.warn('Empty alias value');
+	}
+	const name = get(value, 'name', null);
+	const sortName = get(value, 'sortName', null);
+	const language = get(value, 'language', null);
+	const primary = get(value, 'primary', null);
+
+	let success = true;
+	let err = '';
+	if (!validateAliasName(name)) {
+		success = false;
+		err += `Alias - Invalid name. ${name}\n`;
+	}
+
+	if (!validateAliasSortName(sortName)) {
+		success = false;
+		err += `Alias - Invalid sort name. ${name}\n`;
+	}
+
+	if (!validateAliasLanguage(language)) {
+		success = false;
+		err += `Alias - Invalid language. ${language}\n`;
+	}
+
+	if (!validateAliasPrimary(primary)) {
+		success = false;
+		err += `Alias - Invalid primary. ${primary}\n`;
+	}
+
+	if (!success) {
+		log.warning(`Alias - Error \n${err}\
+		\r Alias for reference ${JSON.stringify(value, null, 4)}`);
+	}
+
+	return success;
 }
 
 export const validateAliases = _.partial(
