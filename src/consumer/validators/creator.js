@@ -20,11 +20,11 @@
 
 import {get, validateDate, validatePositiveInteger} from './base';
 import {
-	validateAliases, validateIdentifiers, validateNameSection,
-	validateSubmissionSection
+	validateAliases, validateIdentifiers, validateNameSection
 } from './common';
 import _ from 'lodash';
 import type {_IdentifierType} from './types';
+import log from '../../helpers/logger';
 
 
 export function validateCreatorSectionBeginArea(value: any): boolean {
@@ -76,17 +76,56 @@ export function validateCreatorSection(data: any): boolean {
 }
 
 export function validateCreator(
-	formData: any, identifierTypes?: ?Array<_IdentifierType>
+	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
-	const conditions = [
-		validateAliases(get(formData, 'aliasSection', {})),
-		validateIdentifiers(
-			get(formData, 'identifierSection', {}), identifierTypes
-		),
-		validateNameSection(get(formData, 'nameSection', {})),
-		validateCreatorSection(get(formData, 'creatorSection', {})),
-		validateSubmissionSection(get(formData, 'submissionSection', {}))
-	];
+	let success = true;
 
-	return _.every(conditions);
+	const {workerId, ...creatorValidationObject} = validationObject;
+	if (_.isEmpty(creatorValidationObject)) {
+		log.warning(`[CONSUMER::${workerId}] CREATOR Incoming validation\
+			\r object empty`);
+		return false;
+	}
+
+	// Cumulative error messages to be stored in err string
+	let err = '';
+	const aliasSection = get(creatorValidationObject, 'aliasSection', {});
+	const identifierSection = get(
+		creatorValidationObject, 'identifierSection', {}
+	);
+	const nameSection = get(creatorValidationObject, 'nameSection', {});
+	const creatorSection = get(
+		creatorValidationObject,
+		'creatorSection',
+		{}
+	);
+
+	log.info(`[CONSUMER::${workerId}]\
+		\r CREATOR - Calling validation functions.`);
+
+	if (!validateAliases(aliasSection)) {
+		err += 'CREATOR - Validate alias section failed. \n';
+		success = false;
+	}
+
+	if (!validateIdentifiers(identifierSection, identifierTypes)) {
+		err += 'CREATOR - Validate identifier section failed. \n';
+		success = false;
+	}
+
+	if (!validateNameSection(nameSection)) {
+		err += 'CREATOR - Validate name section failed. \n';
+		success = false;
+	}
+
+	if (!validateCreatorSection(creatorSection)) {
+		err += 'CREATOR - Validate creator section failed. \n';
+		success = false;
+	}
+
+	if (!success) {
+		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
+			\r${JSON.stringify(validationObject, null, 4)}`);
+	}
+	return success;
 }
