@@ -18,7 +18,7 @@
 
 
 import _ from 'lodash';
-import {sortName} from '../../helpers/utils';
+import {entityTypes} from '../../helpers/utils';
 import {validateCreator} from './creator';
 import {validateEdition} from './edition';
 import {validatePublication} from './publication';
@@ -77,27 +77,80 @@ function getNameSection(record) {
 	return nameSection;
 }
 
-function getValidationObject(record) {
-	return {
-		aliasSection: getAliasSection(record),
-		identifierSection: getIdentifierSection(record),
-		nameSection: getNameSection(record)
-	};
-}
+function validateEntity(validationFunction, entityType) {
+	return function validate(validationData) {
+		if (_.isEmpty(validationData)) {
+			return false;
+		}
+		// Construct generic validation object from data set for validation
+		const validationObject = {
+			aliasSection: getAliasSection(validationData),
+			identifierSection: getIdentifierSection(validationData),
+			nameSection: getNameSection(validationData),
+			workerId: validationData.workerId
+		};
 
-function validateEntity(validationFunction) {
-	return function validate(record) {
-		const validationObject = getValidationObject(record);
+		// Add entity specific validation data
+		switch (entityType) {
+			case entityTypes.CREATOR:
+				validationObject.creatorSection = {
+					beginArea: validationData.beginArea,
+					beginDate: validationData.beginDate,
+					endArea: validationData.endArea,
+					endDate: validationData.endDate,
+					ended: validationData.ended,
+					gender: validationData.gender,
+					type: validationData.type
+				};
+				break;
+			case entityTypes.EDITION:
+				validationObject.editionSection = {
+					depth: validationData.depth,
+					format: validationData.format,
+					height: validationData.height,
+					languages: validationData.languages,
+					pages: validationData.pages,
+					publication: validationData.publication,
+					publisher: validationData.publisher,
+					releaseDate: validationData.releaseDate,
+					status: validationData.status,
+					weight: validationData.weight,
+					width: validationData.width
+				};
+				break;
+			case entityTypes.PUBLICATION:
+				validationObject.publicationSection = {
+					type: validationData.type
+				};
+				break;
+			case entityTypes.PUBLISHER:
+				validationObject.publisherSection = {
+					area: validationData.area,
+					beginDate: validationData.beginDate,
+					endDate: validationData.endDate,
+					ended: validationData.ended,
+					type: validationData.type
+				};
+				break;
+			case entityTypes.WORK:
+				validationObject.workSection = {
+					language: validationData.language,
+					type: validationData.type
+				};
+				break;
+			default: break;
+		}
+
 		return validationFunction(validationObject);
 	};
 }
 
 const validate = {
-	creator: validateEntity(validateCreator),
-	edition: validateEntity(validateEdition),
-	publication: validateEntity(validatePublication),
-	publisher: validatePublisher(validatePublisher),
-	work: validateEntity(validateWork)
+	creator: validateEntity(validateCreator, entityTypes.CREATOR),
+	edition: validateEntity(validateEdition, entityTypes.EDITION),
+	publication: validateEntity(validatePublication, entityTypes.PUBLICATION),
+	publisher: validateEntity(validatePublisher, entityTypes.PUBLISHER),
+	work: validateEntity(validateWork, entityTypes.WORK)
 };
 
 export default validate;
