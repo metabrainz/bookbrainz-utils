@@ -182,12 +182,40 @@ export function validateNameSectionDisambiguation(value: any): boolean {
 export function validateNameSection(
 	values: any
 ): boolean {
-	return (
-		validateNameSectionName(get(values, 'name', null)) &&
-		validateNameSectionSortName(get(values, 'sortName', null)) &&
-		validateNameSectionLanguage(get(values, 'language', null)) &&
-		validateNameSectionDisambiguation(get(values, 'disambiguation', null))
-	);
+	let success = true;
+
+	if (_.isEmpty(values)) {
+		log.warning('Incoming validation object name section is empty');
+		return !success;
+	}
+
+	const name = get(values, 'name', null);
+	const sortName = get(values, 'sortName', null);
+	const language = get(values, 'language', null);
+	const disambiguation = get(values, 'disambiguation', null);
+
+	if (!validateNameSectionName(name)) {
+		log.error(`Name section - Invalid name section name ${name}`);
+		success = false;
+	}
+
+	if (!validateNameSectionSortName(sortName)) {
+		log.error(`Name section - Invalid name section sort name ${sortName}`);
+		success = false;
+	}
+
+	if (!validateNameSectionLanguage(language)) {
+		log.error(`Name section - Invalid name section language ${language}`);
+		success = false;
+	}
+
+	if (!validateNameSectionDisambiguation(disambiguation)) {
+		log.error(`Name section - Invalid name section disambiguation\
+		\r ${JSON.stringify(disambiguation, null, 4)}`);
+		success = false;
+	}
+
+	return success;
 }
 
 export function validateSubmissionSectionNote(value: any): boolean {
