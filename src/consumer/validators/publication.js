@@ -21,11 +21,11 @@
 
 import {get, validatePositiveInteger} from './base';
 import {
-	validateAliases, validateIdentifiers, validateNameSection,
-	validateSubmissionSection
+	validateAliases, validateIdentifiers, validateNameSection
 } from './common';
 import _ from 'lodash';
 import type {_IdentifierType} from './types';
+import log from '../../helpers/logger';
 
 
 export function validatePublicationSectionType(value: any): boolean {
@@ -37,17 +37,56 @@ export function validatePublicationSection(data: any): boolean {
 }
 
 export function validatePublication(
-	formData: any, identifierTypes?: ?Array<_IdentifierType>
+	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
-	const conditions = [
-		validateAliases(get(formData, 'aliasSection', {})),
-		validateIdentifiers(
-			get(formData, 'identifierSection', {}), identifierTypes
-		),
-		validateNameSection(get(formData, 'nameSection', {})),
-		validatePublicationSection(get(formData, 'publicationSection', {})),
-		validateSubmissionSection(get(formData, 'submissionSection', {}))
-	];
+	let success = true;
 
-	return _.every(conditions);
+	const {workerId, ...publicationValidationObject} = validationObject;
+	if (_.isEmpty(publicationValidationObject)) {
+		log.warning(`[CONSUMER::${workerId}] PUBLICATION Incoming validation\
+			\r object empty`);
+		return false;
+	}
+
+	// Cumulative error messages to be stored in err string
+	let err = '';
+	const aliasSection = get(publicationValidationObject, 'aliasSection', {});
+	const identifierSection = get(
+		publicationValidationObject, 'identifierSection', {}
+	);
+	const nameSection = get(publicationValidationObject, 'nameSection', {});
+	const publicationSection = get(
+		publicationValidationObject,
+		'publicationSection',
+		{}
+	);
+
+	log.info(`[CONSUMER::${workerId}]\
+		\rPUBLICATION - Calling validation functions.`);
+
+	if (!validateAliases(aliasSection)) {
+		err += 'PUBLICATION - Failed validate alias section. \n';
+		success = false;
+	}
+
+	if (!validateIdentifiers(identifierSection, identifierTypes)) {
+		err += 'PUBLICATION - Validate identifier section. \n';
+		success = false;
+	}
+
+	if (!validateNameSection(nameSection)) {
+		err += 'PUBLICATION - Validate name section. \n';
+		success = false;
+	}
+
+	if (!validatePublicationSection(publicationSection)) {
+		err += 'PUBLICATION - Validate publication section. \n';
+		success = false;
+	}
+
+	if (!success) {
+		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
+			\r${JSON.stringify(validationObject, null, 4)}`);
+	}
+	return success;
 }
