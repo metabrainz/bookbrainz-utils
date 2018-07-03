@@ -79,10 +79,10 @@ function readLine({base, id, init}, callback) {
 			log.log(`WORKER${id}:: Pushing record ${count}`);
 			queue.push({
 				data,
+				entityType: data.entityType,
 				lastEdited: lastEdited || data.lastEdited,
 				originId: originId || data.originId,
-				source,
-				type: data.entityType
+				source
 			});
 		}
 		catch (err) {
