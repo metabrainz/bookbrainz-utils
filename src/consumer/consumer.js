@@ -21,7 +21,6 @@ import * as Error from '../helpers/errors';
 import Promise from 'bluebird';
 import {Queue} from '../queue';
 import consumeRecord from './consumeRecord';
-import {isNotDefined} from '../helpers/utils';
 import log from '../helpers/logger';
 
 
