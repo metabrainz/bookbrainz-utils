@@ -18,8 +18,10 @@
 
 
 import * as Error from '../helpers/errors';
+import BookBrainzData from 'bookbrainz-data';
 import Promise from 'bluebird';
 import {Queue} from '../queue';
+import config from '../helpers/config';
 import consumeRecord from './consumeRecord';
 import log from '../helpers/logger';
 
@@ -34,6 +36,8 @@ import log from '../helpers/logger';
  **/
 function consumerPromise({id, init}) {
 	log.notice(`[WORKER::${id}] Running consumer number ${id}`);
+
+	const importDb = BookBrainzData(config('database')).modules.import;
 
 	// A never resolving promise as consumer is supposed to run forever
 	return new Promise(() => {
@@ -52,7 +56,11 @@ function consumerPromise({id, init}) {
 			}
 
 			const record = JSON.parse(msg.content.toString());
-			const error = await consumeRecord({workerId: id, ...record});
+			const error = await consumeRecord({
+				importDb,
+				workerId: id,
+				...record
+			});
 
 			switch (error) {
 				case Error.NONE:
