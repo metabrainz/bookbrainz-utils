@@ -8,6 +8,9 @@
 			"password": "bookbrainz"
 		}
 	},
+	"import": {
+		"retryLimit": 1
+	},
 	"openLibrary": {
     	"works": {
 	    	"path": "/path/to/dumps/works",
