@@ -60,6 +60,13 @@ function readLine({base, id, init}, callback) {
 	rl.on('line', line => {
 		count++;
 		try {
+			// According to details at https://openlibrary.org/developers/dumps
+			// Tab separated values in the following order
+			// 		➜ type - type of record (/type/edition, /type/work etc.)
+			// 		➜ key - unique key of the record. (/books/OL1M etc.)
+			// 		➜ revision - revision number of the record
+			// 		➜ last_modified - last modified timestamp
+			// 		➜ JSON - the complete record in JSON format
 			const json = JSON.parse(line.split('\t')[4]);
 			log.log(`WORKER${id}:: Pushing record ${count}`);
 			// TODO : parse(json) Implement parser function to process records
