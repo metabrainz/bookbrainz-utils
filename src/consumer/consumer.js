@@ -21,6 +21,7 @@ import * as Error from '../helpers/errors';
 import BookBrainzData from 'bookbrainz-data';
 import Promise from 'bluebird';
 import {Queue} from '../queue';
+import async from 'async';
 import config from '../helpers/config';
 import consumeRecord from './consumeRecord';
 import log from '../helpers/logger';
@@ -38,6 +39,7 @@ function consumerPromise({id, init}) {
 	log.notice(`[WORKER::${id}] Running consumer number ${id}`);
 
 	const importDb = BookBrainzData(config('database')).modules.import;
+	const {retryLimit} = config('import');
 
 	// A never resolving promise as consumer is supposed to run forever
 	return new Promise(() => {
@@ -47,47 +49,69 @@ function consumerPromise({id, init}) {
 			Error.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
 
-		async function messageHandler(msg) {
+		function messageHandler(msg) {
 			log.notice(`[CONSUMER::${id}] Received object.\
 				\r Running message handler`);
+
 			if (typeof msg === 'undefined' || !msg) {
 				log.error('Empty Message received. Skipping.');
 				return;
 			}
 
+			// Attempts left for this message
+			let attemptsLeft = retryLimit;
 			const record = JSON.parse(msg.content.toString());
-			const error = await consumeRecord({
-				importDb,
-				workerId: id,
-				...record
-			});
 
-			switch (error) {
-				case Error.NONE:
-					log.info(
-						`[CONSUMER::${id}] Read message successfully
-						\r${record}`
-					);
-					queue.acknowledge(msg);
-					break;
-				case Error.INVALID_RECORD:
-				case Error.RECORD_ENTITY_NOT_FOUND:
-					log.warning(
-						`[CONSUMER::${id}] ${error} - \
-						\r Skipping the errored record.`
-					);
-					queue.acknowledge(msg);
-					break;
-				case Error.TRANSACTION_ERROR:
-					log.warning(
-						`[CONSUMER::${id}] ${error} Setting up for reinsertion.
-						\r Record for reference:: \n ${record}`
-					);
-					break;
-				default: break;
-			}
+			// Manages consume record retries
+			async.doWhilst(
+				// Function repeated upon transaction error for retries times
+				// Manages async record consumption
+				async () => {
+					log.info('Running async function');
+					const error = await consumeRecord({
+						importDb,
+						workerId: id,
+						...record
+					});
+
+					switch (error) {
+						case Error.NONE:
+							log.info(
+								`[CONSUMER::${id}] Read message successfully
+								\r${record}`
+							);
+							queue.acknowledge(msg);
+							attemptsLeft = 0;
+							break;
+						case Error.INVALID_RECORD:
+						case Error.RECORD_ENTITY_NOT_FOUND:
+							log.warning(
+								`[CONSUMER::${id}] ${error} -\
+								\r Skipping the errored record.`
+							);
+							queue.acknowledge(msg);
+							attemptsLeft = 0;
+							break;
+						case Error.TRANSACTION_ERROR:
+							log.warning(
+								`[CONSUMER::${id}] ${error} Setting up for\
+								\r reinsertion. Record for reference:
+								\r ${record}`
+							);
+							attemptsLeft--;
+							break;
+						default: break;
+					}
+				},
+
+				// Test whose return value if is false, stops the iteration
+				// When number of attempts finish up, the test should return F
+				() => attemptsLeft > 0,
+
+				// Raise error in case of error
+				Error.raiseError(Error.IMPORT_ERROR)
+			);
 		}
-
 		// Connection related errors would be handled on the queue side
 		return queue.consume(messageHandler);
 	});
