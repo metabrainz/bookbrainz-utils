@@ -40,7 +40,6 @@ const argv = yargs.usage('Usage: $0 [options]')
 		+ 'Can take values `works`, `editions` or `authors`',
 		type: 'string',
 		nargs: 1,
-		demand: true,
 		demand: 'dump name key is required',
 		requiresArg:true
 	})
