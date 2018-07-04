@@ -28,7 +28,7 @@ import log from '../helpers/logger';
  * consumerPromise - Instance function called to consume from the RMQ queues
  * @param {Object} objArgs - Arguments passed
  * @param {number} objArgs.id - Worker Id
- * @param {Promise} init - The connection promise to RMQ
+ * @param {Promise} objArgs.init - The connection promise to RMQ
  * @returns {Promise} - A never fulfilling promise, as consumer is supposed to
  * 		run forever
  **/
