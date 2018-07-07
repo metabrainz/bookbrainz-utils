@@ -17,17 +17,18 @@
  */
 
 
-import {Connection} from '../../queue';
-import Promise from 'bluebird';
 import _ from 'lodash';
 import asyncCluster from '../../asyncCluster';
 import config from '../../helpers/config';
+import explorePromise from './read';
 import log from '../../helpers/logger';
-import producerPromise from './producer';
+import {mergeSets} from '../../helpers/utils';
+import util from 'util';
 import yargs from 'yargs';
 
 
 /* eslint-disable */
+
 /**
  * @type {Object} Command line args parsed by yargs library
  **/
@@ -53,6 +54,7 @@ const argv = yargs.usage('Usage: $0 [options]')
  **/
 const configOL = config(`openLibrary.${argv.dump}`);
 
+
 /**
  * masterExitCallback - Func called by the master(cluster head) before it quits
  * to collect results from each worker process
@@ -60,16 +62,24 @@ const configOL = config(`openLibrary.${argv.dump}`);
  * 		functions
  **/
 function masterExitCallback(results) {
-	log.info(
-		'[CLUSTER::MASTER] All workers exited.',
-		'Cluster master is now shutting down.'
+	const aggregateResults = results.reduce((prev, {count, set}) => {
+		prev.count += count;
+		prev.set.push(set);
+		return prev;
+	}, {count: 0, set: []});
+
+	aggregateResults.set = Array.from(mergeSets(aggregateResults.set));
+
+	log.notice(
+		`[MASTER::CLUSTER] Successfully read ${aggregateResults.count} records.`
 	);
 
-	const count = _.sum(results);
 	log.notice(
-		'[CLUSTER::MASTER] Successfully parsed and pushed (%s) records.',
-		count
+		'[MASTER::CLUSTER] Set of unique key are:',
+		util.inspect(aggregateResults.set)
 	);
+
+	log.info('[CLUSTER::MASTER] Master process is now shutting down.');
 }
 
 /**
@@ -81,13 +91,16 @@ function masterExitCallback(results) {
  **/
 function workerExitCallback(results) {
 	return Promise.all(results)
-		.then((res) => {
-			log.info(`[WORKER::${res[0].id}]`,
-				'All files processed.',
-				'Producer worker process is now shutting down.');
-			Connection.shutdown(res[0].connection);
-			return res.reduce((prev, {workerCount}) => prev + workerCount, 0);
-		});
+		.then((res) =>
+			res.reduce((prev, {workerCount, workerSet}) => {
+				prev.count.push(workerCount);
+				prev.set.push(workerSet);
+				return prev;
+			}, {count: [], set: []}))
+		.then(res => ({
+			count: _.sum(res.count),
+			set: Array.from(mergeSets(res.set))
+		}));
 }
 
 /**
@@ -100,21 +113,9 @@ function getClusterArgs() {
 		.map(fileName => `${configOL.path}/${fileName}.txt`);
 }
 
-/**
- * workerInitFunction - Run before worker function begins it's execution.
- * 		Return value is passed to each instance function as {init} of argument.
- * @param {number} id - The numerical WorkerId
- * @returns {Promise} - Return a connection promise to RMQ
- **/
-function workerInitFunction(id) {
-	log.info(`[WORKER::${id}] Producer worker process has begun.`);
-	return Connection.connect();
-}
-
 asyncCluster({
 	clusterArgs: getClusterArgs(),
-	instanceFunction: producerPromise,
+	instanceFunction: explorePromise,
 	masterExitCallback,
-	workerExitCallback,
-	workerInitFunction
+	workerExitCallback
 });

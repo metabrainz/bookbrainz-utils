@@ -17,38 +17,22 @@
  */
 
 
-import * as Error from '../../helpers/errors';
 import Promise from 'bluebird';
-import {Queue} from '../../queue';
 import fs from 'fs';
-import {isNotDefined} from '../../helpers/utils';
 import log from '../../helpers/logger';
-import parser from './parser';
 import readline from 'readline';
 
 
 /**
  * readLine - Function which takes in instanceArgs and processes them.
  * @param {Object} obj - Primary argument
- * @param {Promise} obj.init - Connection promise
  * @param {number} obj.id - Numerical Id of the worker process running this
  * 		instance
  * @param {string} obj.base - This is path to the file to be processed
  * @param {function} callback - Function used send back the results. Used for
  * 		promsifying the result.
  **/
-function readLine({base, id, init}, callback) {
-	if (isNotDefined(base)) {
-		Error.undefinedValue('producerPromise:: File path (base args).');
-	}
-
-	if (id !== 0 && isNotDefined(id)) {
-		Error.undefinedValue('producerPromise:: Worker Id undefined.');
-	}
-
-	// Errors related to init value will be handled on the queue side
-	const queue = new Queue(init);
-
+function readLine({base, id}, callback) {
 	const fileName = base.split('/').pop();
 	log.info(`[WORKER::${id}] Running instance function on ${fileName}.`);
 
@@ -57,6 +41,7 @@ function readLine({base, id, init}, callback) {
 	});
 
 	let count = 0;
+	const set = new Set();
 
 	rl.on('line', line => {
 		count++;
@@ -68,27 +53,12 @@ function readLine({base, id, init}, callback) {
 			// 		➜ revision - revision number of the record
 			// 		➜ last_modified - last modified timestamp
 			// 		➜ JSON - the complete record in JSON format
-			const record = line.split('\t');
-
-			const source = 'OPENLIBRARY';
-			const json = JSON.parse(record[4]);
-			const OLType = record[0].split('/')[2];
-			const data = parser(OLType, json);
-			const originId = record[1].split('/')[2];
-			const lastEdited = record[3];
-
-			log.log(`WORKER${id}:: Pushing record ${count}`);
-			queue.push({
-				data,
-				entityType: data.entityType,
-				lastEdited: lastEdited || data.lastEdited,
-				originId: originId || data.originId,
-				source
-			});
+			const json = JSON.parse(line.split('\t')[4]);
+			Object.keys(json).forEach(key => set.add(key));
 		}
 		catch (err) {
 			log.warning(
-				`Error in ${fileName} in line number ${count}.`,
+				`[WORKER::${id}] Error in ${fileName} in line number ${count}.`,
 				'Skipping. Record for reference: \n [[',
 				line, ']]'
 			);
@@ -96,19 +66,13 @@ function readLine({base, id, init}, callback) {
 	});
 
 	rl.on('close', () => {
-		callback(null, {
-			connection: init,
-			id,
-			workerCount: count
-		});
+		callback(null, {workerCount: count, workerSet: set});
 	});
 }
 
 /**
  * explorePromise - Promisfied version of readLine
- * @type {function}
- * @returns {Promise}
  **/
-const producerPromise = Promise.promisify(readLine);
+const explorePromise = Promise.promisify(readLine);
 
-export default producerPromise;
+export default explorePromise;
