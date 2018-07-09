@@ -5,13 +5,15 @@
 	"main": "index.js",
 	"scripts": {
 		"build": "rimraf lib/* && babel src --out-dir lib",
-		"nodemon": "nodemon --watch './src/' --exec 'npm run build'",
 		"lint": "eslint ./src",
+		"lint-errors": "eslint --quiet ./src",
+		"precommit": "lint-staged",
 		"consumer": "node ./lib/consumer/index.js",
 		"importOLWorks": "node ./lib/openLibrary/producer/index.js -d works",
 		"importOLAuthors": "node ./lib/openLibrary/producer/index.js -d authors",
 		"importOLEditions": "node ./lib/openLibrary/producer/index.js -d editions",
-		"precommit": "lint-staged"
+		"test": "npm run build && npm run lint-errors && cross-env NODE_ENV=test mocha",
+		"nodemon": "nodemon --watch './src/' --exec 'npm run build'"
 	},
 	"lint-staged": {
 		"*.js": [
@@ -35,6 +37,7 @@
 		"async": "^2.6.0",
 		"babel-preset-flow": "^6.23.0",
 		"bluebird": "^3.5.1",
+		"franc-min": "^4.0.0",
 		"bookbrainz-data": "^1.0.3",
 		"immutable": "^3.8.2",
 		"lodash": "^4.17.10",
@@ -52,6 +55,9 @@
 		"babel-plugin-transform-object-rest-spread": "^6.26.0",
 		"babel-preset-env": "^1.7.0",
 		"babel-preset-stage-2": "^6.24.1",
+		"chai": "^4.1.2",
+		"chai-as-promised": "^7.1.1",
+		"cross-env": "^5.2.0",
 		"eslint": "^4.19.1",
 		"eslint-plugin-babel": "^5.1.0",
 		"eslint-plugin-flowtype": "^2.48.0",
@@ -59,6 +65,7 @@
 		"flow-bin": "^0.75.0",
 		"husky": "^0.14.3",
 		"lint-staged": "^7.1.3",
+		"mocha": "^5.1.1",
 		"nodemon": "^1.17.5",
 		"rimraf": "^2.6.2"
 	}

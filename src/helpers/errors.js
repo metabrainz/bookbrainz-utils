@@ -94,6 +94,12 @@ export const NONE = 'No errors occurred';
 export const TRANSACTION_ERROR = 'Error occurred during DB transaction.';
 
 /**
+ * IMPORT_ERROR - Signify that error occurred during the import process.
+ * @type {string}
+ **/
+export const IMPORT_ERROR = 'Error occurred during import process';
+
+/**
  * importErrors - Encapsulate all import errors {INVALID_RECORD,
  * RECORD_ENTITY_NOT_FOUND,
  * TRANSACTION_ERROR}.

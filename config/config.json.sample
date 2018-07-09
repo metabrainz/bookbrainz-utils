@@ -1,5 +1,17 @@
 {
-    "openLibrary": {
+    "database": {
+		"client": "pg",
+		"connection": {
+			"host": "127.0.0.1",
+			"database": "bookbrainz",
+			"user": "bookbrainz",
+			"password": "bookbrainz"
+		}
+	},
+	"import": {
+		"retryLimit": 1
+	},
+	"openLibrary": {
     	"works": {
 	    	"path": "/path/to/dumps/works",
 		    "fileCount": 1,
