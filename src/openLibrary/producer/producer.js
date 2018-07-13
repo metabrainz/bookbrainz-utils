@@ -62,6 +62,7 @@ function readLine({base, id, init}, callback) {
 		count++;
 		try {
 			// According to details at https://openlibrary.org/developers/dumps
+			// Tab separated values in the following order
 			// 		➜ type - type of record (/type/edition, /type/work etc.)
 			// 		➜ key - unique key of the record. (/books/OL1M etc.)
 			// 		➜ revision - revision number of the record
