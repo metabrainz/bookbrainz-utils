@@ -40,11 +40,11 @@ function getAliasSection(record) {
 	return aliasSection;
 }
 
-function getPrimaryAlias(aliasList) {
+function getDefaultAlias(aliasList) {
 	let primaryAlias = null;
 	if (aliasList && _.isArray(aliasList)) {
 		for (let i in aliasList) {
-			if (aliasList[i].primary) {
+			if (aliasList[i].default) {
 				primaryAlias = aliasList[i];
 				break;
 			}
@@ -67,11 +67,11 @@ function getIdentifierSection(record) {
 }
 
 function getNameSection(record) {
-	const primaryAlias = getPrimaryAlias(record.alias);
+	const defaultAlias = getDefaultAlias(record.alias);
 
 	const nameSection = {
 		disambiguation: record.disambiguation,
-		...primaryAlias
+		...defaultAlias
 	};
 
 	return nameSection;
