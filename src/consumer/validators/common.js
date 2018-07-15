@@ -150,7 +150,7 @@ export function validateIdentifier(
 	identifier: any, types?: ?Array<IdentifierType>
 ): boolean {
 	const value = get(identifier, 'value');
-	const type = get(identifier, 'type');
+	const type = get(identifier, 'typeId');
 
 	return (
 		validateIdentifierValue(value, type, types) &&
@@ -191,7 +191,7 @@ export function validateNameSection(
 
 	const name = get(values, 'name', null);
 	const sortName = get(values, 'sortName', null);
-	const language = get(values, 'language', null);
+	const language = get(values, 'languageId', null);
 	const disambiguation = get(values, 'disambiguation', null);
 
 	if (!validateNameSectionName(name)) {
