@@ -146,11 +146,13 @@ function validateEntity(validationFunction, entityType) {
 }
 
 const validate = {
-	creator: validateEntity(validateCreator, entityTypes.CREATOR),
-	edition: validateEntity(validateEdition, entityTypes.EDITION),
-	publication: validateEntity(validatePublication, entityTypes.PUBLICATION),
-	publisher: validateEntity(validatePublisher, entityTypes.PUBLISHER),
-	work: validateEntity(validateWork, entityTypes.WORK)
+	[entityTypes.CREATOR]: validateEntity(validateCreator, entityTypes.CREATOR),
+	[entityTypes.EDITION]: validateEntity(validateEdition, entityTypes.EDITION),
+	[entityTypes.PUBLICATION]:
+		validateEntity(validatePublication, entityTypes.PUBLICATION),
+	[entityTypes.PUBLISHER]:
+		validateEntity(validatePublisher, entityTypes.PUBLISHER),
+	[entityTypes.WORK]: validateEntity(validateWork, entityTypes.WORK)
 };
 
 export default validate;
