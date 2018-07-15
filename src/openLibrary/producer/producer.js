@@ -23,6 +23,7 @@ import {Queue} from '../../queue';
 import fs from 'fs';
 import {isNotDefined} from '../../helpers/utils';
 import log from '../../helpers/logger';
+import parser from './parser';
 import readline from 'readline';
 
 
@@ -67,10 +68,23 @@ function readLine({base, id, init}, callback) {
 			// 		➜ revision - revision number of the record
 			// 		➜ last_modified - last modified timestamp
 			// 		➜ JSON - the complete record in JSON format
-			const json = JSON.parse(line.split('\t')[4]);
+			const record = line.split('\t');
+
+			const source = 'OPENLIBRARY';
+			const json = JSON.parse(record[4]);
+			const OLType = record[0].split('/')[2];
+			const data = parser(OLType, json);
+			const originId = record[1].split('/')[2];
+			const lastEdited = record[3];
+
 			log.log(`WORKER${id}:: Pushing record ${count}`);
-			// TODO : parse(json) Implement parser function to process records
-			queue.push(json);
+			queue.push({
+				data,
+				entityType: data.entityType,
+				lastEdited: lastEdited || data.lastEdited,
+				originId: originId || data.originId,
+				source
+			});
 		}
 		catch (err) {
 			log.warning(
