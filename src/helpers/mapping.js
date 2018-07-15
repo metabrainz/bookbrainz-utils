@@ -214,8 +214,5 @@ export const mbLanguageMapping = {
 export function mapLanguage(francCode) {
 	const language = francMinMapping[francCode];
 	const code = mbLanguageMapping[language];
-	if (!code) {
-		return code;
-	}
-	return mbLanguageMapping.English;
+	return code || mbLanguageMapping.English;
 }
