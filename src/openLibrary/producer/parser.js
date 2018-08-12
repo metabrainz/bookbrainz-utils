@@ -40,15 +40,17 @@ function processWork(json) {
 		return null;
 	}
 
-	const work = {};
-	work.alias = [];
-	work.metadata = {};
-	work.metadata.relationships = [];
-	work.metadata.links = [];
-	work.identifiers = [];
-
-	work.entityType = entityTypes.WORK;
-	work.source = 'OPENLIBRARY';
+	// Base skeleton, remaining keys are added as and when they are extracted
+	const work = {
+		alias: [],
+		entityType: entityTypes.WORK,
+		identifiers: [],
+		metadata: {
+			links: [],
+			relationships: []
+		},
+		source: 'OPENLIBRARY'
+	};
 
 	// Set up aliases
 	// The first alias (in the logical flow) is made to be default alias
@@ -106,7 +108,7 @@ function processWork(json) {
 	}
 
 	if (!isNotDefined(json.description)) {
-		work.disambiguation = json.description.value;
+		work.annotation = json.description.value;
 	}
 
 	if (!isNotDefined(json.links) && (json.links instanceof Array)) {
@@ -151,18 +153,19 @@ function processAuthor(json) {
 		return null;
 	}
 
-	const creator = {};
-	creator.alias = [];
-	creator.identifiers = [];
-
-	creator.metadata = {};
-	creator.metadata.relationships = [];
-	creator.metadata.links = [];
-	creator.metadata.originId = [];
-	creator.metadata.identifiers = [];
-
-	creator.entityType = entityTypes.CREATOR;
-	creator.source = 'OPENLIBRARY';
+	// Base skeleton, remaining keys are added as and when they are extracted
+	const creator = {
+		alias: [],
+		entityType: entityTypes.CREATOR,
+		identifiers: [],
+		metadata: {
+			identifiers: [],
+			links: [],
+			originId: [],
+			relationships: []
+		},
+		source: 'OPENLIBRARY'
+	};
 
 	// Set up aliases
 	// The first alias (in the logical flow) is made to be default alias
