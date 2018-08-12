@@ -43,7 +43,7 @@ export default async function consumeRecord({
 	const validationFunction = validate[entityType];
 
 	if (!validationFunction(validationData)) {
-		return importErrors.INVALID_RECORD;
+		return {errorType: importErrors.INVALID_RECORD};
 	}
 
 	try {
@@ -51,8 +51,8 @@ export default async function consumeRecord({
 	}
 	catch (err) {
 		log.warning(`[TRANSACTION::${entityType}] ${err}`);
-		return importErrors.TRANSACTION_ERROR;
+		return {errMsg: err, errorType: importErrors.TRANSACTION_ERROR};
 	}
 
-	return importErrors.NONE;
+	return {errorType: importErrors.NONE};
 }

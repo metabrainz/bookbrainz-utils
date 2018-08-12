@@ -82,13 +82,13 @@ function consumerPromise({id, init}) {
 					}
 
 					log.info('Running async function');
-					const error = await consumeRecord({
+					const {errorType, errMsg} = await consumeRecord({
 						importRecord,
 						workerId: id,
 						...record
 					});
 
-					switch (error) {
+					switch (errorType) {
 						case Error.NONE:
 							// On success, we don't need to retry again
 							attemptsLeft = 0;
@@ -104,12 +104,12 @@ function consumerPromise({id, init}) {
 							// In case of invalid records, we don't try again
 							attemptsLeft = 0;
 							log.warning(
-								`[CONSUMER::${id}] ${error} -\
-								\r Skipping the errored record.`
+								`[CONSUMER::${id}] ${errorType} -\
+								\r Hence skipping the errored record.`
 							);
 							// As we're not retrying, we acknowledge the message
 							queue.acknowledge(msg);
-							break;
+							throw new Error(`${errorType} :: ${errMsg}`);
 
 						case Error.TRANSACTION_ERROR:
 							// In case of transaction errors, we retry a number
@@ -118,7 +118,7 @@ function consumerPromise({id, init}) {
 
 							// Issue a warning in case of transaction error
 							log.warning(
-								`[CONSUMER::${id}] ${error} Setting up for\
+								`[CONSUMER::${id}] ${errorType} Setting up for\
 								\r reinsertion. Record for reference:
 								\r ${msg}
 								\r Attempts left: ${attemptsLeft}`
@@ -129,6 +129,7 @@ function consumerPromise({id, init}) {
 								log.info('No more attempts left.',
 									'Acknowledging the message.');
 								queue.acknowledge(msg);
+								throw new Error(`${errorType} :: ${errMsg}`);
 							}
 
 							log.info(attemptsLeft);
@@ -147,7 +148,8 @@ function consumerPromise({id, init}) {
 				},
 
 				// Raise error in case of error
-				Error.raiseError(Error.IMPORT_ERROR)
+				Error.raiseError(`${Error.IMPORT_ERROR}
+					\r ${JSON.stringify(record)}`)
 			);
 		}
 		// Connection related errors would be handled on the queue side
