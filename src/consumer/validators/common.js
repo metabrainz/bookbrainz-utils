@@ -57,7 +57,7 @@ export function validateAliasLanguage(value: any): boolean {
 	return validatePositiveInteger(value, true);
 }
 
-export function validateAliasPrimary(value: any): boolean {
+export function validateAliasDefault(value: any): boolean {
 	return _.isBoolean(value);
 }
 
@@ -67,8 +67,8 @@ export function validateAlias(value: any): boolean {
 	}
 	const name = get(value, 'name', null);
 	const sortName = get(value, 'sortName', null);
-	const language = get(value, 'language', null);
-	const primary = get(value, 'primary', null);
+	const language = get(value, 'languageId', null);
+	const _default = get(value, 'default', null);
 
 	let success = true;
 	let err = '';
@@ -87,14 +87,15 @@ export function validateAlias(value: any): boolean {
 		err += `Alias - Invalid language. ${language}\n`;
 	}
 
-	if (!validateAliasPrimary(primary)) {
+	if (!validateAliasDefault(_default)) {
 		success = false;
-		err += `Alias - Invalid primary. ${primary}\n`;
+		err += `Alias - Invalid primary. ${_default}\n`;
 	}
 
 	if (!success) {
 		log.warning(`Alias - Error \n${err}\
 		\r Alias for reference ${JSON.stringify(value, null, 4)}`);
+		throw new Error(err);
 	}
 
 	return success;
@@ -150,7 +151,7 @@ export function validateIdentifier(
 	identifier: any, types?: ?Array<IdentifierType>
 ): boolean {
 	const value = get(identifier, 'value');
-	const type = get(identifier, 'type');
+	const type = get(identifier, 'typeId');
 
 	return (
 		validateIdentifierValue(value, type, types) &&
@@ -191,28 +192,34 @@ export function validateNameSection(
 
 	const name = get(values, 'name', null);
 	const sortName = get(values, 'sortName', null);
-	const language = get(values, 'language', null);
+	const language = get(values, 'languageId', null);
 	const disambiguation = get(values, 'disambiguation', null);
+	let err = '';
 
 	if (!validateNameSectionName(name)) {
-		log.error(`Name section - Invalid name section name ${name}`);
+		err += `Invalid name section name ${name} \n`;
 		success = false;
 	}
 
 	if (!validateNameSectionSortName(sortName)) {
-		log.error(`Name section - Invalid name section sort name ${sortName}`);
+		err += `Invalid name section sort name ${sortName} \n`;
 		success = false;
 	}
 
 	if (!validateNameSectionLanguage(language)) {
-		log.error(`Name section - Invalid name section language ${language}`);
+		err += `Invalid name section language ${language} \n`;
 		success = false;
 	}
 
 	if (!validateNameSectionDisambiguation(disambiguation)) {
-		log.error(`Name section - Invalid name section disambiguation\
-		\r ${JSON.stringify(disambiguation, null, 4)}`);
+		err += `Invalid name section disambiguation\
+		\r ${JSON.stringify(disambiguation, null, 4)} \n`;
 		success = false;
+	}
+
+	if (!success) {
+		log.warning(`Invalid Name section - ${err}`);
+		throw new Error(err);
 	}
 
 	return success;
