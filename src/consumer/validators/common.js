@@ -89,7 +89,7 @@ export function validateAlias(value: any): boolean {
 
 	if (!validateAliasDefault(_default)) {
 		success = false;
-		err += `Alias - Invalid primary. ${_default}\n`;
+		err += `Alias - Invalid default. ${_default}\n`;
 	}
 
 	if (!success) {
