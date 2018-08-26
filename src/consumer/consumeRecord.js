@@ -18,8 +18,8 @@
 
 
 import _ from 'lodash';
-import {entityTypes} from '../helpers/utils';
 import {importErrors} from '../helpers/errors';
+import log from '../helpers/logger';
 import validate from './validators';
 
 
@@ -33,77 +33,26 @@ function getValidationData(record) {
 		...record.data
 	};
 }
-function consumeCreator(record) {
+
+export default async function consumeRecord({
+	entityType,
+	importRecord,
+	...record
+}) {
 	const validationData = getValidationData(record);
+	const validationFunction = validate[entityType];
 
-	if (!validate.creator(validationData)) {
-		return importErrors.INVALID_RECORD;
+	if (!validationFunction(validationData)) {
+		return {errorType: importErrors.INVALID_RECORD};
 	}
-	// Use bookbrainz-data add import of the given type and return relevant err
-	return null;
-}
 
-function consumeEdition(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.edition(validationData)) {
-		return importErrors.INVALID_RECORD;
+	try {
+		await importRecord({entityType, ...record.data});
 	}
-	// Use bookbrainz-data add import of the given type and return relevant err
-	return null;
-}
-
-function consumePublication(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.publication(validationData)) {
-		return importErrors.INVALID_RECORD;
+	catch (err) {
+		log.warning(`[TRANSACTION::${entityType}] ${err}`);
+		return {errMsg: err, errorType: importErrors.TRANSACTION_ERROR};
 	}
-	// Use bookbrainz-data add import of the given type and return relevant err
-	return null;
-}
 
-function consumePublisher(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.publisher(validationData)) {
-		return importErrors.INVALID_RECORD;
-	}
-	// Use bookbrainz-data add import of the given type and return relevant err
-	return null;
-}
-
-function consumeWork(record) {
-	const validationData = getValidationData(record);
-
-	if (!validate.work(validationData)) {
-		return importErrors.INVALID_RECORD;
-	}
-	// Use bookbrainz-data add import of the given type and return relevant err
-	return null;
-}
-
-export default async function consumeRecord({type, ...record}) {
-	let error = importErrors.NONE;
-	switch (type) {
-		case entityTypes.CREATOR:
-			error = await consumeCreator(record) || error;
-			break;
-		case entityTypes.EDITION:
-			error = await consumeEdition(record) || error;
-			break;
-		case entityTypes.PUBLICATION:
-			error = await consumePublication(record) || error;
-			break;
-		case entityTypes.PUBLISHER:
-			error = await consumePublisher(record) || error;
-			break;
-		case entityTypes.WORK:
-			error = await consumeWork(record) || error;
-			break;
-		default:
-			error = importErrors.RECORD_ENTITY_NOT_FOUND;
-			break;
-	}
-	return error;
+	return {errorType: importErrors.NONE};
 }
