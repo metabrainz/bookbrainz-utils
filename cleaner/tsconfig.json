@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+        "lib": ["es2017"],
+        "module": "commonjs",
+        "outDir": "lib",
+        "sourceMap": true,
+        "target": "es2017"
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
