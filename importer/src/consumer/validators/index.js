@@ -41,7 +41,7 @@ function getAliasSection(record) {
 function getDefaultAlias(aliasList) {
 	let primaryAlias = null;
 	if (aliasList && _.isArray(aliasList)) {
-		for (let i in aliasList) {
+		for (const i in aliasList) {
 			if (aliasList[i].default) {
 				primaryAlias = aliasList[i];
 				break;

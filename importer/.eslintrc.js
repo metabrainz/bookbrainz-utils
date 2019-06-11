@@ -20,7 +20,7 @@ const options = {
 	plugins: ['import', 'flowtype', 'babel']
 };
 
-// Generally, don't change TRANSITION_* severities unless you're LordSputnik ;)
+// Generally, don't change TRANSITION_* severities unless after consultation with the maintainers
 const ERROR = 2;
 const TRANSITION_WARNING = 1; // warnings that should be reviewed soon
 const WARNING = 1; // warnings that should stay warnings
@@ -182,7 +182,7 @@ const stylisticIssuesRules = {
 	'func-name-matching': ERROR,
 	'func-names': ERROR,
 	'func-style': [ERROR, 'declaration'],
-	'function-paren-newline': [TRANSITION_WARNING, 'consistent'],
+	'function-paren-newline': [TRANSITION_IGNORE, 'consistent'],
 	'id-length': [
 		ERROR,
 		{
