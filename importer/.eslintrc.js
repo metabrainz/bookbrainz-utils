@@ -1,17 +1,12 @@
 /* eslint-disable import/unambiguous, import/no-commonjs, no-magic-numbers */
 /* eslint-disable no-inline-comments */
 
-
 const options = {
 	env: {
 		es6: true,
 		node: true
 	},
-	extends: [
-		'eslint:recommended',
-		'plugin:flowtype/recommended',
-		'plugin:import/recommended'
-	],
+	extends: ['eslint:recommended', 'plugin:flowtype/recommended', 'plugin:import/recommended'],
 	parser: 'babel-eslint',
 	parserOptions: {
 		ecmaFeatures: {
@@ -22,13 +17,8 @@ const options = {
 		ecmaVersion: 8,
 		sourceType: 'module'
 	},
-	plugins: [
-		'import',
-		'flowtype',
-		'babel'
-	]
+	plugins: ['import', 'flowtype', 'babel']
 };
-
 
 // Generally, don't change TRANSITION_* severities unless you're LordSputnik ;)
 const ERROR = 2;
@@ -75,15 +65,9 @@ const bestPracticesRules = {
 	'consistent-return': ERROR,
 	curly: ERROR,
 	'default-case': ERROR,
-	'dot-location': [
-		ERROR,
-		'property'
-	],
+	'dot-location': [ERROR, 'property'],
 	'dot-notation': ERROR,
-	eqeqeq: [
-		ERROR,
-		'allow-null'
-	],
+	eqeqeq: [ERROR, 'allow-null'],
 	'guard-for-in': ERROR,
 	'no-alert': ERROR,
 	'no-caller': ERROR,
@@ -108,13 +92,7 @@ const bestPracticesRules = {
 		{
 			detectObjects: true,
 			enforceConst: true,
-			ignore: [
-				0,
-				1,
-				2,
-				3,
-				10
-			],
+			ignore: [0, 1, 2, 3, 10],
 			ignoreArrayIndexes: true
 		}
 	],
@@ -144,18 +122,12 @@ const bestPracticesRules = {
 	radix: ERROR,
 	'require-await': ERROR,
 	'vars-on-top': ERROR,
-	'wrap-iife': [
-		ERROR,
-		'any'
-	],
+	'wrap-iife': [ERROR, 'any'],
 	yoda: ERROR
 };
 
 const strictModeRules = {
-	strict: [
-		ERROR,
-		'global'
-	]
+	strict: [ERROR, 'global']
 };
 
 const variablesRules = {
@@ -171,15 +143,7 @@ const variablesRules = {
 };
 
 const nodeAndCommonJSRules = {
-	'callback-return': [
-		ERROR,
-		[
-			'callback',
-			'cb',
-			'next',
-			'done'
-		]
-	],
+	'callback-return': [ERROR, ['callback', 'cb', 'next', 'done']],
 	'global-require': ERROR,
 	'handle-callback-err': ERROR,
 	'no-mixed-requires': ERROR,
@@ -192,15 +156,12 @@ const nodeAndCommonJSRules = {
 
 // Agreement of all project leads needed before changing these.
 const stylisticIssuesRules = {
-	'array-bracket-newline': [
-		ERROR,
-		'consistent'
-	],
+	'array-bracket-newline': [ERROR, 'consistent'],
 	'array-bracket-spacing': ERROR,
 	'block-spacing': ERROR,
 	'brace-style': [
 		ERROR,
-		'stroustrup',
+		'1tbs',
 		{
 			allowSingleLine: true
 		}
@@ -215,34 +176,17 @@ const stylisticIssuesRules = {
 	'comma-spacing': ERROR,
 	'comma-style': ERROR,
 	'computed-property-spacing': ERROR,
-	'consistent-this': [
-		ERROR,
-		'self'
-	],
+	'consistent-this': [ERROR, 'self'],
 	'eol-last': ERROR,
 	'func-call-spacing': ERROR,
 	'func-name-matching': ERROR,
 	'func-names': ERROR,
-	'func-style': [
-		ERROR,
-		'declaration'
-	],
-	'function-paren-newline': [
-		TRANSITION_WARNING,
-		'consistent'
-	],
+	'func-style': [ERROR, 'declaration'],
+	'function-paren-newline': [TRANSITION_WARNING, 'consistent'],
 	'id-length': [
 		ERROR,
 		{
-			exceptions: [
-				'x',
-				'i',
-				'_',
-				'$',
-				'a',
-				'b',
-				'q'
-			]
+			exceptions: ['x', 'i', '_', '$', 'a', 'b', 'q']
 		}
 	],
 	indent: [
@@ -253,10 +197,7 @@ const stylisticIssuesRules = {
 			VariableDeclarator: 1
 		}
 	],
-	'jsx-quotes': [
-		ERROR,
-		'prefer-double'
-	],
+	'jsx-quotes': [ERROR, 'prefer-double'],
 	'key-spacing': ERROR,
 	'keyword-spacing': ERROR,
 	'linebreak-style': ERROR,
@@ -268,73 +209,39 @@ const stylisticIssuesRules = {
 		}
 	],
 	'lines-between-class-members': ERROR,
-	'max-depth': [
-		ERROR,
-		6
-	],
+	'max-depth': [ERROR, 6],
 	'max-len': [
 		ERROR,
 		{
-			code: 80,
+			code: 100,
 			ignoreUrls: true,
 			tabWidth: 4
 		}
 	],
 	'max-lines': TRANSITION_IGNORE,
-	'max-nested-callbacks': [
-		ERROR,
-		5
-	],
-	'max-params': [
-		TRANSITION_IGNORE,
-		4
-	],
-	'max-statements': [
-		TRANSITION_IGNORE,
-		15
-	],
+	'max-nested-callbacks': [ERROR, 5],
+	'max-params': [TRANSITION_IGNORE, 4],
+	'max-statements': [TRANSITION_IGNORE, 15],
 	'new-parens': ERROR,
 	'no-array-constructor': ERROR,
 	'no-bitwise': ERROR,
 	'no-continue': ERROR,
 	'no-inline-comments': ERROR,
 	'no-lonely-if': ERROR,
-	'no-mixed-spaces-and-tabs': [
-		ERROR,
-		'smart-tabs'
-	],
+	'no-mixed-spaces-and-tabs': [ERROR, 'smart-tabs'],
 	'no-multiple-empty-lines': ERROR,
 	'no-nested-ternary': ERROR,
 	'no-new-object': TRANSITION_IGNORE,
 	'no-trailing-spaces': ERROR,
 	'no-unneeded-ternary': ERROR,
 	'no-whitespace-before-property': ERROR,
-	'object-curly-newline': [
-		ERROR,
-		{consistent: true}
-	],
-	'one-var': [
-		ERROR,
-		'never'
-	],
+	'object-curly-newline': [ERROR, {consistent: true}],
+	'one-var': [ERROR, 'never'],
 	'operator-assignment': ERROR,
-	'operator-linebreak': [
-		ERROR,
-		'after'
-	],
-	'padded-blocks': [
-		ERROR,
-		'never'
-	],
-	'quote-props': [
-		ERROR,
-		'as-needed'
-	],
-	quotes: [
-		ERROR,
-		'single',
-		'avoid-escape'
-	],
+	'operator-linebreak': [ERROR, 'after'],
+	'padded-blocks': [ERROR, 'never'],
+	'quote-props': [ERROR, 'as-needed'],
+	quotes: [ERROR, 'single', 'avoid-escape'],
 	'require-jsdoc': TRANSITION_IGNORE,
 	'semi-spacing': [
 		ERROR,
@@ -415,108 +322,8 @@ const flowTypeRules = {
 	'flowtype/semi': ERROR
 };
 
-const reactRules = {
-	'react/boolean-prop-naming': ERROR,
-	'react/button-has-type': ERROR,
-	'react/default-props-match-prop-types': ERROR,
-	'react/forbid-component-props': TRANSITION_IGNORE,
-	'react/forbid-foreign-prop-types': ERROR,
-	'react/jsx-boolean-value': ERROR,
-	'react/jsx-closing-bracket-location': [
-		ERROR,
-		'tag-aligned'
-	],
-	'react/jsx-closing-tag-location': ERROR,
-	'react/jsx-curly-brace-presence': ERROR,
-	'react/jsx-curly-spacing': [
-		ERROR,
-		{
-			children: true
-		}
-	],
-	'react/jsx-equals-spacing': ERROR,
-	'react/jsx-first-prop-new-line': ERROR,
-	'react/jsx-handler-names': ERROR,
-	'react/jsx-indent-props': [
-		ERROR,
-		'tab'
-	],
-	'react/jsx-no-bind': [
-		ERROR,
-		{
-			ignoreRefs: true
-		}
-	],
-	'react/jsx-no-literals': TRANSITION_IGNORE,
-	'react/jsx-one-expression-per-line': TRANSITION_IGNORE,
-	'react/jsx-pascal-case': ERROR,
-	'react/jsx-sort-props': [
-		ERROR,
-		{
-			callbacksLast: true,
-			ignoreCase: false,
-			shorthandFirst: true
-		}
-	],
-	'react/jsx-tag-spacing': [
-		ERROR,
-		{
-			beforeSelfClosing: 'never'
-		}
-	],
-	'react/jsx-wrap-multilines': ERROR,
-	'react/no-access-state-in-setstate': ERROR,
-	'react/no-array-index-key': TRANSITION_WARNING,
-	'react/no-danger': TRANSITION_WARNING,
-	'react/no-did-mount-set-state': ERROR,
-	'react/no-did-update-set-state': ERROR,
-	'react/no-direct-mutation-state': ERROR,
-	'react/no-multi-comp': [
-		ERROR,
-		{
-			ignoreStateless: true
-		}
-	],
-	'react/no-redundant-should-component-update': ERROR,
-	'react/no-set-state': TRANSITION_IGNORE,
-	'react/no-typos': ERROR,
-	'react/no-unused-prop-types': ERROR,
-	'react/no-unused-state': TRANSITION_WARNING,
-	'react/no-will-update-set-state': ERROR,
-	'react/prefer-es6-class': [
-		ERROR,
-		'always'
-	],
-	'react/prefer-stateless-function': ERROR,
-	'react/require-default-props': [
-		ERROR,
-		{
-			forbidDefaultForRequired: true
-		}
-	],
-	'react/self-closing-comp': ERROR,
-	'react/sort-comp': ERROR,
-	'react/sort-prop-types': [
-		ERROR,
-		{
-			callbacksLast: false,
-			ignoreCase: false,
-			requiredFirst: false,
-			sortShapeProp: true
-		}
-	],
-	'react/style-prop-object': ERROR,
-	'react/void-dom-elements-no-children': ERROR
-};
-
 const es6ImportRules = {
 	'import/first': ERROR,
-	'import/newline-after-import': [
-		ERROR,
-		{
-			count: 2
-		}
-	],
 	'import/no-absolute-path': ERROR,
 	'import/no-amd': ERROR,
 	'import/no-commonjs': ERROR,
@@ -556,6 +363,5 @@ options.rules = Object.assign(
 	flowTypeRules,
 	es6ImportRules
 );
-
 
 module.exports = options;

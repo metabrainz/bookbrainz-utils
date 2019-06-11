@@ -19,13 +19,10 @@
 
 // @flow
 
-import {
-	get, validateOptionalString, validatePositiveInteger, validateRequiredString
-} from './base';
+import {get, validateOptionalString, validatePositiveInteger, validateRequiredString} from './base';
 import {Iterable} from 'immutable';
 import _ from 'lodash';
 import log from '../../helpers/logger';
-
 
 export function validateMultiple(
 	values: any[],
@@ -36,13 +33,11 @@ export function validateMultiple(
 	let every = (object, predicate) => _.every(object, predicate);
 	if (Iterable.isIterable(values)) {
 		every = (object, predicate) => object.every(predicate);
-	}
-	else if (!_.isObject(values)) {
+	} else if (!_.isObject(values)) {
 		return false;
 	}
 
-	return every(values, (value) =>
-		validationFunction(value, additionalArgs));
+	return every(values, value => validationFunction(value, additionalArgs));
 }
 
 export function validateAliasName(value: any): boolean {
@@ -93,17 +88,16 @@ export function validateAlias(value: any): boolean {
 	}
 
 	if (!success) {
-		log.warning(`Alias - Error \n${err}\
-		\r Alias for reference ${JSON.stringify(value, null, 4)}`);
+		log.warning(
+			`Alias - Error \n${err}\n Alias for reference ${JSON.stringify(value, null, 4)}`
+		);
 		throw new Error(err);
 	}
 
 	return success;
 }
 
-export const validateAliases = _.partial(
-	validateMultiple, _.partial.placeholder, validateAlias
-);
+export const validateAliases = _.partial(validateMultiple, _.partial.placeholder, validateAlias);
 
 export type IdentifierType = {
 	id: number,
@@ -112,7 +106,9 @@ export type IdentifierType = {
 };
 
 export function validateIdentifierValue(
-	value: any, typeId: mixed, types?: ?Array<IdentifierType>
+	value: any,
+	typeId: mixed,
+	types?: ?Array<IdentifierType>
 ): boolean {
 	if (!validateRequiredString(value)) {
 		return false;
@@ -122,7 +118,7 @@ export function validateIdentifierValue(
 		return true;
 	}
 
-	const selectedType = _.find(types, (type) => type.id === typeId);
+	const selectedType = _.find(types, type => type.id === typeId);
 
 	if (selectedType) {
 		return new RegExp(selectedType.validationRegex).test(value);
@@ -131,9 +127,7 @@ export function validateIdentifierValue(
 	return false;
 }
 
-export function validateIdentifierType(
-	typeId: any, types?: ?Array<IdentifierType>
-): boolean {
+export function validateIdentifierType(typeId: any, types?: ?Array<IdentifierType>): boolean {
 	if (!validatePositiveInteger(typeId, true)) {
 		return false;
 	}
@@ -142,26 +136,23 @@ export function validateIdentifierType(
 		return true;
 	}
 
-	const selectedType = _.find(types, (type) => type.id === typeId);
+	const selectedType = _.find(types, type => type.id === typeId);
 
 	return Boolean(selectedType);
 }
 
-export function validateIdentifier(
-	identifier: any, types?: ?Array<IdentifierType>
-): boolean {
+export function validateIdentifier(identifier: any, types?: ?Array<IdentifierType>): boolean {
 	const value = get(identifier, 'value');
 	const type = get(identifier, 'typeId');
 
-	return (
-		validateIdentifierValue(value, type, types) &&
-		validateIdentifierType(type, types)
-	);
+	return validateIdentifierValue(value, type, types) && validateIdentifierType(type, types);
 }
 
 export const validateIdentifiers = _.partial(
-	validateMultiple, _.partial.placeholder,
-	validateIdentifier, _.partial.placeholder
+	validateMultiple,
+	_.partial.placeholder,
+	validateIdentifier,
+	_.partial.placeholder
 );
 
 export function validateNameSectionName(value: any): boolean {
@@ -180,9 +171,7 @@ export function validateNameSectionDisambiguation(value: any): boolean {
 	return validateOptionalString(value);
 }
 
-export function validateNameSection(
-	values: any
-): boolean {
+export function validateNameSection(values: any): boolean {
 	let success = true;
 
 	if (_.isEmpty(values)) {
@@ -229,10 +218,6 @@ export function validateSubmissionSectionNote(value: any): boolean {
 	return validateRequiredString(value);
 }
 
-export function validateSubmissionSection(
-	data: any
-): boolean {
-	return (
-		validateSubmissionSectionNote(get(data, 'note', null))
-	);
+export function validateSubmissionSection(data: any): boolean {
+	return validateSubmissionSectionNote(get(data, 'note', null));
 }

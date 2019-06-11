@@ -16,7 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import _ from 'lodash';
 import asyncCluster from '../../asyncCluster';
 import config from '../../helpers/config';
@@ -26,26 +25,26 @@ import {mergeSets} from '../../helpers/utils';
 import util from 'util';
 import yargs from 'yargs';
 
-
 /* eslint-disable */
 
 /**
  * @type {Object} Command line args parsed by yargs library
  **/
-const argv = yargs.usage('Usage: $0 [options]')
+const argv = yargs
+	.usage('Usage: $0 [options]')
 	.help('h')
 	.option('dump', {
-		alias : 'd',
-		describe: 'Name of the dump key in OpenLibrary object.'
-		+ 'Can take values `works`, `editions` or `authors`',
+		alias: 'd',
+		describe:
+			'Name of the dump key in OpenLibrary object.' +
+			'Can take values `works`, `editions` or `authors`',
 		type: 'string',
 		nargs: 1,
 		demand: 'dump name key is required',
-		requiresArg:true
+		requiresArg: true
 	})
 	.alias('h', 'help')
-	.epilog('BookBrainz Data Import Project')
-	.argv;
+	.epilog('BookBrainz Data Import Project').argv;
 /* eslint-enable */
 
 /**
@@ -54,7 +53,6 @@ const argv = yargs.usage('Usage: $0 [options]')
  **/
 const configOL = config(`openLibrary.${argv.dump}`);
 
-
 /**
  * masterExitCallback - Func called by the master(cluster head) before it quits
  * to collect results from each worker process
@@ -62,22 +60,20 @@ const configOL = config(`openLibrary.${argv.dump}`);
  * 		functions
  **/
 function masterExitCallback(results) {
-	const aggregateResults = results.reduce((prev, {count, set}) => {
-		prev.count += count;
-		prev.set.push(set);
-		return prev;
-	}, {count: 0, set: []});
+	const aggregateResults = results.reduce(
+		(prev, {count, set}) => {
+			prev.count += count;
+			prev.set.push(set);
+			return prev;
+		},
+		{count: 0, set: []}
+	);
 
 	aggregateResults.set = Array.from(mergeSets(aggregateResults.set));
 
-	log.notice(
-		`[MASTER::CLUSTER] Successfully read ${aggregateResults.count} records.`
-	);
+	log.notice(`[MASTER::CLUSTER] Successfully read ${aggregateResults.count} records.`);
 
-	log.notice(
-		'[MASTER::CLUSTER] Set of unique key are:',
-		util.inspect(aggregateResults.set)
-	);
+	log.notice(`[MASTER::CLUSTER] Set of unique key are: ${util.inspect(aggregateResults.set)}`);
 
 	log.info('[CLUSTER::MASTER] Master process is now shutting down.');
 }
@@ -91,12 +87,16 @@ function masterExitCallback(results) {
  **/
 function workerExitCallback(results) {
 	return Promise.all(results)
-		.then((res) =>
-			res.reduce((prev, {workerCount, workerSet}) => {
-				prev.count.push(workerCount);
-				prev.set.push(workerSet);
-				return prev;
-			}, {count: [], set: []}))
+		.then(res =>
+			res.reduce(
+				(prev, {workerCount, workerSet}) => {
+					prev.count.push(workerCount);
+					prev.set.push(workerSet);
+					return prev;
+				},
+				{count: [], set: []}
+			)
+		)
 		.then(res => ({
 			count: _.sum(res.count),
 			set: Array.from(mergeSets(res.set))
@@ -109,8 +109,7 @@ function workerExitCallback(results) {
  * @returns {Array<string>} - Array containing cluter arguments
  **/
 function getClusterArgs() {
-	return _.range(1, configOL.fileCount + 1)
-		.map(fileName => `${configOL.path}/${fileName}.txt`);
+	return _.range(1, configOL.fileCount + 1).map(fileName => `${configOL.path}/${fileName}.txt`);
 }
 
 asyncCluster({

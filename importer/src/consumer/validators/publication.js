@@ -20,13 +20,10 @@
 // @flow
 
 import {get, validatePositiveInteger} from './base';
-import {
-	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
+import {validateAliases, validateIdentifiers, validateNameSection} from './common';
 import _ from 'lodash';
 import type {_IdentifierType} from './types';
 import log from '../../helpers/logger';
-
 
 export function validatePublicationSectionType(value: any): boolean {
 	return validatePositiveInteger(value);
@@ -37,7 +34,8 @@ export function validatePublicationSection(data: any): boolean {
 }
 
 export function validatePublication(
-	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
+	validationObject: any,
+	identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
@@ -51,15 +49,9 @@ export function validatePublication(
 	// Cumulative error messages to be stored in err string
 	let err = '';
 	const aliasSection = get(publicationValidationObject, 'aliasSection', {});
-	const identifierSection = get(
-		publicationValidationObject, 'identifierSection', {}
-	);
+	const identifierSection = get(publicationValidationObject, 'identifierSection', {});
 	const nameSection = get(publicationValidationObject, 'nameSection', {});
-	const publicationSection = get(
-		publicationValidationObject,
-		'publicationSection',
-		{}
-	);
+	const publicationSection = get(publicationValidationObject, 'publicationSection', {});
 
 	log.info(`[CONSUMER::${workerId}]\
 		\rPUBLICATION - Calling validation functions.`);

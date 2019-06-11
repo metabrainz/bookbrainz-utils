@@ -16,10 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import util from 'util';
 import winston from 'winston';
-
 
 /** @module config */
 
@@ -61,9 +59,7 @@ const log = new winston.Logger({
 	prettyPrint: function prettyPrint(object) {
 		return util.inspect(object);
 	},
-	transports: [
-		new winston.transports.Console(options.console)
-	]
+	transports: [new winston.transports.Console(options.console)]
 });
 
 export default log;

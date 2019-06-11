@@ -16,7 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import _ from 'lodash';
 import {entityTypes} from '../../helpers/utils';
 import {validateCreator} from './creator';
@@ -24,7 +23,6 @@ import {validateEdition} from './edition';
 import {validatePublication} from './publication';
 import {validatePublisher} from './publisher';
 import {validateWork} from './work';
-
 
 function getAliasSection(record) {
 	const aliasSection = {};
@@ -138,7 +136,8 @@ function validateEntity(validationFunction, entityType) {
 					type: validationData.type
 				};
 				break;
-			default: break;
+			default:
+				break;
 		}
 
 		return validationFunction(validationObject);
@@ -148,10 +147,8 @@ function validateEntity(validationFunction, entityType) {
 const validate = {
 	[entityTypes.CREATOR]: validateEntity(validateCreator, entityTypes.CREATOR),
 	[entityTypes.EDITION]: validateEntity(validateEdition, entityTypes.EDITION),
-	[entityTypes.PUBLICATION]:
-		validateEntity(validatePublication, entityTypes.PUBLICATION),
-	[entityTypes.PUBLISHER]:
-		validateEntity(validatePublisher, entityTypes.PUBLISHER),
+	[entityTypes.PUBLICATION]: validateEntity(validatePublication, entityTypes.PUBLICATION),
+	[entityTypes.PUBLISHER]: validateEntity(validatePublisher, entityTypes.PUBLISHER),
 	[entityTypes.WORK]: validateEntity(validateWork, entityTypes.WORK)
 };
 

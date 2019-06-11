@@ -16,17 +16,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import {entityTypes, isNotDefined, sortName} from '../../helpers/utils';
 import {identifiers, mapLanguage} from '../../helpers/mapping';
 import _ from 'lodash';
 import franc from 'franc-min';
 
-
 const WORK = 'work';
 const EDITION = 'edition';
 const AUTHOR = 'author';
-
 
 function detectLanguage(name) {
 	let lang = franc(name);
@@ -81,7 +78,6 @@ function processWork(json) {
 		defaultAlias = false;
 	}
 
-
 	// Last Edited at source
 	if (!isNotDefined(_.get(json, 'last_modified.value'))) {
 		work.lastEdited = json.last_modified.value;
@@ -96,8 +92,8 @@ function processWork(json) {
 		work.originId = openLibraryWorkId;
 	}
 
-	if (!isNotDefined(json.authors) && (json.authors instanceof Array)) {
-		json.authors.forEach((authorObj) => {
+	if (!isNotDefined(json.authors) && json.authors instanceof Array) {
+		json.authors.forEach(authorObj => {
 			if (!isNotDefined(authorObj && _.get(authorObj, 'author.key'))) {
 				work.metadata.relationships.push({
 					type: 'authoredBy',
@@ -111,7 +107,7 @@ function processWork(json) {
 		work.annotation = json.description.value;
 	}
 
-	if (!isNotDefined(json.links) && (json.links instanceof Array)) {
+	if (!isNotDefined(json.links) && json.links instanceof Array) {
 		json.links.forEach(link => {
 			if (!isNotDefined(link.title && link.url)) {
 				work.metadata.links.push({
@@ -194,8 +190,7 @@ function processAuthor(json) {
 		});
 		defaultAlias = false;
 	}
-	if (!isNotDefined(json.alternate_names) &&
-			(json.alternate_names instanceof Array)) {
+	if (!isNotDefined(json.alternate_names) && json.alternate_names instanceof Array) {
 		json.alternate_names.forEach(name => {
 			if (!isNotDefined(name)) {
 				const lang = detectLanguage(name);
@@ -220,12 +215,10 @@ function processAuthor(json) {
 		});
 	}
 
-
 	// Last modified at the source
 	if (!isNotDefined(_.get(json, 'last_modified.value'))) {
 		creator.lastEdited = json.last_modified.value;
 	}
-
 
 	// OriginId for the open library source
 	if (!isNotDefined(json.key)) {
@@ -240,7 +233,6 @@ function processAuthor(json) {
 		});
 	}
 
-
 	// Creator begin and end dates
 	if (!isNotDefined(json.birth_date)) {
 		creator.beginDate = json.birth_date;
@@ -251,15 +243,13 @@ function processAuthor(json) {
 		creator.type = 'Person';
 	}
 
-
 	// Bio is used for diambiguation, tags can be used too?
 	if (!isNotDefined(_.get(json, 'bio.value'))) {
 		creator.disambiguation = json.bio.value;
 	}
 
-
 	// Inserting links
-	if (!isNotDefined(json.links) && (json.links instanceof Array)) {
+	if (!isNotDefined(json.links) && json.links instanceof Array) {
 		json.links.forEach(link => {
 			if (!isNotDefined(link.title && link.url)) {
 				creator.metadata.links.push({
@@ -279,18 +269,15 @@ function processAuthor(json) {
 		}
 	});
 
-
 	// Origin Ids for other sources
-	if (!isNotDefined(json.source_records) &&
-			(json.source_records instanceof Array)) {
+	if (!isNotDefined(json.source_records) && json.source_records instanceof Array) {
 		json.source_records.forEach(record => {
 			creator.metadata.originId.push(record);
 		});
 	}
 
-
 	// Relationship - hasAuthored
-	if (!isNotDefined(json.works) && (json.works instanceof Array)) {
+	if (!isNotDefined(json.works) && json.works instanceof Array) {
 		json.works.forEach(work => {
 			if (!isNotDefined(work.key)) {
 				creator.metadata.relationships.push({
@@ -301,7 +288,6 @@ function processAuthor(json) {
 		});
 	}
 
-
 	/* eslint-disable */
 	// Supported Identifiers for creators:
 	// 		MusicBrainz Artist ID
@@ -310,9 +296,9 @@ function processAuthor(json) {
 	// 		LibraryThing Author
 	// 		Wikidata ID
 	const identifierKeyMapping = {
-		'id_librarything': identifiers.libraryThingAuthor,
-		'id_wikidata': identifiers.wikidataIdCreator,
-		'id_viaf': identifiers.VIAFCreator
+		id_librarything: identifiers.libraryThingAuthor,
+		id_wikidata: identifiers.wikidataIdCreator,
+		id_viaf: identifiers.VIAFCreator
 	};
 	/* eslint-enable */
 
@@ -324,7 +310,6 @@ function processAuthor(json) {
 			});
 		}
 	});
-
 
 	// Fields left out: [photograph, create]
 	const metadataFields = [
@@ -397,9 +382,13 @@ function processEdition(json) {
 
 export default function parser(type, json) {
 	switch (type) {
-		case WORK: return processWork(json);
-		case EDITION: return processEdition(json);
-		case AUTHOR: return processAuthor(json);
-		default: return null;
+		case WORK:
+			return processWork(json);
+		case EDITION:
+			return processEdition(json);
+		case AUTHOR:
+			return processAuthor(json);
+		default:
+			return null;
 	}
 }

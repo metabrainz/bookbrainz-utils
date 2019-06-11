@@ -19,13 +19,10 @@
 // @flow
 
 import {get, validateDate, validatePositiveInteger} from './base';
-import {
-	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
+import {validateAliases, validateIdentifiers, validateNameSection} from './common';
 import _ from 'lodash';
 import type {_IdentifierType} from './types';
 import log from '../../helpers/logger';
-
 
 export function validateCreatorSectionBeginArea(value: any): boolean {
 	if (!value) {
@@ -76,7 +73,8 @@ export function validateCreatorSection(data: any): boolean {
 }
 
 export function validateCreator(
-	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
+	validationObject: any,
+	identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
@@ -90,15 +88,9 @@ export function validateCreator(
 	// Cumulative error messages to be stored in err string
 	let err = '';
 	const aliasSection = get(creatorValidationObject, 'aliasSection', {});
-	const identifierSection = get(
-		creatorValidationObject, 'identifierSection', {}
-	);
+	const identifierSection = get(creatorValidationObject, 'identifierSection', {});
 	const nameSection = get(creatorValidationObject, 'nameSection', {});
-	const creatorSection = get(
-		creatorValidationObject,
-		'creatorSection',
-		{}
-	);
+	const creatorSection = get(creatorValidationObject, 'creatorSection', {});
 
 	log.info(`[CONSUMER::${workerId}]\
 		\r CREATOR - Calling validation functions.`);

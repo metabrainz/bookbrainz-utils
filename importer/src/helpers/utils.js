@@ -21,7 +21,6 @@
 
 import _ from 'lodash';
 
-
 export const CREATOR = 'Creator';
 export const EDITION = 'Edition';
 export const PUBLICATION = 'Publication';
@@ -35,11 +34,13 @@ export const entityTypes = {CREATOR, EDITION, PUBLICATION, PUBLISHER, WORK};
  * @returns {Set} - Set containing all unique values from the array of sets.
  */
 export function mergeSets(setArr) {
-	return new Set(function* generator() {
-		for (const set of setArr) {
-			yield* set;
-		}
-	}());
+	return new Set(
+		(function* generator() {
+			for (const set of setArr) {
+				yield* set;
+			}
+		})()
+	);
 }
 
 /**
@@ -97,9 +98,30 @@ function stripDot(name: string): string {
 export function sortName(name: string): string {
 	const articles = ['a', 'an', 'the', 'los', 'las', 'el', 'la'];
 	const suffixes = [
-		'i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi',
-		'xii', 'xiii', 'xiv', 'xv', 'jr', 'junior', 'sr', 'senior', 'phd', 'md',
-		'dmd', 'dds', 'esq'
+		'i',
+		'ii',
+		'iii',
+		'iv',
+		'v',
+		'vi',
+		'vii',
+		'viii',
+		'ix',
+		'x',
+		'xi',
+		'xii',
+		'xiii',
+		'xiv',
+		'xv',
+		'jr',
+		'junior',
+		'sr',
+		'senior',
+		'phd',
+		'md',
+		'dmd',
+		'dds',
+		'esq'
 	];
 
 	/*
@@ -130,13 +152,11 @@ export function sortName(name: string): string {
 	 * From here on, it is assumed that the sort name is for a person
 	 * Split suffixes
 	 */
-	const isWordSuffix =
-		words.map((word) => suffixes.includes(stripDot(word).toLowerCase()));
+	const isWordSuffix = words.map(word => suffixes.includes(stripDot(word).toLowerCase()));
 	const lastSuffix = isWordSuffix.lastIndexOf(false) + 1;
 
 	// Test this to check that splice will not have a 0 deleteCount
-	const suffixWords =
-		lastSuffix < words.length ? words.splice(lastSuffix) : [];
+	const suffixWords = lastSuffix < words.length ? words.splice(lastSuffix) : [];
 
 	// Rearrange names to (last name, other names)
 	const INDEX_BEFORE_END = -1;

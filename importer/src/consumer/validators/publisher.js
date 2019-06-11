@@ -17,17 +17,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 // @flow
 
 import {get, validateDate, validatePositiveInteger} from './base';
-import {
-	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
+import {validateAliases, validateIdentifiers, validateNameSection} from './common';
 import _ from 'lodash';
 import type {_IdentifierType} from './types';
 import log from '../../helpers/logger';
-
 
 export function validatePublisherSectionArea(value: any): boolean {
 	if (!value) {
@@ -52,7 +48,6 @@ export function validatePublisherSectionEnded(value: any): boolean {
 export function validatePublisherSectionType(value: any): boolean {
 	return validatePositiveInteger(value);
 }
-
 
 export function validatePublisherSection(data: any): boolean {
 	return (
@@ -80,15 +75,9 @@ export function validatePublisher(
 	// Cumulative error messages to be stored in err string
 	let err = '';
 	const aliasSection = get(publisherValidationObject, 'aliasSection', {});
-	const identifierSection = get(
-		publisherValidationObject, 'identifierSection', {}
-	);
+	const identifierSection = get(publisherValidationObject, 'identifierSection', {});
 	const nameSection = get(publisherValidationObject, 'nameSection', {});
-	const publisherSection = get(
-		publisherValidationObject,
-		'publisherSection',
-		{}
-	);
+	const publisherSection = get(publisherValidationObject, 'publisherSection', {});
 
 	log.info(`[CONSUMER::${workerId}] \
 		\r PUBLISHER - Calling validation functions.`);

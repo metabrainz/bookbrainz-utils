@@ -16,13 +16,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import {Connection} from '../queue';
 import Promise from 'bluebird';
 import asyncCluster from '../asyncCluster';
 import consumerPromise from './consumer';
 import log from '../helpers/logger';
-
 
 /**
  * masterExitCallback - Function called upon master exit. Presently serves no
@@ -30,27 +28,22 @@ import log from '../helpers/logger';
  * 		we may want to gracefully end the conusmer processes in case of failure.
  **/
 function masterExitCallback() {
-	log.info(
-		'[CLUSTER::MASTER] All workers exited.',
-		'Cluster master is now shutting down.'
-	);
+	log.info('[CLUSTER::MASTER] All workers exited. Cluster master is now shutting down.');
 }
 
 /**
-* workerExitCallback - Func called by the worker before it quits to collect
-* 		results from each thread. Primary intended to shutdown active
-*		RMQ connection.
-* @param {Array<Promise>} results - Array containing promises which would yield
-* 		results from each instanceFunction
-* @returns {Promise} Empty promise
-**/
+ * workerExitCallback - Func called by the worker before it quits to collect
+ * 		results from each thread. Primary intended to shutdown active
+ *		RMQ connection.
+ * @param {Array<Promise>} results - Array containing promises which would yield
+ * 		results from each instanceFunction
+ * @returns {Promise} Empty promise
+ **/
 function workerExitCallback(results) {
-	return Promise.all(results)
-		.then((res) => {
-			log.info(`[WORKER::${res[0].id}]`,
-				'Consumer process is now shutting down.');
-			Connection.shutdown(res[0].connection);
-		});
+	return Promise.all(results).then(res => {
+		log.info(`[WORKER::${res[0].id}] Consumer process is now shutting down.`);
+		Connection.shutdown(res[0].connection);
+	});
 }
 
 /**

@@ -20,14 +20,11 @@
 // @flow
 
 import {get, validateDate, validatePositiveInteger, validateUUID} from './base';
-import {
-	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
+import {validateAliases, validateIdentifiers, validateNameSection} from './common';
 import {Iterable} from 'immutable';
 import _ from 'lodash';
 import type {_IdentifierType} from './types';
 import log from '../../helpers/logger';
-
 
 export function validateEditionSectionDepth(value: ?any): boolean {
 	return validatePositiveInteger(value);
@@ -54,12 +51,11 @@ export function validateEditionSectionLanguages(values: ?any): boolean {
 	let every = (object, predicate) => _.every(object, predicate);
 	if (Iterable.isIterable(values)) {
 		every = (object, predicate) => object.every(predicate);
-	}
-	else if (!_.isObject(values)) {
+	} else if (!_.isObject(values)) {
 		return false;
 	}
 
-	return every(values, (value) => validateEditionSectionLanguage(value));
+	return every(values, value => validateEditionSectionLanguage(value));
 }
 
 export function validateEditionSectionPages(value: ?any): boolean {
@@ -111,7 +107,8 @@ export function validateEditionSection(data: any): boolean {
 }
 
 export function validateEdition(
-	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
+	validationObject: any,
+	identifierTypes?: ?Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
@@ -125,9 +122,7 @@ export function validateEdition(
 	// Cumulative error messages to be stored in err string
 	let err = '';
 	const aliasSection = get(editionValidationObject, 'aliasSection', {});
-	const identifierSection = get(
-		editionValidationObject, 'identifierSection', {}
-	);
+	const identifierSection = get(editionValidationObject, 'identifierSection', {});
 	const nameSection = get(editionValidationObject, 'nameSection', {});
 	const editionSection = get(editionValidationObject, 'editionSection', {});
 

@@ -16,14 +16,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import * as Error from '../helpers/errors';
 import {isNotDefined, splitArray} from '../helpers/utils';
 import _ from 'lodash';
 import log from '../helpers/logger';
 import os from 'os';
 import runCluster from './cluster';
-
 
 /**
  * Wrap the user provided workerExitCallback into higher abstraction with error
@@ -106,21 +104,15 @@ function asyncCluster({
 	}
 
 	if (isNotDefined(clusterArgs)) {
-		clusterConfig.workerArgsArr =
-			_.times(processLimit, (id) => [`Worker number ${id}`]);
-	}
-	else {
+		clusterConfig.workerArgsArr = _.times(processLimit, id => [`Worker number ${id}`]);
+	} else {
 		clusterConfig.workerArgsArr = splitArray(clusterArgs, processLimit);
 	}
 
 	if (!_.isFunction(workerExitCallback)) {
-		clusterConfig.workerExitCallback = getWorkerExitCallback(
-			(promise) => promise
-		);
-	}
-	else {
-		clusterConfig.workerExitCallback =
-			getWorkerExitCallback(workerExitCallback);
+		clusterConfig.workerExitCallback = getWorkerExitCallback(promise => promise);
+	} else {
+		clusterConfig.workerExitCallback = getWorkerExitCallback(workerExitCallback);
 	}
 
 	runCluster(clusterConfig);

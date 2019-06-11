@@ -16,7 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import * as Error from '../helpers/errors';
 import BookBrainzData from 'bookbrainz-data';
 import Promise from 'bluebird';
@@ -26,7 +25,6 @@ import async from 'async';
 import config from '../helpers/config';
 import consumeRecord from './consumeRecord';
 import log from '../helpers/logger';
-
 
 /**
  * consumerPromise - Instance function called to consume from the RMQ queues
@@ -52,8 +50,7 @@ function consumerPromise({id, init}) {
 		}
 
 		function messageHandler(msg) {
-			log.notice(`[CONSUMER::${id}] Received object.\
-				\r Running message handler`);
+			log.notice(`[CONSUMER::${id}] Received object.\nRunning message handler`);
 
 			if (typeof msg === 'undefined' || !msg) {
 				log.error('Empty Message received. Skipping.');
@@ -72,7 +69,7 @@ function consumerPromise({id, init}) {
 
 				// Function repeated upon transaction error for retries times
 				// Manages async record consumption
-				async (cb) => {
+				async cb => {
 					if (attemptsLeft < retryLimit) {
 						log.info(`
 						\r ##################################################
@@ -92,10 +89,7 @@ function consumerPromise({id, init}) {
 						case Error.NONE:
 							// On success, we don't need to retry again
 							attemptsLeft = 0;
-							log.info(
-								`[CONSUMER::${id}] Read message successfully
-								\r${record}`
-							);
+							log.info(`[CONSUMER::${id}] Read message successfully \n${record}`);
 							queue.acknowledge(msg);
 							break;
 
@@ -118,16 +112,13 @@ function consumerPromise({id, init}) {
 
 							// Issue a warning in case of transaction error
 							log.warning(
-								`[CONSUMER::${id}] ${errorType} Setting up for\
-								\r reinsertion. Record for reference:
-								\r ${msg}
-								\r Attempts left: ${attemptsLeft}`
+								`[CONSUMER::${id}] ${errorType} Setting up for reinsertion.
+								\rRecord for reference: \n${msg} \nAttempts left: ${attemptsLeft}`
 							);
 
 							// If no more attempts left, acknowledge the message
 							if (!attemptsLeft) {
-								log.info('No more attempts left.',
-									'Acknowledging the message.');
+								log.info('No more attempts left. Acknowledging the message.');
 								queue.acknowledge(msg);
 								throw new Error(`${errorType} :: ${errMsg}`);
 							}
@@ -136,9 +127,7 @@ function consumerPromise({id, init}) {
 							break;
 
 						default: {
-							throw new Error(
-								'Undefined response while importing'
-							);
+							throw new Error('Undefined response while importing');
 						}
 					}
 
@@ -148,8 +137,7 @@ function consumerPromise({id, init}) {
 				},
 
 				// Raise error in case of error
-				Error.raiseError(`${Error.IMPORT_ERROR}
-					\r ${JSON.stringify(record)}`)
+				Error.raiseError(`${Error.IMPORT_ERROR} \n${JSON.stringify(record)}`)
 			);
 		}
 		// Connection related errors would be handled on the queue side

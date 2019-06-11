@@ -16,7 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import {Connection} from '../../queue';
 import Promise from 'bluebird';
 import _ from 'lodash';
@@ -26,25 +25,25 @@ import log from '../../helpers/logger';
 import producerPromise from './producer';
 import yargs from 'yargs';
 
-
 /* eslint-disable */
 /**
  * @type {Object} Command line args parsed by yargs library
  **/
-const argv = yargs.usage('Usage: $0 [options]')
+const argv = yargs
+	.usage('Usage: $0 [options]')
 	.help('h')
 	.option('dump', {
-		alias : 'd',
-		describe: 'Name of the dump key in OpenLibrary object.'
-		+ 'Can take values `works`, `editions` or `authors`',
+		alias: 'd',
+		describe:
+			'Name of the dump key in OpenLibrary object.' +
+			'Can take values `works`, `editions` or `authors`',
 		type: 'string',
 		nargs: 1,
 		demand: 'dump name key is required',
-		requiresArg:true
+		requiresArg: true
 	})
 	.alias('h', 'help')
-	.epilog('BookBrainz Data Import Project')
-	.argv;
+	.epilog('BookBrainz Data Import Project').argv;
 /* eslint-enable */
 
 /**
@@ -60,16 +59,10 @@ const configOL = config(`openLibrary.${argv.dump}`);
  * 		functions
  **/
 function masterExitCallback(results) {
-	log.info(
-		'[CLUSTER::MASTER] All workers exited.',
-		'Cluster master is now shutting down.'
-	);
+	log.info('[CLUSTER::MASTER] All workers exited.', 'Cluster master is now shutting down.');
 
 	const count = _.sum(results);
-	log.notice(
-		'[CLUSTER::MASTER] Successfully parsed and pushed (%s) records.',
-		count
-	);
+	log.notice('[CLUSTER::MASTER] Successfully parsed and pushed (%s) records.', count);
 }
 
 /**
@@ -80,14 +73,14 @@ function masterExitCallback(results) {
  * @returns {Promise} Promise returned carrying result to be sent to master
  **/
 function workerExitCallback(results) {
-	return Promise.all(results)
-		.then((res) => {
-			log.info(`[WORKER::${res[0].id}]`,
-				'All files processed.',
-				'Producer worker process is now shutting down.');
-			Connection.shutdown(res[0].connection);
-			return res.reduce((prev, {workerCount}) => prev + workerCount, 0);
-		});
+	return Promise.all(results).then(res => {
+		log.info(
+			`[WORKER::${res[0].id}] All files processed. `,
+			'Producer worker process is now shutting down.'
+		);
+		Connection.shutdown(res[0].connection);
+		return res.reduce((prev, {workerCount}) => prev + workerCount, 0);
+	});
 }
 
 /**
@@ -96,8 +89,7 @@ function workerExitCallback(results) {
  * @returns {Array<string>} - Array containing cluter arguments
  **/
 function getClusterArgs() {
-	return _.range(1, configOL.fileCount + 1)
-		.map(fileName => `${configOL.path}/${fileName}.txt`);
+	return _.range(1, configOL.fileCount + 1).map(fileName => `${configOL.path}/${fileName}.txt`);
 }
 
 /**

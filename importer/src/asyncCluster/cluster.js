@@ -16,14 +16,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import * as Error from '../helpers/errors';
 import _ from 'lodash';
 import asyncWorker from './async';
 import cluster from 'cluster';
 import {isNotDefined} from '../helpers/utils';
 import log from '../helpers/logger';
-
 
 /**
  * runClusters - Base master function to initialize and run worker functions
@@ -36,12 +34,7 @@ import log from '../helpers/logger';
  * 		chunks, split into number of workers
  * @param {Object} args - Remaining arguments passed
  */
-export default function runClusters({
-	masterExitCallback,
-	processLimit,
-	workerArgsArr,
-	...args
-}) {
+export default function runClusters({masterExitCallback, processLimit, workerArgsArr, ...args}) {
 	if (!_.isFunction(masterExitCallback)) {
 		Error.undefinedValue('Cluster:: Undefined masterExitCallback.');
 	}
@@ -74,8 +67,7 @@ export default function runClusters({
 		process.on('exit', () => {
 			masterExitCallback(results);
 		});
-	}
-	else {
+	} else {
 		process.on('message', ({id}) => {
 			asyncWorker({
 				workerArgs: workerArgsArr[id],

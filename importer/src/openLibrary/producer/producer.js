@@ -16,7 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import * as Error from '../../helpers/errors';
 import Promise from 'bluebird';
 import {Queue} from '../../queue';
@@ -25,7 +24,6 @@ import {isNotDefined} from '../../helpers/utils';
 import log from '../../helpers/logger';
 import parser from './parser';
 import readline from 'readline';
-
 
 /**
  * readLine - Function which takes in instanceArgs and processes them.
@@ -85,12 +83,10 @@ function readLine({base, id, init}, callback) {
 				originId: originId || data.originId,
 				source
 			});
-		}
-		catch (err) {
+		} catch (err) {
 			log.warning(
 				`Error in ${fileName} in line number ${count}.`,
-				'Skipping. Record for reference: \n [[',
-				line, ']]'
+				`Skipping. Record for reference: \n [[ ${line} ]]`
 			);
 		}
 	});

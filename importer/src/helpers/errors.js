@@ -16,9 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import log from '../helpers/logger';
-
 
 /**
  * CONNECTION_ERROR - Raised when unable to connect to the RMQ.
@@ -118,7 +116,7 @@ export const importErrors = {
  * @returns {function} - Takes in error message received and prints msg and err.
  */
 export function raiseError(msg) {
-	return (err) => {
+	return err => {
 		log.error(`[ERROR] ${msg} -- ${err}`);
 		throw new Error(`[ERROR] ${msg}: ${err}`);
 	};

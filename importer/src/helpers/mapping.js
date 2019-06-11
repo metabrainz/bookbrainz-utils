@@ -16,7 +16,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 export const musicBrainzReleaseId = 1;
 export const musicBrainzArtistId = 2;
 export const musicBrainzWorkId = 3;

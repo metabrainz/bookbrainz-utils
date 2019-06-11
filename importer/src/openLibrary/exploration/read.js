@@ -16,12 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import Promise from 'bluebird';
 import fs from 'fs';
 import log from '../../helpers/logger';
 import readline from 'readline';
-
 
 /**
  * readLine - Function which takes in instanceArgs and processes them.
@@ -55,12 +53,10 @@ function readLine({base, id}, callback) {
 			// 		➜ JSON - the complete record in JSON format
 			const json = JSON.parse(line.split('\t')[4]);
 			Object.keys(json).forEach(key => set.add(key));
-		}
-		catch (err) {
+		} catch (err) {
 			log.warning(
 				`[WORKER::${id}] Error in ${fileName} in line number ${count}.`,
-				'Skipping. Record for reference: \n [[',
-				line, ']]'
+				`Skipping. Record for reference: \n [[ ${line} ]]`
 			);
 		}
 	});

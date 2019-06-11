@@ -16,12 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import _ from 'lodash';
 import {importErrors} from '../helpers/errors';
 import log from '../helpers/logger';
 import validate from './validators';
-
 
 function getValidationData(record) {
 	if (_.isEmpty(record)) {
@@ -34,11 +32,7 @@ function getValidationData(record) {
 	};
 }
 
-export default async function consumeRecord({
-	entityType,
-	importRecord,
-	...record
-}) {
+export default async function consumeRecord({entityType, importRecord, ...record}) {
 	const validationData = getValidationData(record);
 	const validationFunction = validate[entityType];
 
@@ -48,8 +42,7 @@ export default async function consumeRecord({
 
 	try {
 		await importRecord({entityType, ...record.data});
-	}
-	catch (err) {
+	} catch (err) {
 		log.warning(`[TRANSACTION::${entityType}] ${err}`);
 		return {errMsg: err, errorType: importErrors.TRANSACTION_ERROR};
 	}

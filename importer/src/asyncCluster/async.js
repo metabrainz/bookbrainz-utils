@@ -16,9 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import async from 'async';
-
 
 /**
  * Convert instance functions into async.parallel compatible functions with
@@ -31,7 +29,7 @@ import async from 'async';
  */
 function getAsyncWorkerFunctions({instanceFunction, allWorkerArgs}) {
 	function asyncWorkerFunction(args) {
-		return (callback) => callback(null, instanceFunction(args));
+		return callback => callback(null, instanceFunction(args));
 	}
 
 	return allWorkerArgs.map(args => asyncWorkerFunction(args));
@@ -61,19 +59,14 @@ function asyncWorker({
 }) {
 	const initArgs = workerInitFunction ? workerInitFunction(workerId) : null;
 
-	const allWorkerArgs = workerArgs.map(wargs =>
-		({base: wargs, id: workerId, init: initArgs}));
+	const allWorkerArgs = workerArgs.map(wargs => ({base: wargs, id: workerId, init: initArgs}));
 
 	const asyncWorkerFunctions = getAsyncWorkerFunctions({
 		allWorkerArgs,
 		instanceFunction
 	});
 
-	async.parallelLimit(
-		asyncWorkerFunctions,
-		asyncLimit,
-		workerExitCallback
-	);
+	async.parallelLimit(asyncWorkerFunctions, asyncLimit, workerExitCallback);
 }
 
 export default asyncWorker;

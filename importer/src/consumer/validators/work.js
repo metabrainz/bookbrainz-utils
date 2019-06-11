@@ -17,17 +17,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 // @flow
 
 import {get, validatePositiveInteger} from './base';
-import {
-	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
+import {validateAliases, validateIdentifiers, validateNameSection} from './common';
 import _ from 'lodash';
 import type {_IdentifierType} from './types';
 import log from '../../helpers/logger';
-
 
 export function validateWorkSectionType(value: ?any): boolean {
 	return validatePositiveInteger(value);
@@ -64,9 +60,7 @@ export function validateWork(
 	// Cumulative error messages to be stored in err string
 	let err = '';
 	const aliasSection = get(workValidationObject, 'aliasSection', {});
-	const identifierSection = get(
-		workValidationObject, 'identifierSection', {}
-	);
+	const identifierSection = get(workValidationObject, 'identifierSection', {});
 	const nameSection = get(workValidationObject, 'nameSection', {});
 	const workSection = get(workValidationObject, 'workSection', {});
 

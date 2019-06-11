@@ -16,12 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 import * as Error from '../helpers/errors';
 import amqp from 'amqplib';
 import {isNotDefined} from '../helpers/utils';
 import log from '../helpers/logger';
-
 
 /**
  * QUEUE_NAME - Queue name for importing data.
@@ -41,8 +39,7 @@ export const Connection = {
 		let connection = null;
 		try {
 			connection = amqp.connect('amqp://localhost');
-		}
-		catch (err) {
+		} catch (err) {
 			Error.raiseError(Error.CONNECTION_ERROR)(err);
 		}
 		return connection;
@@ -56,8 +53,7 @@ export const Connection = {
 		try {
 			const connection = await connectionPromise;
 			return connection.close();
-		}
-		catch (err) {
+		} catch (err) {
 			return Error.raiseError(Error.CONNECTION_CLOSE_ERROR);
 		}
 	}
@@ -66,9 +62,9 @@ export const Connection = {
 /** Class representing a RMQ Queue. */
 export class Queue {
 	/**
-     * Create a channel promise
-     * @param {Promise} connectionPromise - Connection promise
-     */
+	 * Create a channel promise
+	 * @param {Promise} connectionPromise - Connection promise
+	 */
 	constructor(connectionPromise) {
 		if (isNotDefined(connectionPromise)) {
 			Error.undefinedValue('Queue.constructor:: connectionPromise');
@@ -80,9 +76,9 @@ export class Queue {
 	}
 
 	/**
-     * Push a message into the queue
-     * @param {string} msg - The string containing message to be pushed into RMQ
-     */
+	 * Push a message into the queue
+	 * @param {string} msg - The string containing message to be pushed into RMQ
+	 */
 	async push(msg) {
 		if (isNotDefined(msg)) {
 			log.error('Invalid message! Skipping.');
@@ -102,22 +98,16 @@ export class Queue {
 			const channel = await this.channelPromise;
 
 			if (!channel) {
-				Error.undefinedValue(
-					'Queue.push:: Unable to get channel from promise.'
-				);
+				Error.undefinedValue('Queue.push:: Unable to get channel from promise.');
 			}
 
 			try {
-				const queueAssertion =
-					await channel.assertQueue(QUEUE_NAME, {durable: true});
+				const queueAssertion = await channel.assertQueue(QUEUE_NAME, {durable: true});
 
 				if (!queueAssertion) {
-					Error.undefinedValue(
-						'Queue.push:: Could not assert queue.'
-					);
+					Error.undefinedValue('Queue.push:: Could not assert queue.');
 				}
-			}
-			catch (err) {
+			} catch (err) {
 				Error.raiseError('Queue.push:: Error asserting queue.')(err);
 			}
 
@@ -130,23 +120,21 @@ export class Queue {
 					/* eslint-enable */
 					{persistent: true}
 				);
-			}
-			catch (err) {
+			} catch (err) {
 				Error.raiseError(Error.QUEUE_PUSH_ERROR)(err);
 			}
-		}
-		catch (err) {
+		} catch (err) {
 			Error.raiseError(Error.QUEUE_ERROR)(err);
 		}
 	}
 
 	/**
-     * consume -
-     * @param {function} messageHandler - function to be called upon consuming
+	 * consume -
+	 * @param {function} messageHandler - function to be called upon consuming
 	 * 		a message
 	 * @returns {Promise<?>} Returns a promise either error or channel consume
 	 * 		return object
-     */
+	 */
 	async consume(messageHandler) {
 		if (isNotDefined(this.channelPromise)) {
 			Error.undefinedValue('Queue.consume:: undefined channel.');
@@ -156,44 +144,33 @@ export class Queue {
 			const channel = await this.channelPromise;
 
 			if (isNotDefined(channel)) {
-				Error.undefinedValue(
-					'Queue.consume:: Unable to get channel from promise.'
-				);
+				Error.undefinedValue('Queue.consume:: Unable to get channel from promise.');
 			}
 
 			try {
-				const queueAssertion =
-					await channel.assertQueue(QUEUE_NAME, {durable: true});
+				const queueAssertion = await channel.assertQueue(QUEUE_NAME, {durable: true});
 
 				if (!queueAssertion) {
-					Error.undefinedValue(
-						'Queue.consume:: Could not assert queue.'
-					);
+					Error.undefinedValue('Queue.consume:: Could not assert queue.');
 				}
-			}
-			catch (err) {
+			} catch (err) {
 				Error.raiseError('Queue.consume:: Error Asserting queue.')(err);
 			}
 
-			return channel.consume(
-				QUEUE_NAME,
-				messageHandler,
-				{noAck: false}
-			);
-		}
-		catch (err) {
+			return channel.consume(QUEUE_NAME, messageHandler, {noAck: false});
+		} catch (err) {
 			return Error.raiseError(Error.QUEUE_ERROR)(err);
 		}
 	}
 
 	/**
-     * Acknowledge receiving of a message
-     * @param {Object} msg - The message object to be acknowledged
+	 * Acknowledge receiving of a message
+	 * @param {Object} msg - The message object to be acknowledged
 	 * @returns {Promise<Object>} Returns acknowledgement status wrapped in a
 	 * 		promise
-     */
+	 */
 	acknowledge(msg) {
-		log.debug('Acknowledging message', msg.content.toString());
+		log.debug(`Acknowledging message ${msg.content.toString()}`);
 		return this.channelPromise.then(channel => channel.ack(msg));
 	}
 }

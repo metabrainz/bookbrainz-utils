@@ -19,17 +19,11 @@
 
 // @flow
 
-export type _Creator = {
+export type _Creator = {};
 
-};
+export type _CreatorType = {};
 
-export type _CreatorType = {
-
-};
-
-export type _Gender = {
-
-};
+export type _Gender = {};
 
 export type _IdentifierType = {
 	id: number,
@@ -37,6 +31,4 @@ export type _IdentifierType = {
 	validationRegex: string
 };
 
-export type _Language = {
-
-};
+export type _Language = {};

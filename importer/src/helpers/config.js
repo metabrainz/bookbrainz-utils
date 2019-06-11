@@ -21,7 +21,6 @@ import log from '../helpers/logger';
 import path from 'path';
 import {readFileSync} from 'fs';
 
-
 /** @module config */
 
 /*
@@ -41,16 +40,14 @@ const FILE = path.join(__dirname, '../../config/config.json');
 export default function config(configKeys) {
 	try {
 		if (configKeys) {
-			const configContents =
-				JSON.parse(readFileSync(`${FILE}`));
+			const configContents = JSON.parse(readFileSync(`${FILE}`));
 
-			log.info(`[CONFIG] Succesfully read ${configKeys} configuration.\
-				\r Generating object from ${configKeys} file.`);
+			log.info(`[CONFIG] Succesfully read ${configKeys} configuration.
+				\rGenerating object from ${configKeys} file.`);
 
 			return _.get(configContents, configKeys);
 		}
-	}
-	catch (err) {
+	} catch (err) {
 		log.error('[ERROR::CONFIG] Please set up ./config/config.json files.');
 		throw new Error('Configuration values not found!');
 	}

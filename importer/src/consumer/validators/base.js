@@ -23,23 +23,14 @@ import {Iterable} from 'immutable';
 import _ from 'lodash';
 import validator from 'validator';
 
-
-export function get(
-	object: any,
-	path: string,
-	defaultValue: ?mixed = null
-): mixed {
+export function get(object: any, path: string, defaultValue: ?mixed = null): mixed {
 	if (Iterable.isIterable(object)) {
 		return object.get(path, defaultValue);
 	}
 	return _.get(object, path, defaultValue);
 }
 
-export function getIn(
-	object: any,
-	path: string,
-	defaultValue: ?mixed = null
-): mixed {
+export function getIn(object: any, path: string, defaultValue: ?mixed = null): mixed {
 	if (Iterable.isIterable(object)) {
 		return object.getIn(path, defaultValue);
 	}
@@ -74,9 +65,7 @@ export function validateRequiredString(value: any): boolean {
 	return Boolean(value);
 }
 
-export function validatePositiveInteger(
-	value: any, required: boolean = false
-): boolean {
+export function validatePositiveInteger(value: any, required: boolean = false): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;
 	}
@@ -88,15 +77,11 @@ export function validatePositiveInteger(
 	return _.isNil(value) || (_.isInteger(value) && value > 0);
 }
 
-export function validateBoolean(
-	value: mixed
-): boolean {
+export function validateBoolean(value: mixed): boolean {
 	return _.isBoolean(value);
 }
 
-export function validateDate(
-	value: mixed, required: boolean = false
-): boolean {
+export function validateDate(value: mixed, required: boolean = false): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;
 	}
@@ -108,9 +93,7 @@ export function validateDate(
 	return !value || validator.isISO8601(value);
 }
 
-export function validateUUID(
-	value: mixed, required: boolean = false
-): boolean {
+export function validateUUID(value: mixed, required: boolean = false): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;
 	}
