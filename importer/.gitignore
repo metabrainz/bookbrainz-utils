@@ -62,3 +62,6 @@ typings/
 
 # Personal config files
 config.json
+
+# Package lock file
+package-lock.json
