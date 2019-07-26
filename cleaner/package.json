@@ -16,7 +16,7 @@
     "@types/lodash": "^4.14.116",
     "@types/node": "^10.11.3",
     "commander": "^2.18.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.13",
     "pg": "^7.4.3",
     "reflect-metadata": "^0.1.12",
     "typeorm": "^0.2.7",
