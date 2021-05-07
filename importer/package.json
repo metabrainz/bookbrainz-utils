@@ -37,7 +37,7 @@
 		"bookbrainz-data": "^1.0.3",
 		"franc-min": "^4.0.0",
 		"immutable": "^3.8.2",
-		"lodash": "^4.17.13",
+		"lodash": "^4.17.21",
 		"validator": "^10.4.0",
 		"winston": "^2.4.2",
 		"yargs": "^11.0.0"
