@@ -32,7 +32,7 @@
 	"license": "GPL-2.0+",
 	"dependencies": {
 		"amqplib": "^0.5.2",
-		"async": "^2.6.0",
+		"async": "^3.2.2",
 		"bluebird": "^3.5.1",
 		"bookbrainz-data": "^1.0.3",
 		"franc-min": "^4.0.0",
