@@ -37,12 +37,12 @@
 		"amqplib": "^0.5.2",
 		"async": "^2.6.0",
 		"bookbrainz-data": "^4.0.0",
-		"franc-min": "^4.0.0",
+		"franc-min": "^6.1.0",
 		"immutable": "^3.8.2",
 		"lodash": "^4.17.21",
-		"validator": "^10.4.0",
+		"validator": "^13.9.0",
 		"winston": "^2.4.2",
-		"yargs": "^11.0.0"
+		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.14.3",
