@@ -18,7 +18,6 @@
 
 
 import * as Error from '../../helpers/errors';
-import Promise from 'bluebird';
 import {Queue} from '../../queue';
 import fs from 'fs';
 import {isNotDefined} from '../../helpers/utils';
@@ -34,10 +33,8 @@ import readline from 'readline';
  * @param {number} obj.id - Numerical Id of the worker process running this
  * 		instance
  * @param {string} obj.base - This is path to the file to be processed
- * @param {function} callback - Function used send back the results. Used for
- * 		promsifying the result.
  **/
-function readLine({base, id, init}, callback) {
+function readLine({base, id, init}) {
 	if (isNotDefined(base)) {
 		Error.undefinedValue('producerPromise:: File path (base args).');
 	}
@@ -95,20 +92,13 @@ function readLine({base, id, init}, callback) {
 		}
 	});
 
-	rl.on('close', () => {
-		callback(null, {
+	return new Promise((resolve) => {
+		rl.on('close', () => resolve({
 			connection: init,
 			id,
 			workerCount: count
-		});
+		}));
 	});
 }
 
-/**
- * explorePromise - Promisfied version of readLine
- * @type {function}
- * @returns {Promise}
- **/
-const producerPromise = Promise.promisify(readLine);
-
-export default producerPromise;
+export default readLine;

@@ -18,7 +18,6 @@
 
 
 import {Connection} from '../../queue';
-import Promise from 'bluebird';
 import _ from 'lodash';
 import asyncCluster from '../../asyncCluster';
 import config from '../../helpers/config';

@@ -19,7 +19,6 @@
 
 import * as Error from '../helpers/errors';
 import BookBrainzData from 'bookbrainz-data';
-import Promise from 'bluebird';
 import {Queue} from '../queue';
 import _ from 'lodash';
 import async from 'async';

@@ -18,7 +18,6 @@
 
 
 import {Connection} from '../queue';
-import Promise from 'bluebird';
 import asyncCluster from '../asyncCluster';
 import consumerPromise from './consumer';
 import log from '../helpers/logger';
