@@ -9,24 +9,23 @@ const options = {
 	},
 	extends: [
 		'eslint:recommended',
-		'plugin:flowtype/recommended',
-		'plugin:import/recommended'
+		'plugin:node/recommended',
+		'plugin:import/recommended',
+		'plugin:@typescript-eslint/recommended'
 	],
-	parser: 'babel-eslint',
-	parserOptions: {
-		ecmaFeatures: {
-			experimentalObjectRestSpread: true,
-			generators: true,
-			modules: false
-		},
-		ecmaVersion: 8,
-		sourceType: 'module'
-	},
+	parser: '@typescript-eslint/parser',
 	plugins: [
 		'import',
-		'flowtype',
-		'babel'
-	]
+		'@typescript-eslint'
+	],
+	root: true,
+	settings: {
+		'import/resolver': {
+			node: {
+				extensions: ['.js', '.ts']
+			}
+		}
+	}
 };
 
 
@@ -35,24 +34,12 @@ const ERROR = 2;
 const TRANSITION_WARNING = 1; // warnings that should be reviewed soon
 const WARNING = 1; // warnings that should stay warnings
 const TRANSITION_IGNORE = 0; // ignores that should be reviewed soon
+const IGNORE = 0;
 
 // These should not be removed at all.
 const possibleErrorsRules = {
-	'for-direction': ERROR,
-	'getter-return': ERROR,
 	'no-await-in-loop': ERROR,
 	'no-console': ERROR,
-	'no-extra-parens': [
-		ERROR,
-		'all',
-		{
-			enforceForArrowConditionals: false,
-			ignoreJSX: 'multi-line',
-			nestedBinaryExpressions: false,
-			returnAssign: false
-		}
-	],
-	'no-prototype-builtins': ERROR,
 	'no-template-curly-in-string': ERROR,
 	'valid-jsdoc': [
 		ERROR,
@@ -139,7 +126,6 @@ const bestPracticesRules = {
 	'no-useless-return': ERROR,
 	'no-void': ERROR,
 	'no-warning-comments': WARNING,
-	'no-with': ERROR,
 	'prefer-promise-reject-errors': ERROR,
 	radix: ERROR,
 	'require-await': ERROR,
@@ -162,16 +148,12 @@ const variablesRules = {
 	'init-declarations': TRANSITION_IGNORE,
 	'no-catch-shadow': ERROR,
 	'no-label-var': ERROR,
-	'no-shadow': ERROR,
-	'no-shadow-restricted-names': ERROR,
 	'no-undef-init': ERROR,
-	'no-undefined': ERROR,
-	'no-unused-vars': WARNING,
-	'no-use-before-define': ERROR
+	'no-undefined': ERROR
 };
 
 const nodeAndCommonJSRules = {
-	'callback-return': [
+	'node/callback-return': [
 		ERROR,
 		[
 			'callback',
@@ -180,14 +162,21 @@ const nodeAndCommonJSRules = {
 			'done'
 		]
 	],
-	'global-require': ERROR,
-	'handle-callback-err': ERROR,
-	'no-mixed-requires': ERROR,
-	'no-new-require': ERROR,
-	'no-path-concat': ERROR,
-	'no-process-env': TRANSITION_WARNING,
-	'no-process-exit': ERROR,
-	'no-sync': ERROR
+	'node/global-require': ERROR,
+	'node/handle-callback-err': ERROR,
+	'node/no-missing-import': [
+		ERROR,
+		{tryExtensions: ['.js', '.jsx', '.ts', '.tsx']}
+	],
+	'node/no-mixed-requires': ERROR,
+	'node/no-new-require': ERROR,
+	'node/no-path-concat': ERROR,
+	'node/no-process-env': TRANSITION_WARNING,
+	'node/no-process-exit': ERROR,
+	'node/no-sync': ERROR,
+	'node/no-unpublished-import': IGNORE,
+	'node/no-unsupported-features/es-builtins': IGNORE,
+	'node/no-unsupported-features/es-syntax': IGNORE
 };
 
 // Agreement of all project leads needed before changing these.
@@ -273,9 +262,9 @@ const stylisticIssuesRules = {
 		6
 	],
 	'max-len': [
-		ERROR,
+		WARNING,
 		{
-			code: 80,
+			code: 120,
 			ignoreUrls: true,
 			tabWidth: 4
 		}
@@ -293,6 +282,12 @@ const stylisticIssuesRules = {
 		TRANSITION_IGNORE,
 		15
 	],
+	'new-cap': [
+		ERROR,
+		{
+			capIsNew: false
+		}
+	],
 	'new-parens': ERROR,
 	'no-array-constructor': ERROR,
 	'no-bitwise': ERROR,
@@ -309,10 +304,8 @@ const stylisticIssuesRules = {
 	'no-trailing-spaces': ERROR,
 	'no-unneeded-ternary': ERROR,
 	'no-whitespace-before-property': ERROR,
-	'object-curly-newline': [
-		ERROR,
-		{consistent: true}
-	],
+	'object-curly-newline': ERROR,
+	'object-curly-spacing': ERROR,
 	'one-var': [
 		ERROR,
 		'never'
@@ -326,6 +319,7 @@ const stylisticIssuesRules = {
 		ERROR,
 		'never'
 	],
+	'prefer-object-spread': ERROR,
 	'quote-props': [
 		ERROR,
 		'as-needed'
@@ -370,12 +364,7 @@ const ecmaScript6Rules = {
 			before: false
 		}
 	],
-	'no-confusing-arrow': [
-		ERROR,
-		{
-			allowParens: true
-		}
-	],
+	'no-confusing-arrow': ERROR,
 	'no-duplicate-imports': ERROR,
 	'no-useless-computed-key': ERROR,
 	'no-useless-constructor': ERROR,
@@ -399,120 +388,31 @@ const ecmaScript6Rules = {
 	'yield-star-spacing': ERROR
 };
 
-const babelRules = {
-	'babel/new-cap': [
+const typescriptRules = {
+	'@typescript-eslint/ban-types': TRANSITION_WARNING,
+	'@typescript-eslint/explicit-module-boundary-types': TRANSITION_IGNORE,
+	'@typescript-eslint/no-explicit-any': TRANSITION_IGNORE,
+	'@typescript-eslint/no-extra-parens': [
 		ERROR,
+		'all',
 		{
-			capIsNew: false
+			enforceForArrowConditionals: false,
+			ignoreJSX: 'multi-line',
+			nestedBinaryExpressions: false,
+			returnAssign: false
 		}
 	],
-	'babel/no-invalid-this': ERROR,
-	'babel/object-curly-spacing': ERROR,
-	'babel/semi': ERROR
-};
-
-const flowTypeRules = {
-	'flowtype/semi': ERROR
-};
-
-const reactRules = {
-	'react/boolean-prop-naming': ERROR,
-	'react/button-has-type': ERROR,
-	'react/default-props-match-prop-types': ERROR,
-	'react/forbid-component-props': TRANSITION_IGNORE,
-	'react/forbid-foreign-prop-types': ERROR,
-	'react/jsx-boolean-value': ERROR,
-	'react/jsx-closing-bracket-location': [
-		ERROR,
-		'tag-aligned'
-	],
-	'react/jsx-closing-tag-location': ERROR,
-	'react/jsx-curly-brace-presence': ERROR,
-	'react/jsx-curly-spacing': [
-		ERROR,
-		{
-			children: true
-		}
-	],
-	'react/jsx-equals-spacing': ERROR,
-	'react/jsx-first-prop-new-line': ERROR,
-	'react/jsx-handler-names': ERROR,
-	'react/jsx-indent-props': [
-		ERROR,
-		'tab'
-	],
-	'react/jsx-no-bind': [
-		ERROR,
-		{
-			ignoreRefs: true
-		}
-	],
-	'react/jsx-no-literals': TRANSITION_IGNORE,
-	'react/jsx-one-expression-per-line': TRANSITION_IGNORE,
-	'react/jsx-pascal-case': ERROR,
-	'react/jsx-sort-props': [
-		ERROR,
-		{
-			callbacksLast: true,
-			ignoreCase: false,
-			shorthandFirst: true
-		}
-	],
-	'react/jsx-tag-spacing': [
-		ERROR,
-		{
-			beforeSelfClosing: 'never'
-		}
-	],
-	'react/jsx-wrap-multilines': ERROR,
-	'react/no-access-state-in-setstate': ERROR,
-	'react/no-array-index-key': TRANSITION_WARNING,
-	'react/no-danger': TRANSITION_WARNING,
-	'react/no-did-mount-set-state': ERROR,
-	'react/no-did-update-set-state': ERROR,
-	'react/no-direct-mutation-state': ERROR,
-	'react/no-multi-comp': [
-		ERROR,
-		{
-			ignoreStateless: true
-		}
-	],
-	'react/no-redundant-should-component-update': ERROR,
-	'react/no-set-state': TRANSITION_IGNORE,
-	'react/no-typos': ERROR,
-	'react/no-unused-prop-types': ERROR,
-	'react/no-unused-state': TRANSITION_WARNING,
-	'react/no-will-update-set-state': ERROR,
-	'react/prefer-es6-class': [
-		ERROR,
-		'always'
-	],
-	'react/prefer-stateless-function': ERROR,
-	'react/require-default-props': [
-		ERROR,
-		{
-			forbidDefaultForRequired: true
-		}
-	],
-	'react/self-closing-comp': ERROR,
-	'react/sort-comp': ERROR,
-	'react/sort-prop-types': [
-		ERROR,
-		{
-			callbacksLast: false,
-			ignoreCase: false,
-			requiredFirst: false,
-			sortShapeProp: true
-		}
-	],
-	'react/style-prop-object': ERROR,
-	'react/void-dom-elements-no-children': ERROR
+	'@typescript-eslint/no-invalid-this': ERROR,
+	'@typescript-eslint/no-shadow': ERROR,
+	'@typescript-eslint/no-unused-vars': WARNING,
+	'@typescript-eslint/no-use-before-define': ERROR,
+	'@typescript-eslint/semi': ERROR
 };
 
 const es6ImportRules = {
 	'import/first': ERROR,
 	'import/newline-after-import': [
-		ERROR,
+		WARNING,
 		{
 			count: 2
 		}
@@ -543,6 +443,7 @@ const es6ImportRules = {
 	'import/no-unassigned-import': ERROR
 };
 
+/* eslint-disable-next-line prefer-object-spread */
 options.rules = Object.assign(
 	{},
 	possibleErrorsRules,
@@ -552,8 +453,7 @@ options.rules = Object.assign(
 	nodeAndCommonJSRules,
 	stylisticIssuesRules,
 	ecmaScript6Rules,
-	babelRules,
-	flowTypeRules,
+	typescriptRules,
 	es6ImportRules
 );
 

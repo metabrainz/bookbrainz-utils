@@ -1,21 +1,16 @@
 {
   "plugins": [
-    "lodash",
-    "transform-object-rest-spread",
-    "transform-es2015-modules-commonjs",
-    "transform-class-properties",
-    "array-includes"
+    "lodash"
   ],
   "presets": [
+    "@babel/preset-typescript",
     [
-      "env", {
+      "@babel/env", {
         "targets": {
           "node": "current"
         }
       }
-    ],
-    ["babel-preset-stage-2"],
-    ["flow"]
+    ]
   ]
 }
 
