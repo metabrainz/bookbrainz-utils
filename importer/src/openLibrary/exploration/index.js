@@ -21,6 +21,7 @@ import _ from 'lodash';
 import asyncCluster from '../../asyncCluster/index.js';
 import config from '../../helpers/config.js';
 import explorePromise from './read.js';
+import {hideBin} from 'yargs/helpers'
 import log from '../../helpers/logger.js';
 import {mergeSets} from '../../helpers/utils.js';
 import util from 'util';
@@ -32,7 +33,7 @@ import yargs from 'yargs';
 /**
  * @type {Object} Command line args parsed by yargs library
  **/
-const argv = yargs.usage('Usage: $0 [options]')
+const argv = yargs(hideBin(process.argv)).usage('Usage: $0 [options]')
 	.help('h')
 	.option('dump', {
 		alias : 'd',
