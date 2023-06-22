@@ -17,12 +17,12 @@
  */
 
 
-import * as Error from '../../helpers/errors';
-import {Queue} from '../../queue';
+import * as Error from '../../helpers/errors.js';
+import {Queue} from '../../queue/index.js';
 import fs from 'fs';
-import {isNotDefined} from '../../helpers/utils';
-import log from '../../helpers/logger';
-import parser from './parser';
+import {isNotDefined} from '../../helpers/utils.js';
+import log from '../../helpers/logger.js';
+import parser from './parser.js';
 import readline from 'readline';
 
 

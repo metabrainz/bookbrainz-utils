@@ -17,7 +17,7 @@
  */
 
 
-import log from '../helpers/logger';
+import log from '../helpers/logger.js';
 
 
 /**

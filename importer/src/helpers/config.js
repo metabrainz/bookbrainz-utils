@@ -17,8 +17,8 @@
  */
 
 import _ from 'lodash';
-import log from '../helpers/logger';
-import path from 'path';
+import log from '../helpers/logger.js';
+import {fileURLToPath} from 'node:url';
 import {readFileSync} from 'fs';
 
 
@@ -28,7 +28,7 @@ import {readFileSync} from 'fs';
  * @type {string} FILE
  * Path to config file.
  **/
-const FILE = path.join(__dirname, '../../config/config.json');
+const FILE = fileURLToPath(new URL('../../config/config.json', import.meta.url));
 
 /**
  * Extract the import configuration from the config file.

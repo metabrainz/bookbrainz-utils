@@ -17,12 +17,12 @@
  */
 
 
-import * as Error from '../helpers/errors';
+import * as Error from '../helpers/errors.js';
 import _ from 'lodash';
-import asyncWorker from './async';
+import asyncWorker from './async.js';
 import cluster from 'cluster';
-import {isNotDefined} from '../helpers/utils';
-import log from '../helpers/logger';
+import {isNotDefined} from '../helpers/utils.js';
+import log from '../helpers/logger.js';
 
 
 /**

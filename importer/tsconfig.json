@@ -6,7 +6,7 @@
 		// Ensure that Babel can safely transpile files in the TypeScript project
 		"isolatedModules": true,
 		"lib": ["ES2019"],
-		"module": "CommonJS",
+		"module": "Node16",
 		"outDir": "./lib",
 		"strict": false,
 		"target": "ES2019"

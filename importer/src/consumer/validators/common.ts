@@ -20,10 +20,10 @@
 
 import {
 	get, validateOptionalString, validatePositiveInteger, validateRequiredString
-} from './base';
+} from './base.js';
 import {Iterable} from 'immutable';
 import _ from 'lodash';
-import log from '../../helpers/logger';
+import log from '../../helpers/logger.js';
 
 
 export function validateMultiple(

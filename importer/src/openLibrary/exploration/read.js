@@ -18,7 +18,7 @@
 
 
 import fs from 'fs';
-import log from '../../helpers/logger';
+import log from '../../helpers/logger.js';
 import readline from 'readline';
 
 

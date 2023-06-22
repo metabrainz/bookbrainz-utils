@@ -17,10 +17,10 @@
  */
 
 
-import * as Error from '../helpers/errors';
+import * as Error from '../helpers/errors.js';
 import amqp from 'amqplib';
-import {isNotDefined} from '../helpers/utils';
-import log from '../helpers/logger';
+import {isNotDefined} from '../helpers/utils.js';
+import log from '../helpers/logger.js';
 
 
 /**

@@ -17,12 +17,12 @@
  */
 
 
-import {Connection} from '../../queue';
+import {Connection} from '../../queue/index.js';
 import _ from 'lodash';
-import asyncCluster from '../../asyncCluster';
-import config from '../../helpers/config';
-import log from '../../helpers/logger';
-import producerPromise from './producer';
+import asyncCluster from '../../asyncCluster/index.js';
+import config from '../../helpers/config.js';
+import log from '../../helpers/logger.js';
+import producerPromise from './producer.js';
 import yargs from 'yargs';
 
 

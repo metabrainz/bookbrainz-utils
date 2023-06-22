@@ -1,11 +1,16 @@
 {
   "plugins": [
-    "lodash"
+    //"lodash"
+    // This plugin outputs incompatible ESM imports without the necessary extension (and has not seen any releases since 2018).
+    // See https://github.com/lodash/babel-plugin-lodash/issues/246
+    // @kellnerd: I'm note even sure whether we (still) need this optimization since we do not bundle the code...
+    // TODO: Find a replacement or refactor all lodash imports to only import specific functions instead of `_`?
   ],
   "presets": [
     "@babel/preset-typescript",
     [
       "@babel/env", {
+        "modules": false, // do not convert ESM to CommonJS (https://babeljs.io/docs/babel-preset-env#modules)
         "targets": {
           "node": "current"
         }

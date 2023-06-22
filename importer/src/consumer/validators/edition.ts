@@ -18,14 +18,14 @@
  */
 
 
-import {get, validateDate, validatePositiveInteger, validateUUID} from './base';
+import {get, validateDate, validatePositiveInteger, validateUUID} from './base.js';
 import {
 	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
+} from './common.js';
 import {Iterable} from 'immutable';
 import _ from 'lodash';
-import type {_IdentifierType} from './types';
-import log from '../../helpers/logger';
+import type {_IdentifierType} from './types.js';
+import log from '../../helpers/logger.js';
 
 
 export function validateEditionSectionDepth(value: any): boolean {

@@ -18,11 +18,11 @@
 
 
 import _ from 'lodash';
-import asyncCluster from '../../asyncCluster';
-import config from '../../helpers/config';
-import explorePromise from './read';
-import log from '../../helpers/logger';
-import {mergeSets} from '../../helpers/utils';
+import asyncCluster from '../../asyncCluster/index.js';
+import config from '../../helpers/config.js';
+import explorePromise from './read.js';
+import log from '../../helpers/logger.js';
+import {mergeSets} from '../../helpers/utils.js';
 import util from 'util';
 import yargs from 'yargs';
 

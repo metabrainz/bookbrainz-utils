@@ -2,7 +2,10 @@
 	"name": "bookbrainz-import",
 	"version": "0.1.0",
 	"description": "Import scripts for various data sources",
-	"main": "index.js",
+	"type": "module",
+	"engines": {
+		"node": ">=16"
+	},
 	"scripts": {
 		"build": "rimraf lib/* && babel src --out-dir lib --extensions .js,.ts && tsc",
 		"nodemon": "nodemon --watch './src/' --exec 'npm run build'",

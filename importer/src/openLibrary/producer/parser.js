@@ -17,8 +17,8 @@
  */
 
 
-import {entityTypes, isNotDefined, sortName} from '../../helpers/utils';
-import {identifiers, mapLanguage} from '../../helpers/mapping';
+import {entityTypes, isNotDefined, sortName} from '../../helpers/utils.js';
+import {identifiers, mapLanguage} from '../../helpers/mapping.js';
 import _ from 'lodash';
 import franc from 'franc-min';
 

@@ -18,12 +18,12 @@
 
 
 import _ from 'lodash';
-import {entityTypes} from '../../helpers/utils';
-import {validateCreator} from './creator';
-import {validateEdition} from './edition';
-import {validatePublication} from './publication';
-import {validatePublisher} from './publisher';
-import {validateWork} from './work';
+import {entityTypes} from '../../helpers/utils.js';
+import {validateCreator} from './creator.js';
+import {validateEdition} from './edition.js';
+import {validatePublication} from './publication.js';
+import {validatePublisher} from './publisher.js';
+import {validateWork} from './work.js';
 
 
 function getAliasSection(record) {

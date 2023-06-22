@@ -17,14 +17,14 @@
  */
 
 
-import * as Error from '../helpers/errors';
+import * as Error from '../helpers/errors.js';
 import BookBrainzData from 'bookbrainz-data';
-import {Queue} from '../queue';
+import {Queue} from '../queue/index.js';
 import _ from 'lodash';
 import async from 'async';
-import config from '../helpers/config';
-import consumeRecord from './consumeRecord';
-import log from '../helpers/logger';
+import config from '../helpers/config.js';
+import consumeRecord from './consumeRecord.js';
+import log from '../helpers/logger.js';
 
 
 /**
