@@ -18,23 +18,20 @@
 
 
 import util from 'util';
-import winston from 'winston';
+import {createLogger, format, transports} from 'winston';
 
 
 /** @module config */
 
 /**
- * @type {Object} options
- * Logger configuration options
- **/
-const options = {
-	console: {
-		colorize: true,
-		handleExceptions: true,
-		json: false,
-		level: 'debug',
-		timestamp: true
-	},
+ * @type {Object} log
+ * Winston logger Object:
+ * 		Transport added: console
+ * 		Pretty printed using utils.inspect
+ * 		Doesn't exit on error
+ */
+const log = createLogger({
+	exitOnError: false,
 	levels: {
 		alert: 1,
 		crit: 2,
@@ -45,24 +42,20 @@ const options = {
 		notice: 5,
 		read: 8,
 		warning: 4
-	}
-};
-
-/**
- * @type {Object} log
- * Winston logger Object:
- * 		Transport added: console
- * 		Pretty printed using utils.inspect
- * 		Doesn't exit on error
- */
-const log = new winston.Logger({
-	exitOnError: false,
-	levels: options.levels,
+	},
 	prettyPrint: function prettyPrint(object) {
 		return util.inspect(object);
 	},
 	transports: [
-		new winston.transports.Console(options.console)
+		new transports.Console({
+			format: format.combine(
+				format.colorize(),
+				format.timestamp(),
+				format.printf((info) => `${info.timestamp} - ${info.level}: ${info.message}`)
+			),
+			handleExceptions: true,
+			level: 'debug'
+		})
 	]
 });
 

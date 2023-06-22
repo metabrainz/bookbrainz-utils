@@ -44,7 +44,7 @@
 		"immutable": "^3.8.2",
 		"lodash": "^4.17.21",
 		"validator": "^13.9.0",
-		"winston": "^2.4.2",
+		"winston": "^3.9.0",
 		"yargs": "^17.7.2"
 	},
 	"devDependencies": {
