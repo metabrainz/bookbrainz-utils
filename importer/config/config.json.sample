@@ -8,25 +8,25 @@
 			"password": "bookbrainz"
 		}
 	},
-    "openLibrary": {
-    	"works": {
-	    	"path": "/path/to/dumps/works",
-		    "fileCount": 1,
-		    "parallelLimit": 1,
-		    "asyncLimit": 1
-    	},
-    	"authors": {
-    		"path": "/path/to/dumps/authors",
-    		"fileCount": 1,
-    		"parallelLimit": 1,
-    		"asyncLimit": 1
-    	},
-    	"editions": {
-    		"path": "/path/to/dumps/editions",
-    		"fileCount": 1,
-    		"parallelLimit": 1,
-    		"asyncLimit": 1
-    	},
+		"openLibrary": {
+			"works": {
+				"path": "/path/to/dumps/works",
+				"fileCount": 1,
+				"parallelLimit": 1,
+				"asyncLimit": 1
+			},
+			"authors": {
+				"path": "/path/to/dumps/authors",
+				"fileCount": 1,
+				"parallelLimit": 1,
+				"asyncLimit": 1
+			},
+			"editions": {
+				"path": "/path/to/dumps/editions",
+				"fileCount": 1,
+				"parallelLimit": 1,
+				"asyncLimit": 1
+			}
 	},
 	"import": {
 		"retryLimit": 4
