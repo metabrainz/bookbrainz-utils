@@ -1,3 +1,6 @@
+# Lib directory (Babel output)
+lib
+
 # Logs
 logs
 *.log
