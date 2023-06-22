@@ -18,8 +18,6 @@
  */
 
 
-// @flow
-
 import {get, validateDate, validatePositiveInteger} from './base';
 import {
 	validateAliases, validateIdentifiers, validateNameSection
@@ -66,7 +64,7 @@ export function validatePublisherSection(data: any): boolean {
 
 export function validatePublisher(
 	validationObject: any,
-	identifierTypes?: ?Array<_IdentifierType>
+	identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 

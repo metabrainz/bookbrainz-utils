@@ -16,7 +16,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-// @flow
+
 
 import {get, validateDate, validatePositiveInteger} from './base';
 import {
@@ -76,7 +76,7 @@ export function validateCreatorSection(data: any): boolean {
 }
 
 export function validateCreator(
-	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
+	validationObject: any, identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 

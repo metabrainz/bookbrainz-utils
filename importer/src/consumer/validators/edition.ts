@@ -17,7 +17,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// @flow
 
 import {get, validateDate, validatePositiveInteger, validateUUID} from './base';
 import {
@@ -29,23 +28,23 @@ import type {_IdentifierType} from './types';
 import log from '../../helpers/logger';
 
 
-export function validateEditionSectionDepth(value: ?any): boolean {
+export function validateEditionSectionDepth(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionFormat(value: ?any): boolean {
+export function validateEditionSectionFormat(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionHeight(value: ?any): boolean {
+export function validateEditionSectionHeight(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionLanguage(value: ?any): boolean {
+export function validateEditionSectionLanguage(value: any): boolean {
 	return validatePositiveInteger(get(value, 'value', null), true);
 }
 
-export function validateEditionSectionLanguages(values: ?any): boolean {
+export function validateEditionSectionLanguages(values: any): boolean {
 	if (!values) {
 		return true;
 	}
@@ -62,15 +61,15 @@ export function validateEditionSectionLanguages(values: ?any): boolean {
 	return every(values, (value) => validateEditionSectionLanguage(value));
 }
 
-export function validateEditionSectionPages(value: ?any): boolean {
+export function validateEditionSectionPages(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionPublication(value: ?any): boolean {
+export function validateEditionSectionPublication(value: any): boolean {
 	return validateUUID(get(value, 'id', null), true);
 }
 
-export function validateEditionSectionPublisher(value: ?any): boolean {
+export function validateEditionSectionPublisher(value: any): boolean {
 	if (!value) {
 		return true;
 	}
@@ -78,19 +77,19 @@ export function validateEditionSectionPublisher(value: ?any): boolean {
 	return validateUUID(get(value, 'id', null), true);
 }
 
-export function validateEditionSectionReleaseDate(value: ?any): boolean {
+export function validateEditionSectionReleaseDate(value: any): boolean {
 	return validateDate(value);
 }
 
-export function validateEditionSectionStatus(value: ?any): boolean {
+export function validateEditionSectionStatus(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionWeight(value: ?any): boolean {
+export function validateEditionSectionWeight(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionWidth(value: ?any): boolean {
+export function validateEditionSectionWidth(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
@@ -111,7 +110,7 @@ export function validateEditionSection(data: any): boolean {
 }
 
 export function validateEdition(
-	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
+	validationObject: any, identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 

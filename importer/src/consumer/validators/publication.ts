@@ -18,8 +18,6 @@
  */
 
 
-// @flow
-
 import {get, validatePositiveInteger} from './base';
 import {
 	validateAliases, validateIdentifiers, validateNameSection
@@ -29,66 +27,59 @@ import type {_IdentifierType} from './types';
 import log from '../../helpers/logger';
 
 
-export function validateWorkSectionType(value: ?any): boolean {
+export function validatePublicationSectionType(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateWorkSectionLanguage(value: ?any): boolean {
-	if (!value) {
-		return true;
-	}
-
-	return validatePositiveInteger(get(value, 'value', null), true);
+export function validatePublicationSection(data: any): boolean {
+	return validatePublicationSectionType(get(data, 'type', null));
 }
 
-export function validateWorkSection(data: any): boolean {
-	return (
-		validateWorkSectionType(get(data, 'type', null)) &&
-		validateWorkSectionLanguage(get(data, 'language', null))
-	);
-}
-
-export function validateWork(
-	validationObject: any,
-	identifierTypes?: ?Array<_IdentifierType>
+export function validatePublication(
+	validationObject: any, identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...workValidationObject} = validationObject;
-	if (_.isEmpty(workValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] WORK Incoming validation object \
-			\rempty`);
+	const {workerId, ...publicationValidationObject} = validationObject;
+	if (_.isEmpty(publicationValidationObject)) {
+		log.warning(`[CONSUMER::${workerId}] PUBLICATION Incoming validation\
+			\r object empty`);
 		return false;
 	}
 
 	// Cumulative error messages to be stored in err string
 	let err = '';
-	const aliasSection = get(workValidationObject, 'aliasSection', {});
+	const aliasSection = get(publicationValidationObject, 'aliasSection', {});
 	const identifierSection = get(
-		workValidationObject, 'identifierSection', {}
+		publicationValidationObject, 'identifierSection', {}
 	);
-	const nameSection = get(workValidationObject, 'nameSection', {});
-	const workSection = get(workValidationObject, 'workSection', {});
+	const nameSection = get(publicationValidationObject, 'nameSection', {});
+	const publicationSection = get(
+		publicationValidationObject,
+		'publicationSection',
+		{}
+	);
 
-	log.info(`[CONSUMER::${workerId}] WORK - Calling validation functions.`);
+	log.info(`[CONSUMER::${workerId}]\
+		\rPUBLICATION - Calling validation functions.`);
 
 	if (!validateAliases(aliasSection)) {
-		err += 'WORK - Failed validate alias section failed. \n';
+		err += 'PUBLICATION - Failed validate alias section. \n';
 		success = false;
 	}
 
 	if (!validateIdentifiers(identifierSection, identifierTypes)) {
-		err += 'WORK - Validate identifier section failed. \n';
+		err += 'PUBLICATION - Validate identifier section. \n';
 		success = false;
 	}
 
 	if (!validateNameSection(nameSection)) {
-		err += 'WORK - Validate name section failed. \n';
+		err += 'PUBLICATION - Validate name section. \n';
 		success = false;
 	}
 
-	if (!validateWorkSection(workSection)) {
-		err += 'WORK - Validate work section failed. \n';
+	if (!validatePublicationSection(publicationSection)) {
+		err += 'PUBLICATION - Validate publication section. \n';
 		success = false;
 	}
 
