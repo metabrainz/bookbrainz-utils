@@ -116,8 +116,7 @@ export function validateEdition(
 
 	const {workerId, ...editionValidationObject} = validationObject;
 	if (_.isEmpty(editionValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] Edition Incoming validation object\
-			\r empty`);
+		log.warning(`[CONSUMER::${workerId}] Edition Incoming validation object empty`);
 		return false;
 	}
 

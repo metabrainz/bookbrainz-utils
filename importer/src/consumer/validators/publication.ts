@@ -42,8 +42,7 @@ export function validatePublication(
 
 	const {workerId, ...publicationValidationObject} = validationObject;
 	if (_.isEmpty(publicationValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] PUBLICATION Incoming validation\
-			\r object empty`);
+		log.warning(`[CONSUMER::${workerId}] PUBLICATION Incoming validation object empty`);
 		return false;
 	}
 
@@ -60,8 +59,7 @@ export function validatePublication(
 		{}
 	);
 
-	log.info(`[CONSUMER::${workerId}]\
-		\rPUBLICATION - Calling validation functions.`);
+	log.info(`[CONSUMER::${workerId}] PUBLICATION - Calling validation functions.`);
 
 	if (!validateAliases(aliasSection)) {
 		err += 'PUBLICATION - Failed validate alias section. \n';

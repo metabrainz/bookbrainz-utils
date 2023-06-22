@@ -92,8 +92,7 @@ export function validateAlias(value: any): boolean {
 	}
 
 	if (!success) {
-		log.warning(`Alias - Error \n${err}\
-		\r Alias for reference ${JSON.stringify(value, null, 4)}`);
+		log.warning(`Alias - Error \n${err} Alias for reference ${JSON.stringify(value, null, 4)}`);
 		throw new Error(err);
 	}
 
@@ -212,8 +211,7 @@ export function validateNameSection(
 	}
 
 	if (!validateNameSectionDisambiguation(disambiguation)) {
-		err += `Invalid name section disambiguation\
-		\r ${JSON.stringify(disambiguation, null, 4)} \n`;
+		err += `Invalid name section disambiguation ${JSON.stringify(disambiguation, null, 4)} \n`;
 		success = false;
 	}
 

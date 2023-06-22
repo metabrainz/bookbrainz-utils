@@ -51,8 +51,7 @@ function consumerPromise({id, init}) {
 		}
 
 		function messageHandler(msg) {
-			log.notice(`[CONSUMER::${id}] Received object.\
-				\r Running message handler`);
+			log.notice(`[CONSUMER::${id}] Received object. Running message handler`);
 
 			if (typeof msg === 'undefined' || !msg) {
 				log.error('Empty Message received. Skipping.');

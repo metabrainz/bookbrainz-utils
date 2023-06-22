@@ -54,8 +54,7 @@ export function validateWork(
 
 	const {workerId, ...workValidationObject} = validationObject;
 	if (_.isEmpty(workValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] WORK Incoming validation object \
-			\rempty`);
+		log.warning(`[CONSUMER::${workerId}] WORK Incoming validation object empty`);
 		return false;
 	}
 

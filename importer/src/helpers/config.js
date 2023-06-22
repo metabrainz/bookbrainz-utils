@@ -44,8 +44,7 @@ export default function config(configKeys) {
 			const configContents =
 				JSON.parse(readFileSync(`${FILE}`));
 
-			log.info(`[CONFIG] Succesfully read ${configKeys} configuration.\
-				\r Generating object from ${configKeys} file.`);
+			log.info(`[CONFIG] Successfully read ${configKeys} configuration. Generating object from ${configKeys} file.`);
 
 			return _.get(configContents, configKeys);
 		}

@@ -82,8 +82,7 @@ export function validateCreator(
 
 	const {workerId, ...creatorValidationObject} = validationObject;
 	if (_.isEmpty(creatorValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] CREATOR Incoming validation\
-			\r object empty`);
+		log.warning(`[CONSUMER::${workerId}] CREATOR Incoming validation object empty`);
 		return false;
 	}
 
@@ -100,8 +99,7 @@ export function validateCreator(
 		{}
 	);
 
-	log.info(`[CONSUMER::${workerId}]\
-		\r CREATOR - Calling validation functions.`);
+	log.info(`[CONSUMER::${workerId}] CREATOR - Calling validation functions.`);
 
 	if (!validateAliases(aliasSection)) {
 		err += 'CREATOR - Validate alias section failed. \n';
