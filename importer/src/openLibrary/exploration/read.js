@@ -17,9 +17,9 @@
  */
 
 
-import fs from 'fs';
+import fs from 'node:fs';
 import log from '../../helpers/logger.js';
-import readline from 'readline';
+import readline from 'node:readline';
 
 
 /**

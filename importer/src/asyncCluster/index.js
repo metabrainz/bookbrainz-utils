@@ -18,10 +18,10 @@
 
 
 import * as Error from '../helpers/errors.js';
-import {isNotDefined, splitArray} from '../helpers/utils.js';
+import {isNotDefined, splitArray} from '../helpers/utils.ts';
 import _ from 'lodash';
 import log from '../helpers/logger.js';
-import os from 'os';
+import os from 'node:os';
 import runCluster from './cluster.js';
 
 

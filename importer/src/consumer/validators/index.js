@@ -18,7 +18,7 @@
 
 
 import _ from 'lodash';
-import {entityTypes} from '../../helpers/utils.js';
+import {entityTypes} from '../../helpers/utils.ts';
 import {validateCreator} from './creator.js';
 import {validateEdition} from './edition.js';
 import {validatePublication} from './publication.js';

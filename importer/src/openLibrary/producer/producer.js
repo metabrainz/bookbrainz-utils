@@ -19,11 +19,11 @@
 
 import * as Error from '../../helpers/errors.js';
 import {Queue} from '../../queue/index.js';
-import fs from 'fs';
-import {isNotDefined} from '../../helpers/utils.js';
+import fs from 'node:fs';
+import {isNotDefined} from '../../helpers/utils.ts';
 import log from '../../helpers/logger.js';
 import parser from './parser.js';
-import readline from 'readline';
+import readline from 'node:readline';
 
 
 /**

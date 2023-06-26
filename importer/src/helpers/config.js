@@ -19,7 +19,7 @@
 import _ from 'lodash';
 import log from '../helpers/logger.js';
 import {fileURLToPath} from 'node:url';
-import {readFileSync} from 'fs';
+import {readFileSync} from 'node:fs';
 
 
 /** @module config */

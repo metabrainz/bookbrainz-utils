@@ -23,8 +23,8 @@ import config from '../../helpers/config.js';
 import explorePromise from './read.js';
 import {hideBin} from 'yargs/helpers'
 import log from '../../helpers/logger.js';
-import {mergeSets} from '../../helpers/utils.js';
-import util from 'util';
+import {mergeSets} from '../../helpers/utils.ts';
+import util from 'node:util';
 import yargs from 'yargs';
 
 

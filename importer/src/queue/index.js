@@ -19,7 +19,7 @@
 
 import * as Error from '../helpers/errors.js';
 import amqp from 'amqplib';
-import {isNotDefined} from '../helpers/utils.js';
+import {isNotDefined} from '../helpers/utils.ts';
 import log from '../helpers/logger.js';
 
 

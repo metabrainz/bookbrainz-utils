@@ -17,7 +17,7 @@
  */
 
 
-import util from 'util';
+import util from 'node:util';
 import {createLogger, format, transports} from 'winston';
 
 

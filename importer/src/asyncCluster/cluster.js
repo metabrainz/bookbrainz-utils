@@ -20,8 +20,8 @@
 import * as Error from '../helpers/errors.js';
 import _ from 'lodash';
 import asyncWorker from './async.js';
-import cluster from 'cluster';
-import {isNotDefined} from '../helpers/utils.js';
+import cluster from 'node:cluster';
+import {isNotDefined} from '../helpers/utils.ts';
 import log from '../helpers/logger.js';
 
 
@@ -76,7 +76,9 @@ export default function runClusters({
 		});
 	}
 	else {
+		log.info('Worker has started');
 		process.on('message', ({id}) => {
+			log.info(`Worker received message with ID: ${id}`);
 			asyncWorker({
 				workerArgs: workerArgsArr[id],
 				workerId: id,
