@@ -23,6 +23,7 @@ import asyncCluster from '../../asyncCluster/index.js';
 import config from '../../helpers/config.js';
 import {hideBin} from 'yargs/helpers';
 import log from '../../helpers/logger.js';
+import process from 'node:process';
 import producerPromise from './producer.js';
 import yargs from 'yargs';
 

@@ -24,6 +24,7 @@ import explorePromise from './read.js';
 import {hideBin} from 'yargs/helpers'
 import log from '../../helpers/logger.js';
 import {mergeSets} from '../../helpers/utils.ts';
+import process from 'node:process';
 import util from 'node:util';
 import yargs from 'yargs';
 
