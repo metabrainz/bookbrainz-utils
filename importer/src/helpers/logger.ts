@@ -17,19 +17,9 @@
  */
 
 
-import util from 'node:util';
 import {createLogger, format, transports} from 'winston';
 
 
-/** @module config */
-
-/**
- * @type {Object} log
- * Winston logger Object:
- * 		Transport added: console
- * 		Pretty printed using utils.inspect
- * 		Doesn't exit on error
- */
 const log = createLogger({
 	exitOnError: false,
 	levels: {
@@ -42,9 +32,6 @@ const log = createLogger({
 		notice: 5,
 		read: 8,
 		warning: 4
-	},
-	prettyPrint: function prettyPrint(object) {
-		return util.inspect(object);
 	},
 	transports: [
 		new transports.Console({

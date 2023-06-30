@@ -17,14 +17,15 @@
  */
 
 
-import * as Error from '../../helpers/errors.js';
-import {Queue} from '../../queue/index.js';
+import * as Error from '../../helpers/errors.ts';
+import {Queue} from '../../queue/index.ts';
 import fs from 'node:fs';
 import {isNotDefined} from '../../helpers/utils.ts';
-import log from '../../helpers/logger.js';
+import log from '../../helpers/logger.ts';
 import parser from './parser.js';
 import readline from 'node:readline';
 
+import type amqp from 'amqplib';
 
 /**
  * readLine - Function which takes in instanceArgs and processes them.
@@ -34,7 +35,7 @@ import readline from 'node:readline';
  * 		instance
  * @param {string} obj.base - This is path to the file to be processed
  **/
-function readLine({base, id, init}) {
+function readLine({base, id, init}: {init: Promise<amqp.Connection>; id: number; base: string;}) {
 	if (isNotDefined(base)) {
 		Error.undefinedValue('producerPromise:: File path (base args).');
 	}
@@ -74,7 +75,7 @@ function readLine({base, id, init}) {
 			const originId = record[1].split('/')[2];
 			const lastEdited = record[3];
 
-			log.log(`WORKER${id}:: Pushing record ${count}`);
+			log.debug(`WORKER${id}:: Pushing record ${count}`);
 			queue.push({
 				data,
 				entityType: data.entityType,

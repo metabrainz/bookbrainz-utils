@@ -18,13 +18,13 @@
  */
 
 
-import {get, validatePositiveInteger} from './base.js';
+import {get, validatePositiveInteger} from './base.ts';
 import {
 	validateAliases, validateIdentifiers, validateNameSection
-} from './common.js';
+} from './common.ts';
 import _ from 'lodash';
-import type {_IdentifierType} from './types.js';
-import log from '../../helpers/logger.js';
+import type {_IdentifierType} from './types.ts';
+import log from '../../helpers/logger.ts';
 
 
 export function validateWorkSectionType(value: any): boolean {
