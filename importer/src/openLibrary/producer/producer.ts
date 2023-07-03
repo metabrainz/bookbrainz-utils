@@ -76,7 +76,7 @@ function readLine({base, id, init}: {init: amqp.Connection; id: number; base: st
 			});
 		}
 		catch (err) {
-			log.warning(
+			log.warn(
 				`Error in ${fileName} in line number ${count}.`,
 				'Skipping. Record for reference: \n [[',
 				line, ']]'

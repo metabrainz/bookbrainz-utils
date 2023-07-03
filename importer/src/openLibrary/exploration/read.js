@@ -54,7 +54,7 @@ function readLine({base, id}) {
 			Object.keys(json).forEach(key => set.add(key));
 		}
 		catch (err) {
-			log.warning(
+			log.warn(
 				`[WORKER::${id}] Error in ${fileName} in line number ${count}.`,
 				'Skipping. Record for reference: \n [[',
 				line, ']]'

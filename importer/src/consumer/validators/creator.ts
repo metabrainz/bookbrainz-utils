@@ -82,7 +82,7 @@ export function validateCreator(
 
 	const {workerId, ...creatorValidationObject} = validationObject;
 	if (_.isEmpty(creatorValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] CREATOR Incoming validation object empty`);
+		log.warn(`[CONSUMER::${workerId}] CREATOR Incoming validation object empty`);
 		return false;
 	}
 

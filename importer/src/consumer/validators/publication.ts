@@ -42,7 +42,7 @@ export function validatePublication(
 
 	const {workerId, ...publicationValidationObject} = validationObject;
 	if (_.isEmpty(publicationValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] PUBLICATION Incoming validation object empty`);
+		log.warn(`[CONSUMER::${workerId}] PUBLICATION Incoming validation object empty`);
 		return false;
 	}
 

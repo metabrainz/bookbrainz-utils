@@ -50,7 +50,7 @@ export default async function consumeRecord({
 		await importRecord({entityType, ...record.data});
 	}
 	catch (err) {
-		log.warning(`[TRANSACTION::${entityType}] ${err}`);
+		log.warn(`[TRANSACTION::${entityType}] ${err}`);
 		return {errMsg: err, errorType: importErrors.TRANSACTION_ERROR};
 	}
 

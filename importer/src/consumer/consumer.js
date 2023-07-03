@@ -101,7 +101,7 @@ function consumerPromise({id, init}) {
 						case Error.RECORD_ENTITY_NOT_FOUND:
 							// In case of invalid records, we don't try again
 							attemptsLeft = 0;
-							log.warning(
+							log.warn(
 								`[CONSUMER::${id}] ${errorType} -\
 								\r Hence skipping the errored record.`
 							);
@@ -115,7 +115,7 @@ function consumerPromise({id, init}) {
 							attemptsLeft--;
 
 							// Issue a warning in case of transaction error
-							log.warning(
+							log.warn(
 								`[CONSUMER::${id}] ${errorType} Setting up for\
 								\r reinsertion. Record for reference:
 								\r ${msg}

@@ -26,17 +26,10 @@ async function processDump(dumpPath: string) {
 	try {
 		console.debug('Establishing AMQP connection...');
 		connection = await amqp.connect('amqp://localhost');
-		// TODO: process always hangs above as soon as the call to `readLine` is present!?
-		// It does not matter whether the AMQP server is up or not in this scenario.
 		console.debug('AMQP connection established, processing dump...');
 		await readLine({base: dumpPath, id: 0, init: connection});
 		console.debug('Dump has been processed');
 	} catch (error) {
-		// Unfortunately catching connection errors becomes impossible as soon as the call to `readLine` is present.
-		// It does not matter that we never even get to this line because the process hangs if there is no RabbitMQ server.
-		// If we comment out the `readLine` call, the error message is caught and logged as expected.
-		// Apparently `amqplib` is silently swallowing errors in certain cases because of it's use of bluebird promises:
-		// https://github.com/amqp-node/amqplib/issues/334
 		console.error('Failed to process dump:', error);
 		exitCode = 1;
 	} finally {

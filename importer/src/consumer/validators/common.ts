@@ -92,7 +92,7 @@ export function validateAlias(value: any): boolean {
 	}
 
 	if (!success) {
-		log.warning(`Alias - Error \n${err} Alias for reference ${JSON.stringify(value, null, 4)}`);
+		log.warn(`Alias - Error \n${err} Alias for reference ${JSON.stringify(value, null, 4)}`);
 		throw new Error(err);
 	}
 
@@ -185,7 +185,7 @@ export function validateNameSection(
 	let success = true;
 
 	if (_.isEmpty(values)) {
-		log.warning('Incoming validation object name section is empty');
+		log.warn('Incoming validation object name section is empty');
 		return !success;
 	}
 
@@ -216,7 +216,7 @@ export function validateNameSection(
 	}
 
 	if (!success) {
-		log.warning(`Invalid Name section - ${err}`);
+		log.warn(`Invalid Name section - ${err}`);
 		throw new Error(err);
 	}
 
