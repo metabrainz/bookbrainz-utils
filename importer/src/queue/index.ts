@@ -58,12 +58,8 @@ export class Queue {
 	channelPromise: Promise<amqp.Channel>;
 
 	/** Create a channel promise */
-	constructor(connectionPromise: Promise<amqp.Connection>) {
-		if (isNotDefined(connectionPromise)) {
-			Error.undefinedValue('Queue.constructor:: connectionPromise');
-		}
-		this.channelPromise = connectionPromise
-			.then(conn => conn.createChannel())
+	constructor(connection: amqp.Connection) {
+		this.channelPromise = connection.createChannel()
 			.catch(Error.raiseError(Error.CHANNEL_ERROR));
 	}
 

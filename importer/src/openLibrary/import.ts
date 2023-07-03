@@ -19,4 +19,4 @@ const argv = yargs(hideBin(process.argv))
 	.alias('help', 'h')
 	.parseSync();
 
-await readLine({base: argv.dump, id: 0, init: Connection.connect()});
+await readLine({base: argv.dump, id: 0, init: await Connection.connect()});

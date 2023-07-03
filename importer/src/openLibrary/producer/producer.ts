@@ -17,10 +17,8 @@
  */
 
 
-import * as Error from '../../helpers/errors.ts';
 import {Queue} from '../../queue/index.ts';
 import fs from 'node:fs';
-import {isNotDefined} from '../../helpers/utils.ts';
 import log from '../../helpers/logger.ts';
 import parser from './parser.js';
 import readline from 'node:readline';
@@ -30,19 +28,12 @@ import type amqp from 'amqplib';
 /**
  * readLine - Function which takes in instanceArgs and processes them.
  * @param {Object} obj - Primary argument
- * @param {Promise} obj.init - Connection promise
+ * @param obj.init - Message queue connection
  * @param {number} obj.id - Numerical Id of the worker process running this
  * 		instance
  * @param {string} obj.base - This is path to the file to be processed
  **/
-function readLine({base, id, init}: {init: Promise<amqp.Connection>; id: number; base: string;}) {
-	if (isNotDefined(base)) {
-		Error.undefinedValue('producerPromise:: File path (base args).');
-	}
-
-	if (id !== 0 && isNotDefined(id)) {
-		Error.undefinedValue('producerPromise:: Worker Id undefined.');
-	}
+function readLine({base, id, init}: {init: amqp.Connection; id: number; base: string;}) {
 
 	// Errors related to init value will be handled on the queue side
 	const queue = new Queue(init);
