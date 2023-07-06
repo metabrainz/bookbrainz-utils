@@ -17,41 +17,41 @@
  */
 
 
-import * as Error from '../helpers/errors.js';
+import * as Errors from '../helpers/errors.ts';
 import BookBrainzData from 'bookbrainz-data';
-import {Queue} from '../queue/index.js';
+import {type ConsumeMessage} from 'amqplib';
+import {type ImportQueue} from '../queue.ts';
 import _ from 'lodash';
 import async from 'async';
 import config from '../helpers/config.js';
 import consumeRecord from './consumeRecord.js';
-import log from '../helpers/logger.js';
+import log from '../helpers/logger.ts';
 
 
 /**
  * consumerPromise - Instance function called to consume from the RMQ queues
  * @param {Object} objArgs - Arguments passed
  * @param {number} objArgs.id - Worker Id
- * @param {Promise} objArgs.init - The connection promise to RMQ
+ * @param {ImportQueue} objArgs.queue - Message queue connection
  * @returns {Promise} - A never fulfilling promise, as consumer is supposed to
  * 		run forever
  **/
-function consumerPromise({id, init}) {
-	log.notice(`[WORKER::${id}] Running consumer number ${id}`);
+function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
+	log.info(`[WORKER::${id}] Running consumer number ${id}`);
 
-	const orm = BookBrainzData(config('database'));
+	// TODO: Why do we have to call `.default` here to make TS happy!?
+	const orm = BookBrainzData.default(config('database'));
 	const importRecord = _.partial(orm.func.imports.createImport, orm);
 	const {retryLimit} = config('import');
 
 	// A never resolving promise as consumer is supposed to run forever
 	return new Promise(() => {
-		const queue = new Queue(init);
-
 		if (id !== 0 && !id) {
-			Error.undefinedValue('Consumer instance:: Worker Id undefined');
+			Errors.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
 
-		function messageHandler(msg) {
-			log.notice(`[CONSUMER::${id}] Received object. Running message handler`);
+		function messageHandler(msg: ConsumeMessage) {
+			log.info(`[CONSUMER::${id}] Received object. Running message handler`);
 
 			if (typeof msg === 'undefined' || !msg) {
 				log.error('Empty Message received. Skipping.');
@@ -87,7 +87,7 @@ function consumerPromise({id, init}) {
 					});
 
 					switch (errorType) {
-						case Error.NONE:
+						case Errors.NONE:
 							// On success, we don't need to retry again
 							attemptsLeft = 0;
 							log.info(
@@ -97,8 +97,8 @@ function consumerPromise({id, init}) {
 							queue.acknowledge(msg);
 							break;
 
-						case Error.INVALID_RECORD:
-						case Error.RECORD_ENTITY_NOT_FOUND:
+						case Errors.INVALID_RECORD:
+						case Errors.RECORD_ENTITY_NOT_FOUND:
 							// In case of invalid records, we don't try again
 							attemptsLeft = 0;
 							log.warn(
@@ -109,7 +109,7 @@ function consumerPromise({id, init}) {
 							queue.acknowledge(msg);
 							throw new Error(`${errorType} :: ${errMsg}`);
 
-						case Error.TRANSACTION_ERROR:
+						case Errors.TRANSACTION_ERROR:
 							// In case of transaction errors, we retry a number
 							// 		of times before giving up
 							attemptsLeft--;
@@ -146,12 +146,12 @@ function consumerPromise({id, init}) {
 				},
 
 				// Raise error in case of error
-				Error.raiseError(`${Error.IMPORT_ERROR}
+				Errors.raiseError(`${Errors.IMPORT_ERROR}
 					\r ${JSON.stringify(record)}`)
 			);
 		}
 		// Connection related errors would be handled on the queue side
-		return queue.consume(messageHandler);
+		return queue.addConsumer(messageHandler);
 	});
 }
 
