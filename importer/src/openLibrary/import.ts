@@ -1,4 +1,4 @@
-import {ImportQueue} from '../queue.ts';
+import {ImportQueue, type ImportQueueOptions} from '../queue.ts';
 // eslint-disable-next-line import/no-internal-modules
 import {hideBin} from 'yargs/helpers';
 import log from '../helpers/logger.ts';
@@ -7,8 +7,14 @@ import readLine from './producer/producer.ts';
 import yargs from 'yargs';
 
 
-const {dump} = yargs(hideBin(process.argv))
+// eslint-disable-next-line node/no-sync -- name parseSync is a false positive
+const {dump, test, connection} = yargs(hideBin(process.argv))
 	.help()
+	.option('connection', {
+		alias: 'c',
+		describe: 'Connection URL to an AMQP server.',
+		type: 'string'
+	})
 	.option('dump', {
 		alias: 'd',
 		demandOption: true,
@@ -17,11 +23,27 @@ const {dump} = yargs(hideBin(process.argv))
 		requiresArg: true,
 		type: 'string'
 	})
+	.option('test', {
+		alias: 't',
+		default: false,
+		describe: 'Perform a non-persistent test import.',
+		type: 'boolean'
+	})
 	.alias('help', 'h')
 	.parseSync();
 
 async function importDump(dumpPath: string) {
-	const queue = new ImportQueue();
+	const queueOptions: Partial<ImportQueueOptions> = {
+		connectionUrl: connection,
+		isPersistent: !test
+	};
+
+	if (test) {
+		// AMQP does not allow us to re-declare the same queue as (non-)persistent
+		queueOptions.queueName = 'bookbrainz-import-test';
+	}
+
+	const queue = new ImportQueue(queueOptions);
 	let exitCode = 0;
 
 	try {
