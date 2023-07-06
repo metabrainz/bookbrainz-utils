@@ -46,7 +46,7 @@ export class ImportQueue {
 
 	/** Closes the connection to the AMQP server. */
 	close() {
-		return this.connection.close();
+		return this.connection?.close();
 	}
 
 	/** Appends the given entity to the import queue. */

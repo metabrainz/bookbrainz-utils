@@ -17,29 +17,24 @@
  */
 
 
-import {Queue} from '../../queue/index.ts';
+import {type ImportQueue} from '../../queue.ts';
 import fs from 'node:fs';
 import log from '../../helpers/logger.ts';
 import parser from './parser.js';
 import readline from 'node:readline';
 
-import type amqp from 'amqplib';
 
 /**
  * readLine - Function which takes in instanceArgs and processes them.
  * @param {Object} obj - Primary argument
- * @param obj.init - Message queue connection
+ * @param {ImportQueue} obj.queue - Message queue connection
  * @param {number} obj.id - Numerical Id of the worker process running this
  * 		instance
  * @param {string} obj.base - This is path to the file to be processed
  **/
-function readLine({base, id, init}: {init: amqp.Connection; id: number; base: string;}) {
-
-	// Errors related to init value will be handled on the queue side
-	const queue = new Queue(init);
-
+function readLine({base, id, queue}: {id: number; base: string; queue: ImportQueue}) {
 	const fileName = base.split('/').pop();
-	log.info(`[WORKER::${id}] Running instance function on ${fileName}.`);
+	log.info(`[WORKER::${id}] Processing dump file '${fileName}'`);
 
 	const rl = readline.createInterface({
 		input: fs.createReadStream(base)
@@ -66,14 +61,20 @@ function readLine({base, id, init}: {init: amqp.Connection; id: number; base: st
 			const originId = record[1].split('/')[2];
 			const lastEdited = record[3];
 
-			log.debug(`WORKER${id}:: Pushing record ${count}`);
-			queue.push({
+			const success = queue.push({
 				data,
 				entityType: data.entityType,
 				lastEdited: lastEdited || data.lastEdited,
 				originId: originId || data.originId,
 				source
 			});
+
+			if (success) {
+				log.debug(`[WORKER::${id}] Pushing record #${count} (${originId})`);
+			}
+			else {
+				log.error(`[WORKER::${id}] Failed to push record #${count} (${originId})`);
+			}
 		}
 		catch (err) {
 			log.warn(
@@ -86,7 +87,6 @@ function readLine({base, id, init}: {init: amqp.Connection; id: number; base: st
 
 	return new Promise((resolve) => {
 		rl.on('close', () => resolve({
-			connection: init,
 			id,
 			workerCount: count
 		}));
