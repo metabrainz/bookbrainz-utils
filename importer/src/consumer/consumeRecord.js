@@ -18,9 +18,9 @@
 
 
 import _ from 'lodash';
-import {importErrors} from '../helpers/errors.js';
-import log from '../helpers/logger.js';
-import validate from './validators.js';
+import {importErrors} from '../helpers/errors.ts';
+import log from '../helpers/logger.ts';
+import validate from './validators/index.js';
 
 
 function getValidationData(record) {

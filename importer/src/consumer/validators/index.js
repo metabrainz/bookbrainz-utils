@@ -19,11 +19,11 @@
 
 import _ from 'lodash';
 import {entityTypes} from '../../helpers/utils.ts';
-import {validateCreator} from './creator.js';
-import {validateEdition} from './edition.js';
-import {validatePublication} from './publication.js';
-import {validatePublisher} from './publisher.js';
-import {validateWork} from './work.js';
+import {validateCreator} from './creator.ts';
+import {validateEdition} from './edition.ts';
+import {validatePublication} from './publication.ts';
+import {validatePublisher} from './publisher.ts';
+import {validateWork} from './work.ts';
 
 
 function getAliasSection(record) {

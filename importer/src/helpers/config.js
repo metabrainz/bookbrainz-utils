@@ -17,7 +17,7 @@
  */
 
 import _ from 'lodash';
-import log from '../helpers/logger.js';
+import log from '../helpers/logger.ts';
 import {fileURLToPath} from 'node:url';
 import {readFileSync} from 'node:fs';
 
