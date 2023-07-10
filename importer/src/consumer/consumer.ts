@@ -151,7 +151,8 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 			);
 		}
 		// Connection related errors would be handled on the queue side
-		return queue.addConsumer(messageHandler);
+		queue.addConsumer(messageHandler);
+		log.debug('Consumer registered, waiting for messages...');
 	});
 }
 
