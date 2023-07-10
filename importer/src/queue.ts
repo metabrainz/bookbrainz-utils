@@ -45,7 +45,9 @@ export class ImportQueue {
 	}
 
 	/** Closes the connection to the AMQP server. */
-	close() {
+	async close() {
+		// wait until the channel closes to guarantee that all sent messages went through
+		await this.channel?.close();
 		return this.connection?.close();
 	}
 
