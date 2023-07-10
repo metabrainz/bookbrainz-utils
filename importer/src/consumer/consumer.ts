@@ -53,14 +53,17 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 		function messageHandler(msg: ConsumeMessage) {
 			log.info(`[CONSUMER::${id}] Received object. Running message handler`);
 
-			if (typeof msg === 'undefined' || !msg) {
-				log.error('Empty Message received. Skipping.');
-				return;
+			let record;
+			try {
+				record = JSON.parse(msg.content.toString());
+			}
+			catch (error) {
+				log.warn('Skipping invalid message:', error.message);
+				return queue.acknowledge(msg);
 			}
 
 			// Attempts left for this message
 			let attemptsLeft = retryLimit;
-			const record = JSON.parse(msg.content.toString());
 
 			// Manages consume record retries
 			async.whilst(
