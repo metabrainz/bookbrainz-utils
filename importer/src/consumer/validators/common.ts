@@ -21,7 +21,7 @@
 import {
 	get, validateOptionalString, validatePositiveInteger, validateRequiredString
 } from './base.ts';
-import {Iterable} from 'immutable';
+import {isCollection} from 'immutable';
 import _ from 'lodash';
 import log from '../../helpers/logger.ts';
 
@@ -33,7 +33,7 @@ export function validateMultiple(
 ): boolean {
 	// eslint-disable-next-line func-style
 	let every = (object, predicate) => _.every(object, predicate);
-	if (Iterable.isIterable(values)) {
+	if (isCollection(values)) {
 		every = (object, predicate) => object.every(predicate);
 	}
 	else if (!_.isObject(values)) {

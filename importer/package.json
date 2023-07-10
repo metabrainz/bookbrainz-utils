@@ -41,7 +41,7 @@
 		"async": "^2.6.0",
 		"bookbrainz-data": "^4.0.1",
 		"franc-min": "^6.1.0",
-		"immutable": "^3.8.2",
+		"immutable": "^4.3.0",
 		"lodash": "^4.17.21",
 		"validator": "^13.9.0",
 		"winston": "^3.9.0",

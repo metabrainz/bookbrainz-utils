@@ -22,7 +22,7 @@ import {get, validateDate, validatePositiveInteger, validateUUID} from './base.t
 import {
 	validateAliases, validateIdentifiers, validateNameSection
 } from './common.ts';
-import {Iterable} from 'immutable';
+import {isCollection} from 'immutable';
 import _ from 'lodash';
 import type {_IdentifierType} from './types.ts';
 import log from '../../helpers/logger.ts';
@@ -51,7 +51,7 @@ export function validateEditionSectionLanguages(values: any): boolean {
 
 	// eslint-disable-next-line func-style
 	let every = (object, predicate) => _.every(object, predicate);
-	if (Iterable.isIterable(values)) {
+	if (isCollection(values)) {
 		every = (object, predicate) => object.every(predicate);
 	}
 	else if (!_.isObject(values)) {

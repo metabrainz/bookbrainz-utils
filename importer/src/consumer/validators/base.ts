@@ -18,7 +18,7 @@
  */
 
 
-import {Iterable} from 'immutable';
+import {isCollection} from 'immutable';
 import _ from 'lodash';
 import validator from 'validator';
 
@@ -28,7 +28,7 @@ export function get(
 	path: string,
 	defaultValue: unknown | null | undefined = null
 ): any {
-	if (Iterable.isIterable(object)) {
+	if (isCollection(object)) {
 		return object.get(path, defaultValue);
 	}
 	return _.get(object, path, defaultValue);
@@ -39,7 +39,7 @@ export function getIn(
 	path: string,
 	defaultValue: unknown | null | undefined = null
 ): any {
-	if (Iterable.isIterable(object)) {
+	if (isCollection(object)) {
 		return object.getIn(path, defaultValue);
 	}
 	return _.get(object, path, defaultValue);
