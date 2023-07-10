@@ -82,6 +82,11 @@ export class ImportQueue {
 		this.channel.ack(message);
 	}
 
+	/** Drop all currently queued entities. */
+	purge() {
+		return this.channel.purgeQueue(this.queueName);
+	}
+
 	readonly queueName: string;
 
 	private connectionUrl: string;

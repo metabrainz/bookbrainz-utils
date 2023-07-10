@@ -8,12 +8,18 @@ import yargs from 'yargs';
 
 
 // eslint-disable-next-line node/no-sync -- name parseSync is a false positive
-const {connection, test} = yargs(hideBin(process.argv))
+const {connection, purge, test} = yargs(hideBin(process.argv))
 	.help()
 	.option('connection', {
 		alias: 'c',
 		describe: 'Connection URL to an AMQP server.',
 		type: 'string'
+	})
+	.option('purge', {
+		alias: 'p',
+		default: false,
+		describe: 'Drop all entities from the import queue.',
+		type: 'boolean'
 	})
 	.option('test', {
 		alias: 't',
@@ -47,7 +53,13 @@ async function consumeQueuedEntities() {
 	try {
 		const queueInfo = await queue.open();
 		log.info('Import queue has been opened:', queueInfo);
-		await consumerPromise({id: 0, queue});
+		if (purge) {
+			const result = await queue.purge();
+			log.info('Purged messages:', result.messageCount);
+		}
+		else {
+			await consumerPromise({id: 0, queue});
+		}
 	}
 	catch (error) {
 		log.error('Failed to consume queue:', error);
