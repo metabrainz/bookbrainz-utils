@@ -22,7 +22,6 @@ import BookBrainzData from 'bookbrainz-data';
 import {type ConsumeMessage} from 'amqplib';
 import {type ImportQueue} from '../queue.ts';
 import _ from 'lodash';
-import async from 'async';
 import config from '../helpers/config.js';
 import consumeRecord from './consumeRecord.js';
 import log from '../helpers/logger.ts';
@@ -50,7 +49,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 			Errors.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
 
-		function messageHandler(msg: ConsumeMessage) {
+		async function messageHandler(msg: ConsumeMessage) {
 			log.info(`[CONSUMER::${id}] Received object. Running message handler`);
 
 			let record;
@@ -66,14 +65,11 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 			let attemptsLeft = retryLimit;
 
 			// Manages consume record retries
-			async.whilst(
-				// Test whose return value if is false, stops the iteration
-				// When number of attempts finish up, the test should return F
-				() => attemptsLeft > 0,
+			while (attemptsLeft > 0) {
 
 				// Function repeated upon transaction error for retries times
 				// Manages async record consumption
-				async (cb) => {
+				try {
 					if (attemptsLeft < retryLimit) {
 						log.info('--- Restarting import process... ---');
 					}
@@ -119,24 +115,19 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 								throw new Error(`${errorType} :: ${errMsg}`);
 							}
 
-							log.info(attemptsLeft);
 							break;
 
 						default: {
 							throw new Error('Undefined response while importing');
 						}
 					}
-
-					// In case of no error, return back the present count of
-					//		attemptsLeft
-					cb(null, attemptsLeft);
-				},
-
-				// Raise error in case of error
-				Errors.raiseError(`${Errors.IMPORT_ERROR}
-					\r ${JSON.stringify(record)}`)
-			);
+				}
+				catch {
+					log.error(`${Errors.IMPORT_ERROR}\n ${JSON.stringify(record)}`);
+				}
+			}
 		}
+
 		// Connection related errors would be handled on the queue side
 		queue.addConsumer(messageHandler);
 		log.debug('Consumer registered, waiting for messages...');
