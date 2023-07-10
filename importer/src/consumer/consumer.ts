@@ -75,11 +75,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 				// Manages async record consumption
 				async (cb) => {
 					if (attemptsLeft < retryLimit) {
-						log.info(`
-						\r ##################################################
-						\r Restarting import process....
-						\r ##################################################
-						`);
+						log.info('--- Restarting import process... ---');
 					}
 
 					log.info('Running async function');
@@ -93,10 +89,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 						case Errors.NONE:
 							// On success, we don't need to retry again
 							attemptsLeft = 0;
-							log.info(
-								`[CONSUMER::${id}] Read message successfully
-								\r${record}`
-							);
+							log.info(`[CONSUMER::${id}] Read message successfully:\n${record}`);
 							queue.acknowledge(msg);
 							break;
 
@@ -104,10 +97,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 						case Errors.RECORD_ENTITY_NOT_FOUND:
 							// In case of invalid records, we don't try again
 							attemptsLeft = 0;
-							log.warn(
-								`[CONSUMER::${id}] ${errorType} -\
-								\r Hence skipping the errored record.`
-							);
+							log.warn(`[CONSUMER::${id}] ${errorType} - Hence skipping the errored record.`);
 							// As we're not retrying, we acknowledge the message
 							queue.acknowledge(msg);
 							throw new Error(`${errorType} :: ${errMsg}`);
@@ -119,16 +109,12 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 
 							// Issue a warning in case of transaction error
 							log.warn(
-								`[CONSUMER::${id}] ${errorType} Setting up for\
-								\r reinsertion. Record for reference:
-								\r ${msg}
-								\r Attempts left: ${attemptsLeft}`
+								`[CONSUMER::${id}] ${errorType} Setting up for reinsertion, ${attemptsLeft} attempts left:\n ${msg}`
 							);
 
 							// If no more attempts left, acknowledge the message
 							if (!attemptsLeft) {
-								log.info('No more attempts left.',
-									'Acknowledging the message.');
+								log.info('No more attempts left. Acknowledging the message.');
 								queue.acknowledge(msg);
 								throw new Error(`${errorType} :: ${errMsg}`);
 							}
@@ -137,9 +123,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 							break;
 
 						default: {
-							throw new Error(
-								'Undefined response while importing'
-							);
+							throw new Error('Undefined response while importing');
 						}
 					}
 
