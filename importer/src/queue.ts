@@ -27,10 +27,12 @@ export class ImportQueue {
 	constructor({
 		connectionUrl = 'amqp://localhost',
 		isPersistent = true,
+		prefetchLimit = 5,
 		queueName = 'bookbrainz-import'
 	}: Partial<ImportQueueOptions> = {}) {
 		this.connectionUrl = connectionUrl;
 		this.isPersistent = isPersistent;
+		this.prefetchLimit = prefetchLimit;
 		this.queueName = queueName;
 	}
 
@@ -41,6 +43,7 @@ export class ImportQueue {
 	async open() {
 		this.connection = await amqp.connect(this.connectionUrl);
 		this.channel = await this.connection.createChannel();
+		await this.channel.prefetch(this.prefetchLimit);
 		return this.channel.assertQueue(this.queueName, {durable: this.isPersistent});
 	}
 
@@ -82,7 +85,7 @@ export class ImportQueue {
 		this.channel.ack(message);
 	}
 
-	/** Drop all currently queued entities. */
+	/** Drops all currently queued entities. */
 	purge() {
 		return this.channel.purgeQueue(this.queueName);
 	}
@@ -96,6 +99,8 @@ export class ImportQueue {
 	private channel: amqp.Channel;
 
 	private isPersistent: boolean;
+
+	private prefetchLimit: number;
 }
 
 
@@ -106,6 +111,9 @@ export interface ImportQueueOptions {
 
 	/** Keep queued messages when the AMQP server stops. */
 	isPersistent: boolean;
+
+	/** Maximum number of sent messages which are awaiting acknowledgement. */
+	prefetchLimit: number;
 
 	/** Name of the queue which stores parsed entities that have to be imported. */
 	queueName: string;
