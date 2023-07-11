@@ -74,7 +74,6 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 						log.info('--- Restarting import process... ---');
 					}
 
-					log.info('Running async function');
 					const {errorType, errMsg} = await consumeRecord({
 						importRecord,
 						workerId: id,
@@ -93,10 +92,10 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 						case Errors.RECORD_ENTITY_NOT_FOUND:
 							// In case of invalid records, we don't try again
 							attemptsLeft = 0;
-							log.warn(`[CONSUMER::${id}] ${errorType} - Hence skipping the errored record.`);
+							log.warn(`[CONSUMER::${id}] ${errorType} :: ${errMsg} [skipping]`);
 							// As we're not retrying, we acknowledge the message
 							queue.acknowledge(msg);
-							throw new Error(`${errorType} :: ${errMsg}`);
+							break;
 
 						case Errors.TRANSACTION_ERROR:
 							// In case of transaction errors, we retry a number
@@ -105,14 +104,13 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 
 							// Issue a warning in case of transaction error
 							log.warn(
-								`[CONSUMER::${id}] ${errorType} Setting up for reinsertion, ${attemptsLeft} attempts left:\n ${msg}`
+								`[CONSUMER::${id}] ${errorType} :: ${errMsg} [retry, ${attemptsLeft} attempts left]`
 							);
 
 							// If no more attempts left, acknowledge the message
 							if (!attemptsLeft) {
 								log.info('No more attempts left. Acknowledging the message.');
 								queue.acknowledge(msg);
-								throw new Error(`${errorType} :: ${errMsg}`);
 							}
 
 							break;
