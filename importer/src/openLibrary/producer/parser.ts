@@ -17,8 +17,9 @@
  */
 
 
-import {entityTypes, isNotDefined, sortName} from '../../helpers/utils.ts';
-import {identifiers, mapLanguage} from '../../helpers/mapping.js';
+import type {ParsedCreator, ParsedWork} from '../../parser.ts';
+import {isNotDefined, sortName} from '../../helpers/utils.ts';
+import {identifiers, mapLanguage} from '../../helpers/mapping.ts';
 import _ from 'lodash';
 import {franc} from 'franc-min';
 
@@ -28,22 +29,22 @@ const EDITION = 'edition';
 const AUTHOR = 'author';
 
 
-function detectLanguage(name) {
+function detectLanguage(name: string): number {
 	let lang = franc(name);
 	lang = lang !== 'und' ? lang : 'eng';
 
 	return mapLanguage(lang);
 }
 
-function processWork(json) {
+function processWork(json: any) {
 	if (isNotDefined(json)) {
 		return null;
 	}
 
 	// Base skeleton, remaining keys are added as and when they are extracted
-	const work = {
+	const work: ParsedWork = {
 		alias: [],
-		entityType: entityTypes.WORK,
+		entityType: 'Work',
 		identifiers: [],
 		metadata: {
 			links: [],
@@ -76,6 +77,7 @@ function processWork(json) {
 			default: defaultAlias,
 			languageId: lang,
 			name,
+			primary: false,
 			sortName: sortName(name)
 		});
 		defaultAlias = false;
@@ -154,9 +156,9 @@ function processAuthor(json) {
 	}
 
 	// Base skeleton, remaining keys are added as and when they are extracted
-	const creator = {
+	const creator: ParsedCreator = {
 		alias: [],
-		entityType: entityTypes.CREATOR,
+		entityType: 'Creator', // TODO: s/Creator/Author/
 		identifiers: [],
 		metadata: {
 			identifiers: [],
@@ -178,6 +180,7 @@ function processAuthor(json) {
 			default: defaultAlias,
 			languageId: lang,
 			name,
+			primary: false,
 			sortName: sortName(name)
 		});
 		defaultAlias = false;
@@ -190,6 +193,7 @@ function processAuthor(json) {
 			default: defaultAlias,
 			languageId: lang,
 			name,
+			primary: false,
 			sortName: sortName(name)
 		});
 		defaultAlias = false;
@@ -203,6 +207,7 @@ function processAuthor(json) {
 					default: defaultAlias,
 					languageId: lang,
 					name,
+					primary: false,
 					sortName: sortName(name)
 				});
 				defaultAlias = false;
@@ -216,6 +221,7 @@ function processAuthor(json) {
 			default: defaultAlias,
 			languageId: lang,
 			name,
+			primary: false,
 			sortName: sortName(name)
 		});
 	}

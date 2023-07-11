@@ -18,7 +18,7 @@
 
 
 import {Buffer} from 'node:buffer';
-import type {EntityT} from 'bookbrainz-data/lib/types/entity.d.ts';
+import {type ParsedEntity} from './parser.ts';
 import amqp from 'amqplib';
 import log from './helpers/logger.ts';
 
@@ -56,7 +56,7 @@ export class ImportQueue {
 	}
 
 	/** Appends the given entity to the import queue. */
-	push(entity): boolean {
+	push(entity: QueuedEntity): boolean {
 		let message: string;
 		try {
 			message = JSON.stringify(entity);
@@ -76,9 +76,9 @@ export class ImportQueue {
 	 * Registers a consumer function for queued entities which is called with already parsed messages.
 	 * Acknowledgement of messages happens automatically according to the returned success value of the consumer.
 	 */
-	onData(consumer: (entity: EntityT) => Promise<boolean>) {
+	onData(consumer: (entity: QueuedEntity) => Promise<boolean>) {
 		return this.channel.consume(this.queueName, async (message) => {
-			let entity: EntityT;
+			let entity: QueuedEntity;
 			try {
 				entity = JSON.parse(message.content.toString());
 			}
@@ -132,3 +132,13 @@ export interface ImportQueueOptions {
 	/** Name of the queue which stores parsed entities that have to be imported. */
 	queueName: string;
 }
+
+
+// TODO: drop redundant properties which are present in `data` and at the top level
+export type QueuedEntity = {
+	data: ParsedEntity;
+	entityType: ParsedEntity['entityType'];
+	lastEdited: ParsedEntity['lastEdited'];
+	originId: ParsedEntity['originId'];
+	source: ParsedEntity['source'];
+};

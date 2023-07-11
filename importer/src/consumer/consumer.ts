@@ -17,13 +17,12 @@
  */
 
 
+import type {ImportQueue, QueuedEntity} from '../queue.ts';
 import * as Errors from '../helpers/errors.ts';
 import BookBrainzData from 'bookbrainz-data';
-import type {EntityT} from 'bookbrainz-data/lib/types/entity.d.ts';
-import {type ImportQueue} from '../queue.ts';
 import _ from 'lodash';
 import config from '../helpers/config.js';
-import consumeRecord from './consumeRecord.js';
+import consumeRecord from './consumeRecord.ts';
 import log from '../helpers/logger.ts';
 
 
@@ -49,7 +48,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 			Errors.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
 
-		async function entityHandler(record: EntityT) {
+		async function entityHandler(record: QueuedEntity) {
 			log.info(`[CONSUMER::${id}] Received object. Running message handler`);
 
 			// Attempts left for this message

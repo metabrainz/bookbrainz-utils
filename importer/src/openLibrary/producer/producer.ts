@@ -20,7 +20,7 @@
 import {type ImportQueue} from '../../queue.ts';
 import fs from 'node:fs';
 import log from '../../helpers/logger.ts';
-import parser from './parser.js';
+import parser from './parser.ts';
 import readline from 'node:readline';
 
 

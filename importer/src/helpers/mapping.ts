@@ -211,7 +211,7 @@ export const mbLanguageMapping = {
 	Zulu: 470
 };
 
-export function mapLanguage(francCode) {
+export function mapLanguage(francCode: string): number {
 	const language = francMinMapping[francCode];
 	const code = mbLanguageMapping[language];
 	return code || mbLanguageMapping.English;
