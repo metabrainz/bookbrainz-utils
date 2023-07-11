@@ -18,6 +18,7 @@
 
 
 import {Buffer} from 'node:buffer';
+import type {EntityT} from 'bookbrainz-data/lib/types/entity.d.ts';
 import amqp from 'amqplib';
 import log from './helpers/logger.ts';
 
@@ -72,17 +73,30 @@ export class ImportQueue {
 	}
 
 	/**
-	 * Registers a consumer function for queued entities.
-	 * Messages have to be acknowledged by the consumer.
+	 * Registers a consumer function for queued entities which is called with already parsed messages.
+	 * Acknowledgement of messages happens automatically according to the returned success value of the consumer.
 	 */
-	addConsumer(onMessage: (message: amqp.ConsumeMessage | null) => void) {
-		// TODO: pre-process messages and pass already deserialized entities to the handler
-		this.channel.consume(this.queueName, onMessage, {noAck: false});
-	}
+	onData(consumer: (entity: EntityT) => Promise<boolean>) {
+		return this.channel.consume(this.queueName, async (message) => {
+			let entity: EntityT;
+			try {
+				entity = JSON.parse(message.content.toString());
+			}
+			catch (error) {
+				log.warn('Skipping invalid message:', error.message);
+				this.channel.nack(message);
+				return;
+			}
 
-	/** Acknowledges the successful import of the entity from the given message. */
-	acknowledge(message: amqp.Message) {
-		this.channel.ack(message);
+			const success = await consumer(entity);
+
+			if (success) {
+				this.channel.ack(message);
+			}
+			else {
+				this.channel.nack(message);
+			}
+		});
 	}
 
 	/** Drops all currently queued entities. */

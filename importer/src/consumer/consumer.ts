@@ -19,7 +19,7 @@
 
 import * as Errors from '../helpers/errors.ts';
 import BookBrainzData from 'bookbrainz-data';
-import {type ConsumeMessage} from 'amqplib';
+import type {EntityT} from 'bookbrainz-data/lib/types/entity.d.ts';
 import {type ImportQueue} from '../queue.ts';
 import _ from 'lodash';
 import config from '../helpers/config.js';
@@ -49,17 +49,8 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 			Errors.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
 
-		async function messageHandler(msg: ConsumeMessage) {
+		async function entityHandler(record: EntityT) {
 			log.info(`[CONSUMER::${id}] Received object. Running message handler`);
-
-			let record;
-			try {
-				record = JSON.parse(msg.content.toString());
-			}
-			catch (error) {
-				log.warn('Skipping invalid message:', error.message);
-				return queue.acknowledge(msg);
-			}
 
 			// Attempts left for this message
 			let attemptsLeft = retryLimit;
@@ -82,24 +73,18 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 
 					switch (errorType) {
 						case Errors.NONE:
-							// On success, we don't need to retry again
-							attemptsLeft = 0;
 							log.info(`[CONSUMER::${id}] Read message successfully:\n${record}`);
-							queue.acknowledge(msg);
-							break;
+							return true;
 
 						case Errors.INVALID_RECORD:
 						case Errors.RECORD_ENTITY_NOT_FOUND:
 							// In case of invalid records, we don't try again
 							attemptsLeft = 0;
 							log.warn(`[CONSUMER::${id}] ${errorType} :: ${errMsg} [skipping]`);
-							// As we're not retrying, we acknowledge the message
-							queue.acknowledge(msg);
-							break;
+							return false;
 
 						case Errors.TRANSACTION_ERROR:
-							// In case of transaction errors, we retry a number
-							// 		of times before giving up
+							// In case of transaction errors, we retry a number of times before giving up
 							attemptsLeft--;
 
 							// Issue a warning in case of transaction error
@@ -110,7 +95,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 							// If no more attempts left, acknowledge the message
 							if (!attemptsLeft) {
 								log.info('No more attempts left. Acknowledging the message.');
-								queue.acknowledge(msg);
+								return false;
 							}
 
 							break;
@@ -127,7 +112,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 		}
 
 		// Connection related errors would be handled on the queue side
-		queue.addConsumer(messageHandler);
+		queue.onData(entityHandler);
 		log.debug('Consumer registered, waiting for messages...');
 	});
 }
