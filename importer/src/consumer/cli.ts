@@ -8,11 +8,23 @@ import yargs from 'yargs';
 
 
 // eslint-disable-next-line node/no-sync -- name parseSync is a false positive
-const {connection, purge, test} = yargs(hideBin(process.argv))
+const {connection, purge, test, failureQueue, queue: queueName} = yargs(hideBin(process.argv))
 	.help()
 	.option('connection', {
 		alias: 'c',
 		describe: 'Connection URL to an AMQP server.',
+		type: 'string'
+	})
+	.option('queue', {
+		alias: 'q',
+		describe: 'Name of the queue which stores pending imports.',
+		requiresArg: true,
+		type: 'string'
+	})
+	.option('failure-queue', {
+		alias: 'f',
+		describe: 'Name of the queue which stores failed imports (discarded by default).',
+		requiresArg: true,
 		type: 'string'
 	})
 	.option('purge', {
@@ -33,11 +45,13 @@ const {connection, purge, test} = yargs(hideBin(process.argv))
 async function consumeQueuedEntities() {
 	const queueOptions: Partial<ImportQueueOptions> = {
 		connectionUrl: connection,
+		queueName: queueName,
+		failureQueue: failureQueue || false,
 		isPersistent: !test
 	};
 
-	if (test) {
-		// AMQP does not allow us to re-declare the same queue as (non-)persistent
+	if (test && !queueName) {
+		// AMQP does not allow us to re-declare the same default queue `bookbrainz-import` as non-persistent
 		queueOptions.queueName = 'bookbrainz-import-test';
 	}
 
