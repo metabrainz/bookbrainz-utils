@@ -29,12 +29,16 @@ export class ImportQueue {
 		connectionUrl = 'amqp://localhost',
 		isPersistent = true,
 		prefetchLimit = 5,
-		queueName = 'bookbrainz-import'
+		queueName = 'bookbrainz-import',
+		failureQueue = false
 	}: Partial<ImportQueueOptions> = {}) {
 		this.connectionUrl = connectionUrl;
 		this.isPersistent = isPersistent;
 		this.prefetchLimit = prefetchLimit;
 		this.queueName = queueName;
+		if (failureQueue) {
+			this.failureQueueName = failureQueue;
+		}
 	}
 
 	/**
@@ -45,6 +49,11 @@ export class ImportQueue {
 		this.connection = await amqp.connect(this.connectionUrl);
 		this.channel = await this.connection.createChannel();
 		await this.channel.prefetch(this.prefetchLimit);
+
+		if (this.failureQueueName) {
+			this.channel.assertQueue(this.failureQueueName, {durable: this.isPersistent});
+		}
+
 		return this.channel.assertQueue(this.queueName, {durable: this.isPersistent});
 	}
 
@@ -91,11 +100,13 @@ export class ImportQueue {
 
 			const success = await consumer(entity);
 
-			if (success) {
-				this.channel.ack(message);
-			}
-			else {
-				this.channel.nack(message);
+			// Acknowledge all consumed messages and put problematic messages into a separate queue (if configured).
+			// We do this to avoid a requeue/redelivery loop which occurs if the consumer never accepts the entity.
+			this.channel.ack(message);
+			if (!success && this.failureQueueName) {
+				this.channel.sendToQueue(this.failureQueueName, message.content, {
+					persistent: this.isPersistent
+				});
 			}
 		});
 	}
@@ -106,6 +117,8 @@ export class ImportQueue {
 	}
 
 	readonly queueName: string;
+
+	readonly failureQueueName?: string;
 
 	private connectionUrl: string;
 
@@ -132,6 +145,9 @@ export interface ImportQueueOptions {
 
 	/** Name of the queue which stores parsed entities that have to be imported. */
 	queueName: string;
+
+	/** Name of the queue which stores messages of failed imports. Set to `false` to discard these immediately. */
+	failureQueue: string | false;
 }
 
 
