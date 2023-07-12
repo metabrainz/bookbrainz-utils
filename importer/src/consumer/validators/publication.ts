@@ -87,3 +87,8 @@ export function validatePublication(
 	}
 	return success;
 }
+
+
+export type PublicationSection = {
+	type?: number;
+};

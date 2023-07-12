@@ -18,6 +18,7 @@
  */
 
 
+import type {ParsedAlias, ParsedIdentifier} from '../../parser.ts';
 import {
 	get, validateOptionalString, validatePositiveInteger, validateRequiredString
 } from './base.ts';
@@ -234,3 +235,35 @@ export function validateSubmissionSection(
 		validateSubmissionSectionNote(get(data, 'note', null))
 	);
 }
+
+
+export type NameSection = {
+	name: string;
+	sortName: string;
+	languageId: number;
+	default?: boolean;
+	primary: boolean;
+	disambiguation?: string;
+};
+
+export type AliasSection = Record<string, ParsedAlias>;
+
+export type IdentifierSection = Record<string, ParsedIdentifier>;
+
+/** Incomplete area type definition for validation functions. */
+export type AreaStub = {
+	id: number;
+	[x: string]: any;
+};
+
+/** Incomplete language type definition for validation functions. */
+export type LanguageStub = {
+	value: number;
+	[x: string]: any;
+};
+
+/** Incomplete entity type definition for validation functions. */
+export type EntityStub = {
+	id: string;
+	[x: string]: any;
+};

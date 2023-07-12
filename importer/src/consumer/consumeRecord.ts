@@ -20,7 +20,7 @@
 import _ from 'lodash';
 import {importErrors} from '../helpers/errors.ts';
 import log from '../helpers/logger.ts';
-import validate from './validators/index.js';
+import validate from './validators/index.ts';
 
 
 function getValidationData(record) {

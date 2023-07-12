@@ -18,13 +18,14 @@
  */
 
 
-import {get, validateDate, validatePositiveInteger, validateUUID} from './base.ts';
 import {
+	type EntityStub, type LanguageStub,
 	validateAliases, validateIdentifiers, validateNameSection
 } from './common.ts';
-import {isCollection} from 'immutable';
+import {get, validateDate, validatePositiveInteger, validateUUID} from './base.ts';
 import _ from 'lodash';
 import type {_IdentifierType} from './types.ts';
+import {isCollection} from 'immutable';
 import log from '../../helpers/logger.ts';
 
 
@@ -157,3 +158,18 @@ export function validateEdition(
 	}
 	return success;
 }
+
+
+export type EditionSection = {
+	depth?: number;
+	format?: number;
+	height?: number;
+	languages?: LanguageStub[];
+	pages?: number;
+	publication: EntityStub;
+	publisher?: EntityStub;
+	releaseDate?: string;
+	status?: number;
+	weight?: number;
+	width?: number;
+};

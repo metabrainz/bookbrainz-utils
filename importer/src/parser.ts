@@ -25,14 +25,20 @@ import type {IdentifierT} from 'bookbrainz-data/lib/types/identifiers.d.ts';
 // TODO: move into bookbrainz-data
 type Insertable<T> = Omit<T, 'id'>;
 
+export type ParsedAlias = Insertable<AliasT & {
+	default?: boolean;
+}>;
+
+export type ParsedIdentifier = Insertable<IdentifierT>;
+
 type ParsedBaseEntity = {
 	entityType: EntityTypeString;
-	alias: Insertable<AliasT & {default?: boolean}>[];
+	alias: ParsedAlias[];
 	annotation?: string;
 	disambiguation?: string;
-	identifiers: Insertable<IdentifierT>[];
+	identifiers: ParsedIdentifier[];
 	metadata: {
-		identifiers?: Insertable<IdentifierT>[];
+		identifiers?: ParsedIdentifier[];
 		links: Array<{
 			title: string;
 			url: string;

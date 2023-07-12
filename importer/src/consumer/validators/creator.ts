@@ -18,10 +18,11 @@
  */
 
 
-import {get, validateDate, validatePositiveInteger} from './base.ts';
 import {
+	type AreaStub,
 	validateAliases, validateIdentifiers, validateNameSection
 } from './common.ts';
+import {get, validateDate, validatePositiveInteger} from './base.ts';
 import _ from 'lodash';
 import type {_IdentifierType} from './types.ts';
 import log from '../../helpers/logger.ts';
@@ -127,3 +128,14 @@ export function validateCreator(
 	}
 	return success;
 }
+
+
+export type CreatorSection = Partial<{
+	beginArea: AreaStub;
+	beginDate: string;
+	endArea: AreaStub;
+	endDate: string;
+	ended: boolean;
+	gender: number;
+	type: number;
+}>;

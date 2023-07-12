@@ -18,10 +18,11 @@
  */
 
 
-import {get, validatePositiveInteger} from './base.ts';
 import {
+	type LanguageStub,
 	validateAliases, validateIdentifiers, validateNameSection
 } from './common.ts';
+import {get, validatePositiveInteger} from './base.ts';
 import _ from 'lodash';
 import type {_IdentifierType} from './types.ts';
 import log from '../../helpers/logger.ts';
@@ -95,3 +96,9 @@ export function validateWork(
 	}
 	return success;
 }
+
+
+export type WorkSection = Partial<{
+	language: LanguageStub;
+	type: number;
+}>;
