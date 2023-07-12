@@ -45,9 +45,9 @@ const {connection, purge, test, failureQueue, queue: queueName} = yargs(hideBin(
 async function consumeQueuedEntities() {
 	const queueOptions: Partial<ImportQueueOptions> = {
 		connectionUrl: connection,
-		queueName: queueName,
 		failureQueue: failureQueue || false,
-		isPersistent: !test
+		isPersistent: !test,
+		queueName
 	};
 
 	if (test && !queueName) {

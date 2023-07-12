@@ -18,8 +18,8 @@
  */
 
 
-import {isCollection} from 'immutable';
 import _ from 'lodash';
+import {isCollection} from 'immutable';
 import validator from 'validator';
 
 
@@ -74,7 +74,7 @@ export function validateRequiredString(value: any): boolean {
 }
 
 export function validatePositiveInteger(
-	value: any, required: boolean = false
+	value: any, required = false
 ): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;
@@ -94,7 +94,7 @@ export function validateBoolean(
 }
 
 export function validateDate(
-	value: any, required: boolean = false
+	value: any, required = false
 ): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;
@@ -108,7 +108,7 @@ export function validateDate(
 }
 
 export function validateUUID(
-	value: unknown, required: boolean = false
+	value: unknown, required = false
 ): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;

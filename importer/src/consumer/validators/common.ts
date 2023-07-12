@@ -22,8 +22,8 @@ import type {ParsedAlias, ParsedIdentifier} from '../../parser.ts';
 import {
 	get, validateOptionalString, validatePositiveInteger, validateRequiredString
 } from './base.ts';
-import {isCollection} from 'immutable';
 import _ from 'lodash';
+import {isCollection} from 'immutable';
 import log from '../../helpers/logger.ts';
 
 

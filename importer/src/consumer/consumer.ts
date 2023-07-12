@@ -17,8 +17,8 @@
  */
 
 
-import type {ImportQueue, QueuedEntity} from '../queue.ts';
 import * as Errors from '../helpers/errors.ts';
+import type {ImportQueue, QueuedEntity} from '../queue.ts';
 import BookBrainzData from 'bookbrainz-data';
 import _ from 'lodash';
 import config from '../helpers/config.js';
@@ -49,14 +49,13 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 		}
 
 		async function entityHandler(record: QueuedEntity) {
-			log.info(`[CONSUMER::${id}] Received object. Running message handler`);
+			log.info(`[CONSUMER::${id}] Received entity ${record.originId}, running handler...`);
 
 			// Attempts left for this message
 			let attemptsLeft = retryLimit;
 
 			// Manages consume record retries
 			while (attemptsLeft > 0) {
-
 				// Function repeated upon transaction error for retries times
 				// Manages async record consumption
 				try {
@@ -64,6 +63,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 						log.info('--- Restarting import process... ---');
 					}
 
+					// eslint-disable-next-line no-await-in-loop -- this is a retry loop
 					const {errorType, errMsg} = await consumeRecord({
 						importRecord,
 						workerId: id,
@@ -78,7 +78,6 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 						case Errors.INVALID_RECORD:
 						case Errors.RECORD_ENTITY_NOT_FOUND:
 							// In case of invalid records, we don't try again
-							attemptsLeft = 0;
 							log.warn(`[CONSUMER::${id}] ${errorType} :: ${errMsg} [skipping]`);
 							return false;
 
@@ -91,12 +90,6 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 								`[CONSUMER::${id}] ${errorType} :: ${errMsg} [retry, ${attemptsLeft} attempts left]`
 							);
 
-							// If no more attempts left, acknowledge the message
-							if (!attemptsLeft) {
-								log.info('No more attempts left. Acknowledging the message.');
-								return false;
-							}
-
 							break;
 
 						default: {
@@ -108,6 +101,9 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 					log.error(`${Errors.IMPORT_ERROR}\n ${JSON.stringify(record)}`);
 				}
 			}
+
+			log.info('No more attempts left, giving up');
+			return false;
 		}
 
 		// Connection related errors would be handled on the queue side
