@@ -84,7 +84,8 @@ export class ImportQueue {
 			}
 			catch (error) {
 				log.warn('Skipping invalid message:', error.message);
-				this.channel.nack(message);
+				// acknowledge invalid message, otherwise it will be requeued
+				this.channel.ack(message);
 				return;
 			}
 
