@@ -56,7 +56,7 @@ type ParsedBaseEntity = {
 	originId?: string;
 };
 
-export type ParsedCreator = ParsedBaseEntity & {
+export type ParsedAuthor = ParsedBaseEntity & {
 	beginDate?: string;
 	endDate?: string;
 	type?: 'Person';
@@ -65,5 +65,5 @@ export type ParsedCreator = ParsedBaseEntity & {
 export type ParsedWork = ParsedBaseEntity;
 
 export type ParsedEntity =
-	| ParsedCreator
+	| ParsedAuthor
 	| ParsedWork;

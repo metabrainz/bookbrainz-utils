@@ -28,7 +28,7 @@ import type {_IdentifierType} from './types.ts';
 import log from '../../helpers/logger.ts';
 
 
-export function validateCreatorSectionBeginArea(value: any): boolean {
+export function validateAuthorSectionBeginArea(value: any): boolean {
 	if (!value) {
 		return true;
 	}
@@ -36,11 +36,11 @@ export function validateCreatorSectionBeginArea(value: any): boolean {
 	return validatePositiveInteger(get(value, 'id', null), true);
 }
 
-export function validateCreatorSectionBeginDate(value: any): boolean {
+export function validateAuthorSectionBeginDate(value: any): boolean {
 	return validateDate(value);
 }
 
-export function validateCreatorSectionEndArea(value: any): boolean {
+export function validateAuthorSectionEndArea(value: any): boolean {
 	if (!value) {
 		return true;
 	}
@@ -48,77 +48,77 @@ export function validateCreatorSectionEndArea(value: any): boolean {
 	return validatePositiveInteger(get(value, 'id', null), true);
 }
 
-export function validateCreatorSectionEndDate(value: any): boolean {
+export function validateAuthorSectionEndDate(value: any): boolean {
 	return validateDate(value);
 }
 
-export function validateCreatorSectionEnded(value: any): boolean {
+export function validateAuthorSectionEnded(value: any): boolean {
 	return _.isNull(value) || _.isBoolean(value);
 }
 
-export function validateCreatorSectionType(value: any): boolean {
+export function validateAuthorSectionType(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateCreatorSectionGender(value: any): boolean {
+export function validateAuthorSectionGender(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateCreatorSection(data: any): boolean {
+export function validateAuthorSection(data: any): boolean {
 	return (
-		validateCreatorSectionBeginArea(get(data, 'beginArea', null)) &&
-		validateCreatorSectionBeginDate(get(data, 'beginDate', null)) &&
-		validateCreatorSectionEndArea(get(data, 'endArea', null)) &&
-		validateCreatorSectionEndDate(get(data, 'endDate', null)) &&
-		validateCreatorSectionEnded(get(data, 'ended', null)) &&
-		validateCreatorSectionType(get(data, 'gender', null)) &&
-		validateCreatorSectionType(get(data, 'type', null))
+		validateAuthorSectionBeginArea(get(data, 'beginArea', null)) &&
+		validateAuthorSectionBeginDate(get(data, 'beginDate', null)) &&
+		validateAuthorSectionEndArea(get(data, 'endArea', null)) &&
+		validateAuthorSectionEndDate(get(data, 'endDate', null)) &&
+		validateAuthorSectionEnded(get(data, 'ended', null)) &&
+		validateAuthorSectionType(get(data, 'gender', null)) &&
+		validateAuthorSectionType(get(data, 'type', null))
 	);
 }
 
-export function validateCreator(
+export function validateAuthor(
 	validationObject: any, identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...creatorValidationObject} = validationObject;
-	if (_.isEmpty(creatorValidationObject)) {
-		log.warn(`[CONSUMER::${workerId}] CREATOR Incoming validation object empty`);
+	const {workerId, ...authorValidationObject} = validationObject;
+	if (_.isEmpty(authorValidationObject)) {
+		log.warn(`[CONSUMER::${workerId}] AUTHOR Incoming validation object empty`);
 		return false;
 	}
 
 	// Cumulative error messages to be stored in err string
 	let err = '';
-	const aliasSection = get(creatorValidationObject, 'aliasSection', {});
+	const aliasSection = get(authorValidationObject, 'aliasSection', {});
 	const identifierSection = get(
-		creatorValidationObject, 'identifierSection', {}
+		authorValidationObject, 'identifierSection', {}
 	);
-	const nameSection = get(creatorValidationObject, 'nameSection', {});
-	const creatorSection = get(
-		creatorValidationObject,
-		'creatorSection',
+	const nameSection = get(authorValidationObject, 'nameSection', {});
+	const authorSection = get(
+		authorValidationObject,
+		'authorSection',
 		{}
 	);
 
-	log.info(`[CONSUMER::${workerId}] CREATOR - Calling validation functions.`);
+	log.info(`[CONSUMER::${workerId}] AUTHOR - Calling validation functions.`);
 
 	if (!validateAliases(aliasSection)) {
-		err += 'CREATOR - Validate alias section failed. \n';
+		err += 'AUTHOR - Validate alias section failed. \n';
 		success = false;
 	}
 
 	if (!validateIdentifiers(identifierSection, identifierTypes)) {
-		err += 'CREATOR - Validate identifier section failed. \n';
+		err += 'AUTHOR - Validate identifier section failed. \n';
 		success = false;
 	}
 
 	if (!validateNameSection(nameSection)) {
-		err += 'CREATOR - Validate name section failed. \n';
+		err += 'AUTHOR - Validate name section failed. \n';
 		success = false;
 	}
 
-	if (!validateCreatorSection(creatorSection)) {
-		err += 'CREATOR - Validate creator section failed. \n';
+	if (!validateAuthorSection(authorSection)) {
+		err += 'AUTHOR - Validate author section failed. \n';
 		success = false;
 	}
 
@@ -130,7 +130,7 @@ export function validateCreator(
 }
 
 
-export type CreatorSection = Partial<{
+export type AuthorSection = Partial<{
 	beginArea: AreaStub;
 	beginDate: string;
 	endArea: AreaStub;

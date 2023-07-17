@@ -18,11 +18,11 @@
  */
 
 
-export type _Creator = {
+export type _Author = {
 
 };
 
-export type _CreatorType = {
+export type _AuthorType = {
 
 };
 

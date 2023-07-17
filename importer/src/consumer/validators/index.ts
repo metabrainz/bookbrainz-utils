@@ -18,7 +18,7 @@
 
 
 import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
-import {type CreatorSection, validateCreator} from './creator.ts';
+import {type AuthorSection, validateAuthor} from './author.ts';
 import {type EditionSection, validateEdition} from './edition.ts';
 import type {ParsedAlias, ParsedEntity} from '../../parser.ts';
 import {type PublicationSection, validatePublication} from './publication.ts';
@@ -84,8 +84,8 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 
 		// Add entity specific validation data
 		switch (entityType) {
-			case 'Creator':
-				validationObject.creatorSection = {
+			case 'Author':
+				validationObject.authorSection = {
 					beginArea: validationData.beginArea,
 					beginDate: validationData.beginDate,
 					endArea: validationData.endArea,
@@ -139,7 +139,7 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 }
 
 const validate: Record<EntityTypeString, ReturnType<typeof validateEntity>> = {
-	Creator: validateEntity(validateCreator, 'Creator'),
+	Author: validateEntity(validateAuthor, 'Author'),
 	Edition: validateEntity(validateEdition, 'Edition'),
 	Publication: validateEntity(validatePublication, 'Publication'),
 	Publisher: validateEntity(validatePublisher, 'Publisher'),
@@ -157,7 +157,7 @@ type CommonValidationSections = {
 };
 
 type EntityValidationSections = CommonValidationSections & Partial<{
-	creatorSection: CreatorSection;
+	authorSection: AuthorSection;
 	editionSection: EditionSection;
 	publicationSection: PublicationSection;
 	publisherSection: PublisherSection;
