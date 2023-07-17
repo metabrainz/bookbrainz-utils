@@ -23,10 +23,10 @@ import _ from 'lodash';
 
 export const AUTHOR = 'Author';
 export const EDITION = 'Edition';
-export const PUBLICATION = 'Publication';
+export const EDITION_GROUP = 'EditionGroup';
 export const PUBLISHER = 'Publisher';
 export const WORK = 'Work';
-export const entityTypes = {AUTHOR, EDITION, PUBLICATION, PUBLISHER, WORK};
+export const entityTypes = {AUTHOR, EDITION, EDITION_GROUP, PUBLISHER, WORK};
 
 /**
  * mergeSets: Merge an array of sets into a single set.

@@ -21,7 +21,7 @@ import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
 import {type AuthorSection, validateAuthor} from './author.ts';
 import {type EditionSection, validateEdition} from './edition.ts';
 import type {ParsedAlias, ParsedEntity} from '../../parser.ts';
-import {type PublicationSection, validatePublication} from './publication.ts';
+import {type EditionGroupSection, validateEditionGroup} from './edition-group.ts';
 import {type PublisherSection, validatePublisher} from './publisher.ts';
 import {type WorkSection, validateWork} from './work.ts';
 import {type EntityTypeString} from 'bookbrainz-data/lib/types/entity.js';
@@ -102,7 +102,7 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 					height: validationData.height,
 					languages: validationData.languages,
 					pages: validationData.pages,
-					publication: validationData.publication,
+					editionGroup: validationData.editionGroup,
 					publisher: validationData.publisher,
 					releaseDate: validationData.releaseDate,
 					status: validationData.status,
@@ -110,8 +110,8 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 					width: validationData.width
 				};
 				break;
-			case 'Publication':
-				validationObject.publicationSection = {
+			case 'EditionGroup':
+				validationObject.editionGroupSection = {
 					type: validationData.type
 				};
 				break;
@@ -141,7 +141,7 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 const validate: Record<EntityTypeString, ReturnType<typeof validateEntity>> = {
 	Author: validateEntity(validateAuthor, 'Author'),
 	Edition: validateEntity(validateEdition, 'Edition'),
-	Publication: validateEntity(validatePublication, 'Publication'),
+	EditionGroup: validateEntity(validateEditionGroup, 'EditionGroup'),
 	Publisher: validateEntity(validatePublisher, 'Publisher'),
 	Work: validateEntity(validateWork, 'Work')
 };
@@ -159,7 +159,7 @@ type CommonValidationSections = {
 type EntityValidationSections = CommonValidationSections & Partial<{
 	authorSection: AuthorSection;
 	editionSection: EditionSection;
-	publicationSection: PublicationSection;
+	editionGroupSection: EditionGroupSection;
 	publisherSection: PublisherSection;
 	workSection: WorkSection;
 }>;

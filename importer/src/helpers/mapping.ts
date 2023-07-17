@@ -34,7 +34,7 @@ export const libraryThingAuthor = 15;
 export const IMDbTitleIdEdition = 16;
 export const musicBrainzLabelId = 17;
 export const wikidataIdAuthor = 18;
-export const wikidataIdPublication = 19;
+export const wikidataIdEditionGroup = 19;
 export const wikidataIdPublisher = 20;
 export const wikidataIdWork = 21;
 
@@ -56,7 +56,7 @@ export const identifiers = {
 	openLibraryWorkId,
 	wikidataIdAuthor,
 	wikidataIdEdition,
-	wikidataIdPublication,
+	wikidataIdEditionGroup,
 	wikidataIdPublisher,
 	wikidataIdWork
 };

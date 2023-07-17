@@ -27,57 +27,57 @@ import type {_IdentifierType} from './types.ts';
 import log from '../../helpers/logger.ts';
 
 
-export function validatePublicationSectionType(value: any): boolean {
+export function validateEditionGroupSectionType(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validatePublicationSection(data: any): boolean {
-	return validatePublicationSectionType(get(data, 'type', null));
+export function validateEditionGroupSection(data: any): boolean {
+	return validateEditionGroupSectionType(get(data, 'type', null));
 }
 
-export function validatePublication(
+export function validateEditionGroup(
 	validationObject: any, identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...publicationValidationObject} = validationObject;
-	if (_.isEmpty(publicationValidationObject)) {
-		log.warn(`[CONSUMER::${workerId}] PUBLICATION Incoming validation object empty`);
+	const {workerId, ...editionGroupValidationObject} = validationObject;
+	if (_.isEmpty(editionGroupValidationObject)) {
+		log.warn(`[CONSUMER::${workerId}] EDITION GROUP Incoming validation object empty`);
 		return false;
 	}
 
 	// Cumulative error messages to be stored in err string
 	let err = '';
-	const aliasSection = get(publicationValidationObject, 'aliasSection', {});
+	const aliasSection = get(editionGroupValidationObject, 'aliasSection', {});
 	const identifierSection = get(
-		publicationValidationObject, 'identifierSection', {}
+		editionGroupValidationObject, 'identifierSection', {}
 	);
-	const nameSection = get(publicationValidationObject, 'nameSection', {});
-	const publicationSection = get(
-		publicationValidationObject,
-		'publicationSection',
+	const nameSection = get(editionGroupValidationObject, 'nameSection', {});
+	const editionGroupSection = get(
+		editionGroupValidationObject,
+		'editionGroupSection',
 		{}
 	);
 
-	log.info(`[CONSUMER::${workerId}] PUBLICATION - Calling validation functions.`);
+	log.info(`[CONSUMER::${workerId}] EDITION GROUP - Calling validation functions.`);
 
 	if (!validateAliases(aliasSection)) {
-		err += 'PUBLICATION - Failed validate alias section. \n';
+		err += 'EDITION GROUP - Failed validate alias section. \n';
 		success = false;
 	}
 
 	if (!validateIdentifiers(identifierSection, identifierTypes)) {
-		err += 'PUBLICATION - Validate identifier section. \n';
+		err += 'EDITION GROUP - Validate identifier section. \n';
 		success = false;
 	}
 
 	if (!validateNameSection(nameSection)) {
-		err += 'PUBLICATION - Validate name section. \n';
+		err += 'EDITION GROUP - Validate name section. \n';
 		success = false;
 	}
 
-	if (!validatePublicationSection(publicationSection)) {
-		err += 'PUBLICATION - Validate publication section. \n';
+	if (!validateEditionGroupSection(editionGroupSection)) {
+		err += 'EDITION GROUP - Validate edition group section. \n';
 		success = false;
 	}
 
@@ -89,6 +89,6 @@ export function validatePublication(
 }
 
 
-export type PublicationSection = {
+export type EditionGroupSection = {
 	type?: number;
 };
