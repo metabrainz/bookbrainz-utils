@@ -35,6 +35,20 @@ Restart the container:
 docker start rabbit-mq
 ```
 
+## BookBrainz Import Queue (BBIQ) Management
+
+Each producer application of the BookBrainz importer project inserts parsed entities into an import queue.
+In order to actually insert queued entities into the BookBrainz database, you have to start a consumer service.
+
+The consumer service requires that both the RabbitMQ server with the import queue and the PostgreSQL server with the BB database are available.
+You also have to create a configuration file `config/config.json` ([template](config/config.json.sample)) which specifies the database connection before you can start.
+
+Run the BBIQ application with the `--help` flag to learn about the commands and options which the CLI accepts:
+
+```sh
+deno run -A src/bbiq.ts --help
+```
+
 ## OpenLibrary Producer
 
 Before you can start importing OpenLibrary dumps, you need a running RabbitMQ server.
