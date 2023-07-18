@@ -43,10 +43,16 @@ In order to actually insert queued entities into the BookBrainz database, you ha
 The consumer service requires that both the RabbitMQ server with the import queue and the PostgreSQL server with the BB database are available.
 You also have to create a configuration file `config/config.json` ([template](config/config.json.sample)) which specifies the database connection before you can start.
 
-Run the BBIQ application with the `--help` flag to learn about the commands and options which the CLI accepts:
+Run the [BBIQ application](src/bbiq.ts) with the `--help` flag to learn about the commands and options which the CLI accepts:
 
 ```sh
-deno run -A src/bbiq.ts --help
+deno task bbiq --help
+```
+
+Await and consume queued entities from the default queue:
+
+```sh
+deno task bbiq consume
 ```
 
 ## OpenLibrary Producer
@@ -56,9 +62,8 @@ Before you can start importing OpenLibrary dumps, you need a running RabbitMQ se
 As the producer script operates on plaintext files, you have to unzip the downloaded dump file first.
 For testing purposes you can also extract a short sample with e.g. `head dump.txt > sample.txt`.
 
-Run the producer script with the `--help` flag to learn about the options which the CLI accepts:
+Run the [producer script](src/openLibrary/import.ts) with the `--help` flag to learn about the options which the CLI accepts:
 
 ```sh
-cd src/openLibrary/
-deno run -A import.ts --help
+deno task ol --help
 ```

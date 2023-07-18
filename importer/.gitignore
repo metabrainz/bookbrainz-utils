@@ -65,3 +65,6 @@ typings/
 
 # Personal config files
 config.json
+
+# Deno dependency lock files
+deno.lock

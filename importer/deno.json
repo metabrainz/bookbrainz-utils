@@ -1,0 +1,8 @@
+{
+	"tasks": {
+		"bbiq": "deno run --allow-read --allow-env --allow-net src/bbiq.ts",
+		"consumer-test": "deno task bbiq consume -t",
+		"ol": "deno run --allow-read --allow-env --allow-net src/openLibrary/import.ts",
+		"ol-test": "deno task ol -t"
+	}
+}
