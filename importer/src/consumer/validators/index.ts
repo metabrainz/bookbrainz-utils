@@ -19,9 +19,9 @@
 
 import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
 import {type AuthorSection, validateAuthor} from './author.ts';
+import {type EditionGroupSection, validateEditionGroup} from './edition-group.ts';
 import {type EditionSection, validateEdition} from './edition.ts';
 import type {ParsedAlias, ParsedEntity} from '../../parser.ts';
-import {type EditionGroupSection, validateEditionGroup} from './edition-group.ts';
 import {type PublisherSection, validatePublisher} from './publisher.ts';
 import {type WorkSection, validateWork} from './work.ts';
 import {type EntityTypeString} from 'bookbrainz-data/lib/types/entity.js';
@@ -98,11 +98,11 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 			case 'Edition':
 				validationObject.editionSection = {
 					depth: validationData.depth,
+					editionGroup: validationData.editionGroup,
 					format: validationData.format,
 					height: validationData.height,
 					languages: validationData.languages,
 					pages: validationData.pages,
-					editionGroup: validationData.editionGroup,
 					publisher: validationData.publisher,
 					releaseDate: validationData.releaseDate,
 					status: validationData.status,

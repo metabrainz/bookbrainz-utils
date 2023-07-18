@@ -7,6 +7,48 @@ import process from 'node:process';
 import yargs from 'yargs';
 
 
+function createQueue({connection, test, failureQueue, queue}: BBIQArguments) {
+	const queueOptions: Partial<ImportQueueOptions> = {
+		connectionUrl: connection,
+		failureQueue: failureQueue || false,
+		isPersistent: !test,
+		queueName: queue
+	};
+
+	if (test && !queue) {
+		// AMQP does not allow us to re-declare the same default queue `bookbrainz-import` as non-persistent
+		queueOptions.queueName = 'bookbrainz-import-test';
+	}
+
+	return new ImportQueue(queueOptions);
+}
+
+async function useQueue(
+	queue: ImportQueue,
+	task: (queue: ImportQueue) => Promise<void>,
+	errorMessage = 'Failed to use queue'
+) {
+	let exitCode = 0;
+
+	try {
+		const queueInfo = await queue.open();
+		log.info('Import queue has been opened:', queueInfo);
+		await task(queue);
+	}
+	catch (error) {
+		log.error(`${errorMessage}:`, error);
+		exitCode = 1;
+	}
+	finally {
+		if (await queue.close()) {
+			log.debug('Import queue has been closed');
+		}
+	}
+
+	return exitCode;
+}
+
+
 const {argv} = yargs(hideBin(process.argv))
 	.scriptName('bbiq')
 	.usage('BookBrainz Import Queue management\nUsage: $0 <command>')
@@ -43,7 +85,7 @@ const {argv} = yargs(hideBin(process.argv))
 			await queue.close();
 			log.debug('Queue has been closed');
 		});
-		useQueue(queue, (queue) => consumerPromise({id: 0, queue}), 'Failed to consume queue').then(process.exit);
+		useQueue(queue, (q) => consumerPromise({id: 0, queue: q}), 'Failed to consume queue').then(process.exit);
 	})
 	.command('info', 'Show information about the import queue', {}, (args) => {
 		const queue = createQueue(args as BBIQArguments);
@@ -51,8 +93,8 @@ const {argv} = yargs(hideBin(process.argv))
 	})
 	.command('purge', 'Drop all entities from the import queue', {}, (args) => {
 		const queue = createQueue(args as BBIQArguments);
-		useQueue(queue, async (queue) => {
-			const result = await queue.purge();
+		useQueue(queue, async (q) => {
+			const result = await q.purge();
 			log.info('Purged messages:', result.messageCount);
 		}, 'Failed to purge queue').then(process.exit);
 	})
@@ -60,44 +102,3 @@ const {argv} = yargs(hideBin(process.argv))
 
 
 type BBIQArguments = Awaited<typeof argv>;
-
-function createQueue({connection, test, failureQueue, queue}: BBIQArguments) {
-	const queueOptions: Partial<ImportQueueOptions> = {
-		connectionUrl: connection,
-		failureQueue: failureQueue || false,
-		isPersistent: !test,
-		queueName: queue
-	};
-
-	if (test && !queue) {
-		// AMQP does not allow us to re-declare the same default queue `bookbrainz-import` as non-persistent
-		queueOptions.queueName = 'bookbrainz-import-test';
-	}
-
-	return new ImportQueue(queueOptions);
-}
-
-async function useQueue(
-	queue: ImportQueue,
-	task: (queue: ImportQueue) => Promise<void>,
-	errorMessage = 'Failed to use queue'
-) {
-	let exitCode = 0;
-
-	try {
-		const queueInfo = await queue.open();
-		log.info('Import queue has been opened:', queueInfo);
-		await task(queue);
-	}
-	catch (error) {
-		log.error(errorMessage + ':', error);
-		exitCode = 1;
-	}
-	finally {
-		if (await queue.close()) {
-			log.debug('Import queue has been closed');
-		}
-	}
-
-	return exitCode;
-}

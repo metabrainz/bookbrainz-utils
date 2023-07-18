@@ -17,8 +17,8 @@
  */
 
 import _ from 'lodash';
-import log from '../helpers/logger.ts';
 import {fileURLToPath} from 'node:url';
+import log from '../helpers/logger.ts';
 import {readFileSync} from 'node:fs';
 
 
@@ -44,7 +44,7 @@ export default function config(configKeys) {
 			const configContents =
 				JSON.parse(readFileSync(`${FILE}`));
 
-			log.info(`[CONFIG] Successfully read ${configKeys} configuration. Generating object from ${configKeys} file.`);
+			log.info(`[CONFIG] Successfully read '${configKeys}' configuration.`);
 
 			return _.get(configContents, configKeys);
 		}

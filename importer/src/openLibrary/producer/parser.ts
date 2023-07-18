@@ -18,8 +18,8 @@
 
 
 import type {ParsedAuthor, ParsedWork} from '../../parser.ts';
-import {isNotDefined, sortName} from '../../helpers/utils.ts';
 import {identifiers, mapLanguage} from '../../helpers/mapping.ts';
+import {isNotDefined, sortName} from '../../helpers/utils.ts';
 import _ from 'lodash';
 import {franc} from 'franc-min';
 

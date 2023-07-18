@@ -73,8 +73,7 @@ export class ImportQueue {
 			message = JSON.stringify(entity);
 		}
 		catch (error) {
-			// TODO: also log entity ID
-			log.error(`Failed to serialize entity: ${error}`);
+			log.error(`Failed to serialize entity ${entity.originId}: ${error}`);
 			return false;
 		}
 
