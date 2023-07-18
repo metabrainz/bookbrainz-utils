@@ -43,7 +43,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 	const {retryLimit} = config('import');
 
 	// A never resolving promise as consumer is supposed to run forever
-	return new Promise(() => {
+	return new Promise<never>(() => {
 		if (id !== 0 && !id) {
 			Errors.undefinedValue('Consumer instance:: Worker Id undefined');
 		}
