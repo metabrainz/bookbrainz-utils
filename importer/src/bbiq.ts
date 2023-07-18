@@ -94,8 +94,9 @@ async function useQueue(
 		exitCode = 1;
 	}
 	finally {
-		await queue.close();
-		log.debug('Import queue has been closed');
+		if (await queue.close()) {
+			log.debug('Import queue has been closed');
+		}
 	}
 
 	return exitCode;

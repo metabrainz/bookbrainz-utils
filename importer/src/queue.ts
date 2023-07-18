@@ -58,10 +58,12 @@ export class ImportQueue {
 	}
 
 	/** Closes the connection to the AMQP server. */
-	async close() {
+	async close(): Promise<boolean> {
 		// wait until the channel closes to guarantee that all sent messages went through
 		await this.channel?.close();
-		return this.connection?.close();
+		await this.connection?.close();
+
+		return Boolean(this.connection);
 	}
 
 	/** Appends the given entity to the import queue. */
