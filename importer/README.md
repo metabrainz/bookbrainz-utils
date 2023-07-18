@@ -35,6 +35,31 @@ Restart the container:
 docker start rabbit-mq
 ```
 
+### Create a Minimal Database for Import Tests
+
+If you don't want to use your full development database to test the unstable importer project, you can create a separate test database.
+
+The regular test database, which is used for unit tests, is not sufficient since important supplementary tables (such as `musicbrainz.language`) are empty.
+This would lead to foreign key constraint violations, so you have to create a database which contains minimal data.
+
+Assuming that you have appropriate dump files for a minimal database (plus empty import tables), copy them into the container and launch a shell for the container:
+
+```sh
+docker cp local/minimal_test_database.sql postgres:/minimal_test_database.sql
+docker cp local/minimal_test_database_import_patch.sql postgres:/minimal_test_database_import_patch.sql
+docker exec -it postgres bash
+```
+
+Inside the container you can create the database and execute the SQL files to seed it:
+
+```sh
+psql -c "CREATE DATABASE bookbrainz_min;" -U bookbrainz
+psql -f minimal_test_database.sql -d bookbrainz_min -U bookbrainz
+psql -f minimal_test_database_import_patch.sql -d bookbrainz_min -U bookbrainz
+```
+
+Do not forget to change the target database to `bookbrainz_min` in your `config/config.json` file.
+
 ## BookBrainz Import Queue (BBIQ) Management
 
 Each producer application of the BookBrainz importer project inserts parsed entities into an import queue.
