@@ -17,28 +17,24 @@
  */
 
 
+import {type QueuedEntity} from '../queue.ts';
 import _ from 'lodash';
 import {importErrors} from '../helpers/errors.ts';
+import {importRecord} from '../helpers/orm.ts';
 import log from '../helpers/logger.ts';
 import validate from './validators/index.ts';
 
 
-function getValidationData(record) {
+function getValidationData(record: QueuedEntity) {
 	if (_.isEmpty(record)) {
 		return null;
 	}
 
-	return {
-		workerId: record.workerId,
-		...record.data
-	};
+	return record.data;
 }
 
-export default async function consumeRecord({
-	entityType,
-	importRecord,
-	...record
-}) {
+export default async function consumeRecord(record: QueuedEntity) {
+	const {entityType} = record;
 	const validationData = getValidationData(record);
 	const validationFunction = validate[entityType];
 
