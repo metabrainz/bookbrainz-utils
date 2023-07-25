@@ -60,14 +60,22 @@ export class ImportQueue {
 
 	/** Closes the connection to the AMQP server. */
 	async close(): Promise<boolean> {
+		if (this.consumedMessages) {
+			log.info(`${this.processedMessages}/${this.consumedMessages} messages have been processed`);
+		}
+
 		if (this.pendingMessages) {
 			log.info(`${this.pendingMessages} pending messages still have to be acknowledged before closing...`);
-			// limit accumulated delay for hopeless cases
+			// limit accumulated delay for hopeless cases (no idea why these occur)
 			let gracePeriods = 10;
 			// eslint-disable-next-line no-await-in-loop -- polling loop
 			do {
 				await delay(200);
 			} while (this.pendingMessages && --gracePeriods);
+
+			if (this.pendingMessages) {
+				log.info(`Force-closing, ${this.pendingMessages} messages are still pending...`)
+			}
 		}
 
 		// wait until the channel closes to guarantee that all sent messages went through
@@ -100,6 +108,7 @@ export class ImportQueue {
 	onData(consumer: (entity: QueuedEntity) => Promise<boolean>) {
 		return this.channel.consume(this.queueName, async (message) => {
 			let entity: QueuedEntity;
+			this.consumedMessages++;
 			this.pendingMessages++;
 			try {
 				entity = JSON.parse(message.content.toString());
@@ -123,6 +132,7 @@ export class ImportQueue {
 				});
 			}
 			this.pendingMessages--;
+			this.processedMessages++;
 		});
 	}
 
@@ -145,7 +155,11 @@ export class ImportQueue {
 
 	private prefetchLimit: number;
 
+	private processedMessages = 0;
+
 	private pendingMessages = 0;
+
+	private consumedMessages = 0;
 }
 
 
