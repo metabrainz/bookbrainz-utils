@@ -36,13 +36,12 @@ export function validateEditionGroupSection(data: any): boolean {
 }
 
 export function validateEditionGroup(
-	validationObject: any, identifierTypes?: Array<_IdentifierType>
+	editionGroupValidationObject: any, identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...editionGroupValidationObject} = validationObject;
 	if (_.isEmpty(editionGroupValidationObject)) {
-		log.warn(`[CONSUMER::${workerId}] EDITION GROUP Incoming validation object empty`);
+		log.warn('[CONSUMER] EDITION GROUP Incoming validation object empty');
 		return false;
 	}
 
@@ -59,7 +58,7 @@ export function validateEditionGroup(
 		{}
 	);
 
-	log.info(`[CONSUMER::${workerId}] EDITION GROUP - Calling validation functions.`);
+	log.info('[CONSUMER] EDITION GROUP - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'EDITION GROUP - Failed validate alias section. \n';
@@ -82,8 +81,7 @@ export function validateEditionGroup(
 	}
 
 	if (!success) {
-		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
-			\r${JSON.stringify(validationObject, null, 4)}`);
+		log.error(`[CONSUMER]:: ${err} Record for reference: ${JSON.stringify(editionGroupValidationObject, null, 4)}`);
 	}
 	return success;
 }

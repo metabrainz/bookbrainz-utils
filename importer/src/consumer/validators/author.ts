@@ -77,13 +77,12 @@ export function validateAuthorSection(data: any): boolean {
 }
 
 export function validateAuthor(
-	validationObject: any, identifierTypes?: Array<_IdentifierType>
+	authorValidationObject: any, identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...authorValidationObject} = validationObject;
 	if (_.isEmpty(authorValidationObject)) {
-		log.warn(`[CONSUMER::${workerId}] AUTHOR Incoming validation object empty`);
+		log.warn('[CONSUMER] AUTHOR Incoming validation object empty');
 		return false;
 	}
 
@@ -100,7 +99,7 @@ export function validateAuthor(
 		{}
 	);
 
-	log.info(`[CONSUMER::${workerId}] AUTHOR - Calling validation functions.`);
+	log.info('[CONSUMER] AUTHOR - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'AUTHOR - Validate alias section failed. \n';
@@ -123,8 +122,7 @@ export function validateAuthor(
 	}
 
 	if (!success) {
-		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
-			\r${JSON.stringify(validationObject, null, 4)}`);
+		log.error(`[CONSUMER]:: ${err} Record for reference: ${JSON.stringify(authorValidationObject, null, 4)}`);
 	}
 	return success;
 }

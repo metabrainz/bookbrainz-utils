@@ -64,14 +64,13 @@ export function validatePublisherSection(data: any): boolean {
 }
 
 export function validatePublisher(
-	validationObject: any,
+	publisherValidationObject: any,
 	identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...publisherValidationObject} = validationObject;
 	if (_.isEmpty(publisherValidationObject)) {
-		log.warn(`[CONSUMER::${workerId}] PUBLISHER Incoming validation object empty`);
+		log.warn('[CONSUMER] PUBLISHER Incoming validation object empty');
 		return false;
 	}
 
@@ -88,7 +87,7 @@ export function validatePublisher(
 		{}
 	);
 
-	log.info(`[CONSUMER::${workerId}] PUBLISHER - Calling validation functions.`);
+	log.info('[CONSUMER] PUBLISHER - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'PUBLISHER - Failed validate alias section failed. \n';
@@ -111,8 +110,7 @@ export function validatePublisher(
 	}
 
 	if (!success) {
-		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
-			\r${JSON.stringify(validationObject, null, 4)}`);
+		log.error(`[CONSUMER]:: ${err} Record for reference: ${JSON.stringify(publisherValidationObject, null, 4)}`);
 	}
 	return success;
 }

@@ -48,14 +48,13 @@ export function validateWorkSection(data: any): boolean {
 }
 
 export function validateWork(
-	validationObject: any,
+	workValidationObject: any,
 	identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...workValidationObject} = validationObject;
 	if (_.isEmpty(workValidationObject)) {
-		log.warn(`[CONSUMER::${workerId}] WORK Incoming validation object empty`);
+		log.warn('[CONSUMER] WORK Incoming validation object empty');
 		return false;
 	}
 
@@ -68,7 +67,7 @@ export function validateWork(
 	const nameSection = get(workValidationObject, 'nameSection', {});
 	const workSection = get(workValidationObject, 'workSection', {});
 
-	log.info(`[CONSUMER::${workerId}] WORK - Calling validation functions.`);
+	log.info('[CONSUMER] WORK - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'WORK - Failed validate alias section failed. \n';
@@ -91,8 +90,7 @@ export function validateWork(
 	}
 
 	if (!success) {
-		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
-			\r${JSON.stringify(validationObject, null, 4)}`);
+		log.error(`[CONSUMER]:: ${err} Record for reference: ${JSON.stringify(workValidationObject, null, 4)}`);
 	}
 	return success;
 }
