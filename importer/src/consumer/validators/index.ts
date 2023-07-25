@@ -24,7 +24,7 @@ import {type EditionSection, validateEdition} from './edition.ts';
 import type {ParsedAlias, ParsedEntity} from '../../parser.ts';
 import {type PublisherSection, validatePublisher} from './publisher.ts';
 import {type WorkSection, validateWork} from './work.ts';
-import {type EntityTypeString} from 'bookbrainz-data/lib/types/entity.js';
+import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
 import _ from 'lodash';
 
 
