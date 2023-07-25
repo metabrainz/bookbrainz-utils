@@ -53,7 +53,7 @@ In order to store parsed entities that still have to be imported into the BookBr
 Create and run a Docker container with a RabbitMQ server and expose the relevant ports locally:
 
 ```sh
-docker run --hostname rabbit --name rabbit-mq -p 127.0.0.1:5672:5672 -p 127.0.0.1:15672:15672 rabbitmq:3
+docker run -d --hostname rabbit --name rabbit-mq -p 127.0.0.1:5672:5672 -p 127.0.0.1:15672:15672 rabbitmq:3-management
 ```
 
 Stop the container:
