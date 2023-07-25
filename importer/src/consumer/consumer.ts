@@ -21,7 +21,7 @@ import * as Errors from '../helpers/errors.ts';
 import type {ImportQueue, QueuedEntity} from '../queue.ts';
 import BookBrainzData from 'bookbrainz-data';
 import _ from 'lodash';
-import config from '../helpers/config.js';
+import config from '../helpers/config.ts';
 import consumeRecord from './consumeRecord.ts';
 import log from '../helpers/logger.ts';
 
@@ -38,9 +38,9 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 	log.info(`[WORKER::${id}] Running consumer number ${id}`);
 
 	// TODO: Why do we have to call `.default` here to make TS happy!?
-	const orm = BookBrainzData.default(config('database'));
+	const orm = BookBrainzData.default(config.database);
 	const importRecord = _.partial(orm.func.imports.createImport, orm);
-	const {retryLimit} = config('import');
+	const retryLimit = config.import?.retryLimit ?? 1;
 
 	// A never resolving promise as consumer is supposed to run forever
 	return new Promise<never>(() => {
