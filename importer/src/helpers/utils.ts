@@ -140,3 +140,7 @@ export function sortName(name: string): string {
 
 	return `${lastName}, ${words.join(' ')}`;
 }
+
+export function delay(ms: number) {
+	return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}

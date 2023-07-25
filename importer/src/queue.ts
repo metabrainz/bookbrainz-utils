@@ -20,6 +20,7 @@
 import {Buffer} from 'node:buffer';
 import {type ParsedEntity} from './parser.ts';
 import amqp from 'amqplib';
+import {delay} from './helpers/utils.ts';
 import log from './helpers/logger.ts';
 
 
@@ -59,6 +60,16 @@ export class ImportQueue {
 
 	/** Closes the connection to the AMQP server. */
 	async close(): Promise<boolean> {
+		if (this.pendingMessages) {
+			log.info(`${this.pendingMessages} pending messages still have to be acknowledged before closing...`);
+			// limit accumulated delay for hopeless cases
+			let gracePeriods = 10;
+			// eslint-disable-next-line no-await-in-loop -- polling loop
+			do {
+				await delay(200);
+			} while (this.pendingMessages && --gracePeriods);
+		}
+
 		// wait until the channel closes to guarantee that all sent messages went through
 		await this.channel?.close();
 		await this.connection?.close();
@@ -89,6 +100,7 @@ export class ImportQueue {
 	onData(consumer: (entity: QueuedEntity) => Promise<boolean>) {
 		return this.channel.consume(this.queueName, async (message) => {
 			let entity: QueuedEntity;
+			this.pendingMessages++;
 			try {
 				entity = JSON.parse(message.content.toString());
 			}
@@ -96,6 +108,7 @@ export class ImportQueue {
 				log.warn('Skipping invalid message:', error.message);
 				// acknowledge invalid message, otherwise it will be requeued
 				this.channel.ack(message);
+				this.pendingMessages--;
 				return;
 			}
 
@@ -109,6 +122,7 @@ export class ImportQueue {
 					persistent: this.isPersistent
 				});
 			}
+			this.pendingMessages--;
 		});
 	}
 
@@ -130,6 +144,8 @@ export class ImportQueue {
 	private isPersistent: boolean;
 
 	private prefetchLimit: number;
+
+	private pendingMessages = 0;
 }
 
 
