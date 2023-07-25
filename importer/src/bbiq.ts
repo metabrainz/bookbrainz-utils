@@ -18,6 +18,7 @@
 
 
 import {ImportQueue, type ImportQueueOptions} from './queue.ts';
+import config from './helpers/config.ts';
 import consumerPromise from './consumer/consumer.ts';
 // eslint-disable-next-line import/no-internal-modules
 import {hideBin} from 'yargs/helpers';
@@ -28,7 +29,7 @@ import yargs from 'yargs';
 
 function createQueue({connection, test, failureQueue, queue}: BBIQArguments) {
 	const queueOptions: Partial<ImportQueueOptions> = {
-		connectionUrl: connection,
+		connectionUrl: connection || config.queue?.connection,
 		failureQueue: failureQueue || false,
 		isPersistent: !test,
 		queueName: queue
@@ -76,7 +77,7 @@ const {argv} = yargs(hideBin(process.argv))
 	.wrap(100)
 	.option('connection', {
 		alias: 'c',
-		describe: 'Connection URL to an AMQP server',
+		describe: 'Connection URL to an AMQP server (overrides config file)',
 		type: 'string'
 	})
 	.option('queue', {

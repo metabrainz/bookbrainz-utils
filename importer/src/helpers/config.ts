@@ -36,6 +36,9 @@ export type Configuration = {
 	import: {
 		retryLimit: number;
 	};
+	queue: {
+		connection: string;
+	}
 };
 
 const configPath = fileURLToPath(new URL('../../config/config.json', import.meta.url));

@@ -10,5 +10,8 @@
 	},
 	"import": {
 		"retryLimit": 1
+	},
+	"queue": {
+		"connection": "amqp://localhost"
 	}
 }

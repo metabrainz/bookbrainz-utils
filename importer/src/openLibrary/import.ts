@@ -18,6 +18,7 @@
 
 
 import {ImportQueue, type ImportQueueOptions} from '../queue.ts';
+import config from '../helpers/config.ts';
 // eslint-disable-next-line import/no-internal-modules
 import {hideBin} from 'yargs/helpers';
 import log from '../helpers/logger.ts';
@@ -31,13 +32,13 @@ const {dump, test, connection} = yargs(hideBin(process.argv))
 	.help()
 	.option('connection', {
 		alias: 'c',
-		describe: 'Connection URL to an AMQP server.',
+		describe: 'Connection URL to an AMQP server (overrides config file)',
 		type: 'string'
 	})
 	.option('dump', {
 		alias: 'd',
 		demandOption: true,
-		describe: 'Path to an OpenLibrary dump file.',
+		describe: 'Path to an OpenLibrary dump file',
 		nargs: 1,
 		requiresArg: true,
 		type: 'string'
@@ -45,7 +46,7 @@ const {dump, test, connection} = yargs(hideBin(process.argv))
 	.option('test', {
 		alias: 't',
 		default: false,
-		describe: 'Perform a non-persistent test import.',
+		describe: 'Perform a non-persistent test import',
 		type: 'boolean'
 	})
 	.alias('help', 'h')
@@ -53,7 +54,7 @@ const {dump, test, connection} = yargs(hideBin(process.argv))
 
 async function importDump(dumpPath: string) {
 	const queueOptions: Partial<ImportQueueOptions> = {
-		connectionUrl: connection,
+		connectionUrl: connection || config.queue?.connection,
 		isPersistent: !test
 	};
 
