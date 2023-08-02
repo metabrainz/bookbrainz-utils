@@ -17,37 +17,27 @@
  */
 
 
-import * as Error from '../helpers/errors';
+import * as Error from '../helpers/errors.ts';
 import amqp from 'amqplib';
-import {isNotDefined} from '../helpers/utils';
-import log from '../helpers/logger';
+import {isNotDefined} from '../helpers/utils.ts';
+import log from '../helpers/logger.ts';
 
 
-/**
- * QUEUE_NAME - Queue name for importing data.
- * @type {string} QUEUE_NAME
- **/
-export const QUEUE_NAME = 'bookbrainz-import';
+/** Queue name for importing data. */
+export const QUEUE_NAME: string = 'bookbrainz-import';
 
-/**
- * Connection - Object containing functions to create and close RMQ connections.
- * @type {Object} Connection
- * @property {function} connect - Returns a connection object promise
- * @property {function} shutdown - Takes in a connection promise and closes the
- * 		connection
- **/
+// TODO: drop boilerplate
+/** Object containing functions to create and close RMQ connections. */
 export const Connection = {
 	connect: function connect() {
-		let connection = null;
 		try {
-			connection = amqp.connect('amqp://localhost');
+			return amqp.connect('amqp://localhost');
 		}
 		catch (err) {
 			Error.raiseError(Error.CONNECTION_ERROR)(err);
 		}
-		return connection;
 	},
-	shutdown: async function shutdown(connectionPromise) {
+	shutdown: async function shutdown(connectionPromise: Promise<amqp.Connection>) {
 		if (isNotDefined(connectionPromise)) {
 			Error.undefinedValue('Connection.shutdown:: connectionPromise');
 			return null;
@@ -65,25 +55,19 @@ export const Connection = {
 
 /** Class representing a RMQ Queue. */
 export class Queue {
-	/**
-     * Create a channel promise
-     * @param {Promise} connectionPromise - Connection promise
-     */
-	constructor(connectionPromise) {
-		if (isNotDefined(connectionPromise)) {
-			Error.undefinedValue('Queue.constructor:: connectionPromise');
-			return null;
-		}
-		this.channelPromise = connectionPromise
-			.then(conn => conn.createChannel())
+	channelPromise: Promise<amqp.Channel>;
+
+	/** Create a channel promise */
+	constructor(connection: amqp.Connection) {
+		this.channelPromise = connection.createChannel()
 			.catch(Error.raiseError(Error.CHANNEL_ERROR));
 	}
 
 	/**
-     * Push a message into the queue
-     * @param {string} msg - The string containing message to be pushed into RMQ
-     */
-	async push(msg) {
+	 * Push a message into the queue
+	 * @param msg - JSON-serializable object to be pushed into RMQ
+	 */
+	async push(msg: any) {
 		if (isNotDefined(msg)) {
 			log.error('Invalid message! Skipping.');
 			return;
@@ -91,7 +75,7 @@ export class Queue {
 
 		// Serializing the JSON Object
 		// In this architecture, it is assumed that data is passed as JSON
-		// 		objects are passed from the producers to consumers
+		// objects are passed from the producers to consumers
 		const serializedMessage = JSON.stringify(msg);
 
 		if (isNotDefined(this.channelPromise)) {
@@ -125,9 +109,7 @@ export class Queue {
 			try {
 				channel.sendToQueue(
 					QUEUE_NAME,
-					/* eslint-disable */
-					new Buffer.from(serializedMessage),
-					/* eslint-enable */
+					Buffer.from(serializedMessage),
 					{persistent: true}
 				);
 			}
@@ -141,13 +123,10 @@ export class Queue {
 	}
 
 	/**
-     * consume -
-     * @param {function} messageHandler - function to be called upon consuming
-	 * 		a message
-	 * @returns {Promise<?>} Returns a promise either error or channel consume
-	 * 		return object
-     */
-	async consume(messageHandler) {
+	 * @param messageHandler - function to be called upon consuming a message
+	 * @returns Returns a promise either error or channel consume return object
+	 */
+	async consume(messageHandler: (msg: amqp.ConsumeMessage) => void) {
 		if (isNotDefined(this.channelPromise)) {
 			Error.undefinedValue('Queue.consume:: undefined channel.');
 		}
@@ -187,12 +166,10 @@ export class Queue {
 	}
 
 	/**
-     * Acknowledge receiving of a message
-     * @param {Object} msg - The message object to be acknowledged
-	 * @returns {Promise<Object>} Returns acknowledgement status wrapped in a
-	 * 		promise
-     */
-	acknowledge(msg) {
+	 * Acknowledge receiving of a message
+	 * @param msg - The message object to be acknowledged
+	 */
+	acknowledge(msg: amqp.Message) {
 		log.debug('Acknowledging message', msg.content.toString());
 		return this.channelPromise.then(channel => channel.ack(msg));
 	}

@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"esModuleInterop": true,
+		// Ensure that Babel can safely transpile files in the TypeScript project
+		"isolatedModules": true,
+		"lib": ["ES2019"],
+		"module": "Node16",
+		"outDir": "./lib",
+		"strict": false,
+		"target": "ES2019"
+	},
+	"include": ["src"]
+}

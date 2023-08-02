@@ -17,40 +17,24 @@
  */
 
 
-import * as Error from '../../helpers/errors';
-import Promise from 'bluebird';
-import {Queue} from '../../queue';
-import fs from 'fs';
-import {isNotDefined} from '../../helpers/utils';
-import log from '../../helpers/logger';
-import parser from './parser';
-import readline from 'readline';
+import {type ImportQueue} from '../../queue.ts';
+import fs from 'node:fs';
+import log from '../../helpers/logger.ts';
+import parser from './parser.ts';
+import readline from 'node:readline';
 
 
 /**
  * readLine - Function which takes in instanceArgs and processes them.
  * @param {Object} obj - Primary argument
- * @param {Promise} obj.init - Connection promise
+ * @param {ImportQueue} obj.queue - Message queue connection
  * @param {number} obj.id - Numerical Id of the worker process running this
  * 		instance
  * @param {string} obj.base - This is path to the file to be processed
- * @param {function} callback - Function used send back the results. Used for
- * 		promsifying the result.
  **/
-function readLine({base, id, init}, callback) {
-	if (isNotDefined(base)) {
-		Error.undefinedValue('producerPromise:: File path (base args).');
-	}
-
-	if (id !== 0 && isNotDefined(id)) {
-		Error.undefinedValue('producerPromise:: Worker Id undefined.');
-	}
-
-	// Errors related to init value will be handled on the queue side
-	const queue = new Queue(init);
-
+function readLine({base, id, queue}: {id: number; base: string; queue: ImportQueue}) {
 	const fileName = base.split('/').pop();
-	log.info(`[WORKER::${id}] Running instance function on ${fileName}.`);
+	log.info(`[WORKER::${id}] Processing dump file '${fileName}'`);
 
 	const rl = readline.createInterface({
 		input: fs.createReadStream(base)
@@ -77,17 +61,23 @@ function readLine({base, id, init}, callback) {
 			const originId = record[1].split('/')[2];
 			const lastEdited = record[3];
 
-			log.log(`WORKER${id}:: Pushing record ${count}`);
-			queue.push({
+			const success = queue.push({
 				data,
 				entityType: data.entityType,
 				lastEdited: lastEdited || data.lastEdited,
 				originId: originId || data.originId,
 				source
 			});
+
+			if (success) {
+				log.debug(`[WORKER::${id}] Pushing record #${count} (${originId})`);
+			}
+			else {
+				log.error(`[WORKER::${id}] Failed to push record #${count} (${originId})`);
+			}
 		}
 		catch (err) {
-			log.warning(
+			log.warn(
 				`Error in ${fileName} in line number ${count}.`,
 				'Skipping. Record for reference: \n [[',
 				line, ']]'
@@ -95,20 +85,12 @@ function readLine({base, id, init}, callback) {
 		}
 	});
 
-	rl.on('close', () => {
-		callback(null, {
-			connection: init,
+	return new Promise((resolve) => {
+		rl.on('close', () => resolve({
 			id,
 			workerCount: count
-		});
+		}));
 	});
 }
 
-/**
- * explorePromise - Promisfied version of readLine
- * @type {function}
- * @returns {Promise}
- **/
-const producerPromise = Promise.promisify(readLine);
-
-export default producerPromise;
+export default readLine;

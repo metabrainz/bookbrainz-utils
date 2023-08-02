@@ -17,17 +17,19 @@
  */
 
 
+import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
+import {type AuthorSection, validateAuthor} from './author.ts';
+import {type EditionGroupSection, validateEditionGroup} from './edition-group.ts';
+import {type EditionSection, validateEdition} from './edition.ts';
+import type {ParsedAlias, ParsedEntity} from '../../parser.ts';
+import {type PublisherSection, validatePublisher} from './publisher.ts';
+import {type WorkSection, validateWork} from './work.ts';
+import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
 import _ from 'lodash';
-import {entityTypes} from '../../helpers/utils';
-import {validateCreator} from './creator';
-import {validateEdition} from './edition';
-import {validatePublication} from './publication';
-import {validatePublisher} from './publisher';
-import {validateWork} from './work';
 
 
-function getAliasSection(record) {
-	const aliasSection = {};
+function getAliasSection(record: ParsedEntity): AliasSection {
+	const aliasSection: AliasSection = {};
 	let index = 0;
 	if (record.alias) {
 		record.alias.forEach(element => {
@@ -40,22 +42,12 @@ function getAliasSection(record) {
 	return aliasSection;
 }
 
-function getDefaultAlias(aliasList) {
-	let primaryAlias = null;
-	if (aliasList && _.isArray(aliasList)) {
-		for (let i in aliasList) {
-			if (aliasList[i].default) {
-				primaryAlias = aliasList[i];
-				break;
-			}
-		}
-	}
-
-	return primaryAlias;
+function getDefaultAlias(aliasList: ParsedAlias[]): ParsedAlias {
+	return aliasList?.find((alias) => alias.default);
 }
 
-function getIdentifierSection(record) {
-	const identifierSection = {};
+function getIdentifierSection(record: ParsedEntity): IdentifierSection {
+	const identifierSection: IdentifierSection = {};
 	let index = 0;
 	if (record.identifiers) {
 		record.identifiers.forEach(element => {
@@ -66,7 +58,7 @@ function getIdentifierSection(record) {
 	return identifierSection;
 }
 
-function getNameSection(record) {
+function getNameSection(record: ParsedEntity): NameSection {
 	const defaultAlias = getDefaultAlias(record.alias);
 
 	const nameSection = {
@@ -77,13 +69,13 @@ function getNameSection(record) {
 	return nameSection;
 }
 
-function validateEntity(validationFunction, entityType) {
+function validateEntity(validationFunction, entityType: EntityTypeString) {
 	return function validate(validationData) {
 		if (_.isEmpty(validationData)) {
 			return false;
 		}
 		// Construct generic validation object from data set for validation
-		const validationObject = {
+		const validationObject: EntityValidationSections = {
 			aliasSection: getAliasSection(validationData),
 			identifierSection: getIdentifierSection(validationData),
 			nameSection: getNameSection(validationData),
@@ -92,8 +84,8 @@ function validateEntity(validationFunction, entityType) {
 
 		// Add entity specific validation data
 		switch (entityType) {
-			case entityTypes.CREATOR:
-				validationObject.creatorSection = {
+			case 'Author':
+				validationObject.authorSection = {
 					beginArea: validationData.beginArea,
 					beginDate: validationData.beginDate,
 					endArea: validationData.endArea,
@@ -103,14 +95,14 @@ function validateEntity(validationFunction, entityType) {
 					type: validationData.type
 				};
 				break;
-			case entityTypes.EDITION:
+			case 'Edition':
 				validationObject.editionSection = {
 					depth: validationData.depth,
+					editionGroup: validationData.editionGroup,
 					format: validationData.format,
 					height: validationData.height,
 					languages: validationData.languages,
 					pages: validationData.pages,
-					publication: validationData.publication,
 					publisher: validationData.publisher,
 					releaseDate: validationData.releaseDate,
 					status: validationData.status,
@@ -118,12 +110,12 @@ function validateEntity(validationFunction, entityType) {
 					width: validationData.width
 				};
 				break;
-			case entityTypes.PUBLICATION:
-				validationObject.publicationSection = {
+			case 'EditionGroup':
+				validationObject.editionGroupSection = {
 					type: validationData.type
 				};
 				break;
-			case entityTypes.PUBLISHER:
+			case 'Publisher':
 				validationObject.publisherSection = {
 					area: validationData.area,
 					beginDate: validationData.beginDate,
@@ -132,27 +124,42 @@ function validateEntity(validationFunction, entityType) {
 					type: validationData.type
 				};
 				break;
-			case entityTypes.WORK:
+			case 'Work':
 				validationObject.workSection = {
 					language: validationData.language,
 					type: validationData.type
 				};
 				break;
-			default: break;
+			default:
+				break;
 		}
 
 		return validationFunction(validationObject);
 	};
 }
 
-const validate = {
-	[entityTypes.CREATOR]: validateEntity(validateCreator, entityTypes.CREATOR),
-	[entityTypes.EDITION]: validateEntity(validateEdition, entityTypes.EDITION),
-	[entityTypes.PUBLICATION]:
-		validateEntity(validatePublication, entityTypes.PUBLICATION),
-	[entityTypes.PUBLISHER]:
-		validateEntity(validatePublisher, entityTypes.PUBLISHER),
-	[entityTypes.WORK]: validateEntity(validateWork, entityTypes.WORK)
+const validate: Record<EntityTypeString, ReturnType<typeof validateEntity>> = {
+	Author: validateEntity(validateAuthor, 'Author'),
+	Edition: validateEntity(validateEdition, 'Edition'),
+	EditionGroup: validateEntity(validateEditionGroup, 'EditionGroup'),
+	Publisher: validateEntity(validatePublisher, 'Publisher'),
+	Work: validateEntity(validateWork, 'Work')
 };
 
 export default validate;
+
+
+type CommonValidationSections = {
+	aliasSection: AliasSection;
+	identifierSection: IdentifierSection;
+	nameSection: NameSection;
+	workerId: number;
+};
+
+type EntityValidationSections = CommonValidationSections & Partial<{
+	authorSection: AuthorSection;
+	editionSection: EditionSection;
+	editionGroupSection: EditionGroupSection;
+	publisherSection: PublisherSection;
+	workSection: WorkSection;
+}>;

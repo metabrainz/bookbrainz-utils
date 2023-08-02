@@ -17,14 +17,14 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// @flow
 
+import type {ParsedAlias, ParsedIdentifier} from '../../parser.ts';
 import {
 	get, validateOptionalString, validatePositiveInteger, validateRequiredString
-} from './base';
-import {Iterable} from 'immutable';
+} from './base.ts';
 import _ from 'lodash';
-import log from '../../helpers/logger';
+import {isCollection} from 'immutable';
+import log from '../../helpers/logger.ts';
 
 
 export function validateMultiple(
@@ -34,7 +34,7 @@ export function validateMultiple(
 ): boolean {
 	// eslint-disable-next-line func-style
 	let every = (object, predicate) => _.every(object, predicate);
-	if (Iterable.isIterable(values)) {
+	if (isCollection(values)) {
 		every = (object, predicate) => object.every(predicate);
 	}
 	else if (!_.isObject(values)) {
@@ -93,8 +93,7 @@ export function validateAlias(value: any): boolean {
 	}
 
 	if (!success) {
-		log.warning(`Alias - Error \n${err}\
-		\r Alias for reference ${JSON.stringify(value, null, 4)}`);
+		log.warn(`Alias - Error \n${err} Alias for reference ${JSON.stringify(value, null, 4)}`);
 		throw new Error(err);
 	}
 
@@ -112,7 +111,7 @@ export type IdentifierType = {
 };
 
 export function validateIdentifierValue(
-	value: any, typeId: mixed, types?: ?Array<IdentifierType>
+	value: any, typeId: unknown, types?: Array<IdentifierType>
 ): boolean {
 	if (!validateRequiredString(value)) {
 		return false;
@@ -132,7 +131,7 @@ export function validateIdentifierValue(
 }
 
 export function validateIdentifierType(
-	typeId: any, types?: ?Array<IdentifierType>
+	typeId: any, types?: Array<IdentifierType>
 ): boolean {
 	if (!validatePositiveInteger(typeId, true)) {
 		return false;
@@ -148,7 +147,7 @@ export function validateIdentifierType(
 }
 
 export function validateIdentifier(
-	identifier: any, types?: ?Array<IdentifierType>
+	identifier: any, types?: Array<IdentifierType>
 ): boolean {
 	const value = get(identifier, 'value');
 	const type = get(identifier, 'typeId');
@@ -159,7 +158,8 @@ export function validateIdentifier(
 	);
 }
 
-export const validateIdentifiers = _.partial(
+type ValidateIdentifiersFunc = (identifiers: any[], types?: Array<IdentifierType> | null | undefined) => boolean;
+export const validateIdentifiers: ValidateIdentifiersFunc = _.partial(
 	validateMultiple, _.partial.placeholder,
 	validateIdentifier, _.partial.placeholder
 );
@@ -186,7 +186,7 @@ export function validateNameSection(
 	let success = true;
 
 	if (_.isEmpty(values)) {
-		log.warning('Incoming validation object name section is empty');
+		log.warn('Incoming validation object name section is empty');
 		return !success;
 	}
 
@@ -212,13 +212,12 @@ export function validateNameSection(
 	}
 
 	if (!validateNameSectionDisambiguation(disambiguation)) {
-		err += `Invalid name section disambiguation\
-		\r ${JSON.stringify(disambiguation, null, 4)} \n`;
+		err += `Invalid name section disambiguation ${JSON.stringify(disambiguation, null, 4)} \n`;
 		success = false;
 	}
 
 	if (!success) {
-		log.warning(`Invalid Name section - ${err}`);
+		log.warn(`Invalid Name section - ${err}`);
 		throw new Error(err);
 	}
 
@@ -236,3 +235,35 @@ export function validateSubmissionSection(
 		validateSubmissionSectionNote(get(data, 'note', null))
 	);
 }
+
+
+export type NameSection = {
+	name: string;
+	sortName: string;
+	languageId: number;
+	default?: boolean;
+	primary: boolean;
+	disambiguation?: string;
+};
+
+export type AliasSection = Record<string, ParsedAlias>;
+
+export type IdentifierSection = Record<string, ParsedIdentifier>;
+
+/** Incomplete area type definition for validation functions. */
+export type AreaStub = {
+	id: number;
+	[x: string]: any;
+};
+
+/** Incomplete language type definition for validation functions. */
+export type LanguageStub = {
+	value: number;
+	[x: string]: any;
+};
+
+/** Incomplete entity type definition for validation functions. */
+export type EntityStub = {
+	id: string;
+	[x: string]: any;
+};

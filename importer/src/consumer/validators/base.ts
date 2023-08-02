@@ -17,19 +17,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// @flow
 
-import {Iterable} from 'immutable';
 import _ from 'lodash';
+import {isCollection} from 'immutable';
 import validator from 'validator';
 
 
 export function get(
 	object: any,
 	path: string,
-	defaultValue: ?mixed = null
-): mixed {
-	if (Iterable.isIterable(object)) {
+	defaultValue: unknown | null | undefined = null
+): any {
+	if (isCollection(object)) {
 		return object.get(path, defaultValue);
 	}
 	return _.get(object, path, defaultValue);
@@ -38,19 +37,19 @@ export function get(
 export function getIn(
 	object: any,
 	path: string,
-	defaultValue: ?mixed = null
-): mixed {
-	if (Iterable.isIterable(object)) {
+	defaultValue: unknown | null | undefined = null
+): any {
+	if (isCollection(object)) {
 		return object.getIn(path, defaultValue);
 	}
 	return _.get(object, path, defaultValue);
 }
 
-export function isPositiveInt(value: ?string): boolean {
+export function isPositiveInt(value: string | null | undefined): boolean {
 	return validator.isInt(value, {gt: 0});
 }
 
-export function absentAndRequired(value: any, required: ?boolean): boolean {
+export function absentAndRequired(value: any, required: boolean | null | undefined): boolean {
 	return Boolean(required && _.isNil(value));
 }
 
@@ -75,7 +74,7 @@ export function validateRequiredString(value: any): boolean {
 }
 
 export function validatePositiveInteger(
-	value: any, required: boolean = false
+	value: any, required = false
 ): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;
@@ -89,13 +88,13 @@ export function validatePositiveInteger(
 }
 
 export function validateBoolean(
-	value: mixed
+	value: any
 ): boolean {
 	return _.isBoolean(value);
 }
 
 export function validateDate(
-	value: mixed, required: boolean = false
+	value: any, required = false
 ): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;
@@ -109,7 +108,7 @@ export function validateDate(
 }
 
 export function validateUUID(
-	value: mixed, required: boolean = false
+	value: unknown, required = false
 ): boolean {
 	if (absentAndRequired(value, required)) {
 		return false;

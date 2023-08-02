@@ -18,22 +18,21 @@
  */
 
 
-// @flow
-
-import {get, validatePositiveInteger} from './base';
 import {
+	type LanguageStub,
 	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
+} from './common.ts';
+import {get, validatePositiveInteger} from './base.ts';
 import _ from 'lodash';
-import type {_IdentifierType} from './types';
-import log from '../../helpers/logger';
+import type {_IdentifierType} from './types.ts';
+import log from '../../helpers/logger.ts';
 
 
-export function validateWorkSectionType(value: ?any): boolean {
+export function validateWorkSectionType(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateWorkSectionLanguage(value: ?any): boolean {
+export function validateWorkSectionLanguage(value: any): boolean {
 	if (!value) {
 		return true;
 	}
@@ -49,15 +48,13 @@ export function validateWorkSection(data: any): boolean {
 }
 
 export function validateWork(
-	validationObject: any,
-	identifierTypes?: ?Array<_IdentifierType>
+	workValidationObject: any,
+	identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...workValidationObject} = validationObject;
 	if (_.isEmpty(workValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] WORK Incoming validation object \
-			\rempty`);
+		log.warn('[CONSUMER] WORK Incoming validation object empty');
 		return false;
 	}
 
@@ -70,7 +67,7 @@ export function validateWork(
 	const nameSection = get(workValidationObject, 'nameSection', {});
 	const workSection = get(workValidationObject, 'workSection', {});
 
-	log.info(`[CONSUMER::${workerId}] WORK - Calling validation functions.`);
+	log.info('[CONSUMER] WORK - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'WORK - Failed validate alias section failed. \n';
@@ -93,8 +90,13 @@ export function validateWork(
 	}
 
 	if (!success) {
-		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
-			\r${JSON.stringify(validationObject, null, 4)}`);
+		log.error(`[CONSUMER]:: ${err} Record for reference: ${JSON.stringify(workValidationObject, null, 4)}`);
 	}
 	return success;
 }
+
+
+export type WorkSection = Partial<{
+	language: LanguageStub;
+	type: number;
+}>;

@@ -17,24 +17,16 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// @flow
 
 import _ from 'lodash';
 
-
-export const CREATOR = 'Creator';
-export const EDITION = 'Edition';
-export const PUBLICATION = 'Publication';
-export const PUBLISHER = 'Publisher';
-export const WORK = 'Work';
-export const entityTypes = {CREATOR, EDITION, PUBLICATION, PUBLISHER, WORK};
 
 /**
  * mergeSets: Merge an array of sets into a single set.
  * @param {Array<Set>} setArr - Array containing a number of sets.
  * @returns {Set} - Set containing all unique values from the array of sets.
  */
-export function mergeSets(setArr) {
+export function mergeSets<T>(setArr: Array<Set<T>>): Set<T> {
 	return new Set(function* generator() {
 		for (const set of setArr) {
 			yield* set;
@@ -48,7 +40,7 @@ export function mergeSets(setArr) {
  * @param {?} value - The variable to be checked for definition
  * @returns {boolean} - Boolean value if the variable is not defined or not.
  */
-export function isNotDefined(value) {
+export function isNotDefined(value: any): boolean {
 	if (typeof value === 'undefined' || !value) {
 		return true;
 	}
@@ -61,9 +53,9 @@ export function isNotDefined(value) {
  * @param {number} parts - Number of parts the given array has to be broken into
  * @returns {Array<Array<?>>} - A nested array containing broken down parts.
  */
-export function splitArray(array, parts) {
+export function splitArray<T>(array: Array<T>, parts: number): Array<Array<T>> {
 	if (isNotDefined(array)) {
-		return _.times(parts, []);
+		return _.times(parts, () => []);
 	}
 
 	if (array.length < parts) {
@@ -147,4 +139,8 @@ export function sortName(name: string): string {
 	}
 
 	return `${lastName}, ${words.join(' ')}`;
+}
+
+export function delay(ms: number) {
+	return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }

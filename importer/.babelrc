@@ -1,21 +1,14 @@
 {
-  "plugins": [
-    "lodash",
-    "transform-object-rest-spread",
-    "transform-es2015-modules-commonjs",
-    "transform-class-properties",
-    "array-includes"
-  ],
   "presets": [
+    "@babel/preset-typescript",
     [
-      "env", {
+      "@babel/env", {
+        "modules": false, // do not convert ESM to CommonJS (https://babeljs.io/docs/babel-preset-env#modules)
         "targets": {
           "node": "current"
         }
       }
-    ],
-    ["babel-preset-stage-2"],
-    ["flow"]
+    ]
   ]
 }
 

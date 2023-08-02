@@ -17,93 +17,92 @@
  */
 
 
-import log from '../helpers/logger';
+import log from './logger.ts';
 
 
 /**
  * CONNECTION_ERROR - Raised when unable to connect to the RMQ.
  * @type {string}
  **/
-export const CONNECTION_ERROR = 'Cannot connect to the broker';
+export const CONNECTION_ERROR: string = 'Cannot connect to the broker';
 
 /**
  * CONNECTION_CLOSE_ERROR - Raised when unable to close a connect setup at RMQ.
  * @type {string}
  **/
-export const CONNECTION_CLOSE_ERROR = 'Unable to close connection';
+export const CONNECTION_CLOSE_ERROR: string = 'Unable to close connection';
 
 /**
  * CHANNEL_ERROR - Raised when unable to create a channel using RMQ connection.
  * @type {string}
  **/
-export const CHANNEL_ERROR = 'Cannot create a channel';
+export const CHANNEL_ERROR: string = 'Cannot create a channel';
 
 /**
  * ASSERT_QUEUE_ERROR - Raised when unable to locate queue via the channel setup
  * @type {string}
  **/
-export const ASSERT_QUEUE_ERROR = 'Cannot find the queue';
+export const ASSERT_QUEUE_ERROR: string = 'Cannot find the queue';
 
 /**
  * QUEUE_ERROR - Raised when performing general operations on a queue.
  * @type {string}
  **/
-export const QUEUE_ERROR = 'Error in queue handling';
+export const QUEUE_ERROR: string = 'Error in queue handling';
 
 /**
  * QUEUE_PUSH_ERROR - Raised when performing push operation on a queue.
  * @type {string}
  **/
-export const QUEUE_PUSH_ERROR = 'Unable to push into the queue';
+export const QUEUE_PUSH_ERROR: string = 'Unable to push into the queue';
 
 /**
  * UNDEFINED_VALUE - Raised when a variable is found undefined, when expected to
  * 		be otherwise.
  * @type {string}
  **/
-export const UNDEFINED_VALUE = 'Undefined value found';
+export const UNDEFINED_VALUE: string = 'Undefined value found';
 
 /**
  * SIZE_MISMATCH - Raised when array.length and provided size do not match.
  * @type {string}
  **/
-export const SIZE_MISMATCH = 'Array sizes does not match';
+export const SIZE_MISMATCH: string = 'Array sizes does not match';
 
 /**
  * INVALID_RECORD - Raised when automatic validation tests failed;
  * @type {string}
  **/
-export const INVALID_RECORD = 'Record failed automated validation tests.';
+export const INVALID_RECORD: string = 'Record failed automated validation tests.';
 
 /**
  * RECORD_ENTITY_NOT_FOUND - The type field of imported record is invalid.
  * @type {string}
  **/
-export const RECORD_ENTITY_NOT_FOUND = 'Could not ascertain entity record';
+export const RECORD_ENTITY_NOT_FOUND: string = 'Could not ascertain entity record';
 
 /**
  * NONE - Signify that no error has occurred.
  * @type {string}
  **/
-export const NONE = 'No errors occurred';
+export const NONE: string = 'No errors occurred';
 
 /**
  * TRANSACTION_ERROR - Signify that error occurred during DB transaction.
  * @type {string}
  **/
-export const TRANSACTION_ERROR = 'Error occurred during DB transaction.';
+export const TRANSACTION_ERROR: string = 'Error occurred during DB transaction.';
 
 /**
  * IMPORT_ERROR - Signify that error occurred during the import process.
  * @type {string}
  **/
-export const IMPORT_ERROR = 'Error occurred during import process';
+export const IMPORT_ERROR: string = 'Error occurred during import process';
 
 /**
  * importErrors - Encapsulate all import errors {INVALID_RECORD,
  * RECORD_ENTITY_NOT_FOUND,
  * TRANSACTION_ERROR}.
- * @type {object}
  **/
 export const importErrors = {
 	INVALID_RECORD,
@@ -114,13 +113,13 @@ export const importErrors = {
 
 /**
  * raiseError: Error function called to catch an error of a specific type.
- * @param {string} msg - The error message utility message (usually location).
- * @returns {function} - Takes in error message received and prints msg and err.
+ * @param msg - The error message utility message (usually location).
+ * @returns Function that logs and throws the pre-configured message and the passed error.
  */
-export function raiseError(msg) {
-	return (err) => {
+export function raiseError(msg: string) {
+	return (err: any) => {
 		log.error(`[ERROR] ${msg} -- ${err}`);
-		throw new Error(`[ERROR] ${msg}: ${err}`);
+		throw new Error(`${msg}: ${err}`);
 	};
 }
 
@@ -128,8 +127,8 @@ export function raiseError(msg) {
  * undefinedValue: Error function called when a value is found undefined.
  * @param {string} err - The error message received.
  */
-export function undefinedValue(err) {
-	raiseError(UNDEFINED_VALUE)(err);
+export function undefinedValue(err: string) {
+	return raiseError(UNDEFINED_VALUE)(err);
 }
 
 /**
@@ -137,6 +136,6 @@ export function undefinedValue(err) {
  * 		array and provided length.
  * @param {string} err - The error message received.
  */
-export function sizeMismatch(err) {
-	raiseError(SIZE_MISMATCH)(err);
+export function sizeMismatch(err: string) {
+	return raiseError(SIZE_MISMATCH)(err);
 }

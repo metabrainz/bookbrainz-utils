@@ -17,11 +17,10 @@
  */
 
 
-import {Connection} from '../queue';
-import Promise from 'bluebird';
-import asyncCluster from '../asyncCluster';
-import consumerPromise from './consumer';
-import log from '../helpers/logger';
+import {Connection} from '../queue/index.js';
+import asyncCluster from '../asyncCluster/index.js';
+import consumerPromise from './consumer.js';
+import log from '../helpers/logger.js';
 
 
 /**

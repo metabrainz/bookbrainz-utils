@@ -17,12 +17,12 @@
  */
 
 
-import * as Error from '../helpers/errors';
-import {isNotDefined, splitArray} from '../helpers/utils';
+import * as Error from '../helpers/errors.js';
+import {isNotDefined, splitArray} from '../helpers/utils.ts';
 import _ from 'lodash';
-import log from '../helpers/logger';
-import os from 'os';
-import runCluster from './cluster';
+import log from '../helpers/logger.js';
+import os from 'node:os';
+import runCluster from './cluster.js';
 
 
 /**

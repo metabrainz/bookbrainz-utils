@@ -17,42 +17,42 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// @flow
 
-import {get, validateDate, validatePositiveInteger, validateUUID} from './base';
 import {
+	type EntityStub, type LanguageStub,
 	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
-import {Iterable} from 'immutable';
+} from './common.ts';
+import {get, validateDate, validatePositiveInteger, validateUUID} from './base.ts';
 import _ from 'lodash';
-import type {_IdentifierType} from './types';
-import log from '../../helpers/logger';
+import type {_IdentifierType} from './types.ts';
+import {isCollection} from 'immutable';
+import log from '../../helpers/logger.ts';
 
 
-export function validateEditionSectionDepth(value: ?any): boolean {
+export function validateEditionSectionDepth(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionFormat(value: ?any): boolean {
+export function validateEditionSectionFormat(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionHeight(value: ?any): boolean {
+export function validateEditionSectionHeight(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionLanguage(value: ?any): boolean {
+export function validateEditionSectionLanguage(value: any): boolean {
 	return validatePositiveInteger(get(value, 'value', null), true);
 }
 
-export function validateEditionSectionLanguages(values: ?any): boolean {
+export function validateEditionSectionLanguages(values: any): boolean {
 	if (!values) {
 		return true;
 	}
 
 	// eslint-disable-next-line func-style
 	let every = (object, predicate) => _.every(object, predicate);
-	if (Iterable.isIterable(values)) {
+	if (isCollection(values)) {
 		every = (object, predicate) => object.every(predicate);
 	}
 	else if (!_.isObject(values)) {
@@ -62,15 +62,15 @@ export function validateEditionSectionLanguages(values: ?any): boolean {
 	return every(values, (value) => validateEditionSectionLanguage(value));
 }
 
-export function validateEditionSectionPages(value: ?any): boolean {
+export function validateEditionSectionPages(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionPublication(value: ?any): boolean {
+export function validateEditionSectionEditionGroup(value: any): boolean {
 	return validateUUID(get(value, 'id', null), true);
 }
 
-export function validateEditionSectionPublisher(value: ?any): boolean {
+export function validateEditionSectionPublisher(value: any): boolean {
 	if (!value) {
 		return true;
 	}
@@ -78,19 +78,19 @@ export function validateEditionSectionPublisher(value: ?any): boolean {
 	return validateUUID(get(value, 'id', null), true);
 }
 
-export function validateEditionSectionReleaseDate(value: ?any): boolean {
+export function validateEditionSectionReleaseDate(value: any): boolean {
 	return validateDate(value);
 }
 
-export function validateEditionSectionStatus(value: ?any): boolean {
+export function validateEditionSectionStatus(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionWeight(value: ?any): boolean {
+export function validateEditionSectionWeight(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
-export function validateEditionSectionWidth(value: ?any): boolean {
+export function validateEditionSectionWidth(value: any): boolean {
 	return validatePositiveInteger(value);
 }
 
@@ -101,7 +101,7 @@ export function validateEditionSection(data: any): boolean {
 		validateEditionSectionHeight(get(data, 'height', null)) &&
 		validateEditionSectionLanguages(get(data, 'languages', null)) &&
 		validateEditionSectionPages(get(data, 'pages', null)) &&
-		validateEditionSectionPublication(get(data, 'publication', null)) &&
+		validateEditionSectionEditionGroup(get(data, 'editionGroup', null)) &&
 		validateEditionSectionPublisher(get(data, 'publisher', null)) &&
 		validateEditionSectionReleaseDate(get(data, 'releaseDate', null)) &&
 		validateEditionSectionStatus(get(data, 'status', null)) &&
@@ -111,14 +111,12 @@ export function validateEditionSection(data: any): boolean {
 }
 
 export function validateEdition(
-	validationObject: any, identifierTypes?: ?Array<_IdentifierType>
+	editionValidationObject: any, identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...editionValidationObject} = validationObject;
 	if (_.isEmpty(editionValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] Edition Incoming validation object\
-			\r empty`);
+		log.warn('[CONSUMER] Edition Incoming validation object empty');
 		return false;
 	}
 
@@ -131,7 +129,7 @@ export function validateEdition(
 	const nameSection = get(editionValidationObject, 'nameSection', {});
 	const editionSection = get(editionValidationObject, 'editionSection', {});
 
-	log.info(`[CONSUMER::${workerId}] EDITION - Calling validation functions.`);
+	log.info('[CONSUMER] EDITION - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'EDITION - Failed validate alias section failed. \n';
@@ -154,8 +152,22 @@ export function validateEdition(
 	}
 
 	if (!success) {
-		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
-			\r${JSON.stringify(validationObject, null, 4)}`);
+		log.error(`[CONSUMER]:: ${err} Record for reference: ${JSON.stringify(editionValidationObject, null, 4)}`);
 	}
 	return success;
 }
+
+
+export type EditionSection = {
+	depth?: number;
+	format?: number;
+	height?: number;
+	languages?: LanguageStub[];
+	pages?: number;
+	editionGroup: EntityStub;
+	publisher?: EntityStub;
+	releaseDate?: string;
+	status?: number;
+	weight?: number;
+	width?: number;
+};

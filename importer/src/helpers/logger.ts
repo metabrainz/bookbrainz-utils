@@ -17,24 +17,11 @@
  */
 
 
-import util from 'util';
-import winston from 'winston';
+import {createLogger, format, transports} from 'winston';
 
 
-/** @module config */
-
-/**
- * @type {Object} options
- * Logger configuration options
- **/
-const options = {
-	console: {
-		colorize: true,
-		handleExceptions: true,
-		json: false,
-		level: 'debug',
-		timestamp: true
-	},
+const log = createLogger({
+	exitOnError: false,
 	levels: {
 		alert: 1,
 		crit: 2,
@@ -44,26 +31,22 @@ const options = {
 		info: 6,
 		notice: 5,
 		read: 8,
-		warning: 4
-	}
-};
-
-/**
- * @type {Object} log
- * Winston logger Object:
- * 		Transport added: console
- * 		Pretty printed using utils.inspect
- * 		Doesn't exit on error
- */
-const log = new winston.Logger({
-	exitOnError: false,
-	levels: options.levels,
-	prettyPrint: function prettyPrint(object) {
-		return util.inspect(object);
+		warn: 4
 	},
 	transports: [
-		new winston.transports.Console(options.console)
+		// new transports.Console({
+		// 	// format: format.combine(
+		// 	// 	format.colorize(),
+		// 	// 	format.timestamp(),
+		// 	// 	format.printf((info) => `${info.timestamp} - ${info.level}: ${info.message}`)
+		// 	// ),
+		// 	// handleExceptions: true,
+		// 	// level: 'debug'
+		// })
 	]
 });
 
-export default log;
+// Use standard console as drop-in replacement for winston for now.
+// TODO: Use a proper logging library again once it is clear why the transports setup code above caused amqplib to hang.
+// export default log;
+export default console;

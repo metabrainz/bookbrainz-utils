@@ -27,23 +27,23 @@ export const openLibraryWorkId = 8;
 export const ISBN13Edition = 9;
 export const ISBN10Edition = 10;
 export const barcodeEdition = 11;
-export const VIAFCreator = 12;
-export const INSICreator = 13;
+export const VIAFAuthor = 12;
+export const INSIAuthor = 13;
 export const libraryThingWork = 14;
 export const libraryThingAuthor = 15;
 export const IMDbTitleIdEdition = 16;
 export const musicBrainzLabelId = 17;
-export const wikidataIdCreator = 18;
-export const wikidataIdPublication = 19;
+export const wikidataIdAuthor = 18;
+export const wikidataIdEditionGroup = 19;
 export const wikidataIdPublisher = 20;
 export const wikidataIdWork = 21;
 
 export const identifiers = {
 	IMDbTitleIdEdition,
-	INSICreator,
+	INSIAuthor,
 	ISBN10Edition,
 	ISBN13Edition,
-	VIAFCreator,
+	VIAFAuthor,
 	amazonASINEdition,
 	barcodeEdition,
 	libraryThingAuthor,
@@ -54,9 +54,9 @@ export const identifiers = {
 	musicBrainzWorkId,
 	openLibraryBookIdEdition,
 	openLibraryWorkId,
-	wikidataIdCreator,
+	wikidataIdAuthor,
 	wikidataIdEdition,
-	wikidataIdPublication,
+	wikidataIdEditionGroup,
 	wikidataIdPublisher,
 	wikidataIdWork
 };
@@ -211,7 +211,7 @@ export const mbLanguageMapping = {
 	Zulu: 470
 };
 
-export function mapLanguage(francCode) {
+export function mapLanguage(francCode: string): number {
 	const language = francMinMapping[francCode];
 	const code = mbLanguageMapping[language];
 	return code || mbLanguageMapping.English;

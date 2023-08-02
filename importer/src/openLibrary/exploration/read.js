@@ -17,10 +17,9 @@
  */
 
 
-import Promise from 'bluebird';
-import fs from 'fs';
-import log from '../../helpers/logger';
-import readline from 'readline';
+import fs from 'node:fs';
+import log from '../../helpers/logger.js';
+import readline from 'node:readline';
 
 
 /**
@@ -29,10 +28,8 @@ import readline from 'readline';
  * @param {number} obj.id - Numerical Id of the worker process running this
  * 		instance
  * @param {string} obj.base - This is path to the file to be processed
- * @param {function} callback - Function used send back the results. Used for
- * 		promsifying the result.
  **/
-function readLine({base, id}, callback) {
+function readLine({base, id}) {
 	const fileName = base.split('/').pop();
 	log.info(`[WORKER::${id}] Running instance function on ${fileName}.`);
 
@@ -57,7 +54,7 @@ function readLine({base, id}, callback) {
 			Object.keys(json).forEach(key => set.add(key));
 		}
 		catch (err) {
-			log.warning(
+			log.warn(
 				`[WORKER::${id}] Error in ${fileName} in line number ${count}.`,
 				'Skipping. Record for reference: \n [[',
 				line, ']]'
@@ -65,14 +62,9 @@ function readLine({base, id}, callback) {
 		}
 	});
 
-	rl.on('close', () => {
-		callback(null, {workerCount: count, workerSet: set});
+	return new Promise((resolve) => {
+		rl.on('close', () => resolve({workerCount: count, workerSet: set}));
 	});
 }
 
-/**
- * explorePromise - Promisfied version of readLine
- **/
-const explorePromise = Promise.promisify(readLine);
-
-export default explorePromise;
+export default readLine;

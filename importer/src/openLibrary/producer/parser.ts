@@ -17,10 +17,11 @@
  */
 
 
-import {entityTypes, isNotDefined, sortName} from '../../helpers/utils';
-import {identifiers, mapLanguage} from '../../helpers/mapping';
+import type {ParsedAuthor, ParsedWork} from '../../parser.ts';
+import {identifiers, mapLanguage} from '../../helpers/mapping.ts';
+import {isNotDefined, sortName} from '../../helpers/utils.ts';
 import _ from 'lodash';
-import franc from 'franc-min';
+import {franc} from 'franc-min';
 
 
 const WORK = 'work';
@@ -28,22 +29,22 @@ const EDITION = 'edition';
 const AUTHOR = 'author';
 
 
-function detectLanguage(name) {
+function detectLanguage(name: string): number {
 	let lang = franc(name);
 	lang = lang !== 'und' ? lang : 'eng';
 
 	return mapLanguage(lang);
 }
 
-function processWork(json) {
+function processWork(json: any) {
 	if (isNotDefined(json)) {
 		return null;
 	}
 
 	// Base skeleton, remaining keys are added as and when they are extracted
-	const work = {
+	const work: ParsedWork = {
 		alias: [],
-		entityType: entityTypes.WORK,
+		entityType: 'Work',
 		identifiers: [],
 		metadata: {
 			links: [],
@@ -76,6 +77,7 @@ function processWork(json) {
 			default: defaultAlias,
 			languageId: lang,
 			name,
+			primary: false,
 			sortName: sortName(name)
 		});
 		defaultAlias = false;
@@ -154,9 +156,9 @@ function processAuthor(json) {
 	}
 
 	// Base skeleton, remaining keys are added as and when they are extracted
-	const creator = {
+	const author: ParsedAuthor = {
 		alias: [],
-		entityType: entityTypes.CREATOR,
+		entityType: 'Author',
 		identifiers: [],
 		metadata: {
 			identifiers: [],
@@ -174,10 +176,11 @@ function processAuthor(json) {
 		const {name} = json;
 		const lang = detectLanguage(name);
 
-		creator.alias.push({
+		author.alias.push({
 			default: defaultAlias,
 			languageId: lang,
 			name,
+			primary: false,
 			sortName: sortName(name)
 		});
 		defaultAlias = false;
@@ -186,10 +189,11 @@ function processAuthor(json) {
 		const name = json.personal_name;
 		const lang = detectLanguage(name);
 
-		creator.alias.push({
+		author.alias.push({
 			default: defaultAlias,
 			languageId: lang,
 			name,
+			primary: false,
 			sortName: sortName(name)
 		});
 		defaultAlias = false;
@@ -199,10 +203,11 @@ function processAuthor(json) {
 		json.alternate_names.forEach(name => {
 			if (!isNotDefined(name)) {
 				const lang = detectLanguage(name);
-				creator.alias.push({
+				author.alias.push({
 					default: defaultAlias,
 					languageId: lang,
 					name,
+					primary: false,
 					sortName: sortName(name)
 				});
 				defaultAlias = false;
@@ -212,10 +217,11 @@ function processAuthor(json) {
 	if (!isNotDefined(json.fuller_name)) {
 		const name = json.title;
 		const lang = detectLanguage(name);
-		creator.alias.push({
+		author.alias.push({
 			default: defaultAlias,
 			languageId: lang,
 			name,
+			primary: false,
 			sortName: sortName(name)
 		});
 	}
@@ -223,38 +229,38 @@ function processAuthor(json) {
 
 	// Last modified at the source
 	if (!isNotDefined(_.get(json, 'last_modified.value'))) {
-		creator.lastEdited = json.last_modified.value;
+		author.lastEdited = json.last_modified.value;
 	}
 
 
 	// OriginId for the open library source
 	if (!isNotDefined(json.key)) {
-		const openLibraryCreatorId = json.key.split('/')[2];
+		const openLibraryAuthorId = json.key.split('/')[2];
 
-		// No identifier for OL creator exists, so only setting up origin Id
-		creator.originId = openLibraryCreatorId;
+		// No identifier for OL author exists, so only setting up origin Id
+		author.originId = openLibraryAuthorId;
 
-		creator.metadata.identifiers.push({
-			typeId: identifiers.openLibraryCreatorId,
-			value: openLibraryCreatorId
+		author.metadata.identifiers.push({
+			typeId: identifiers.openLibraryAuthorId,
+			value: openLibraryAuthorId
 		});
 	}
 
 
-	// Creator begin and end dates
+	// Author begin and end dates
 	if (!isNotDefined(json.birth_date)) {
-		creator.beginDate = json.birth_date;
-		creator.type = 'Person';
+		author.beginDate = json.birth_date;
+		author.type = 'Person';
 	}
 	if (!isNotDefined(json.death_date)) {
-		creator.endDate = json.death_date;
-		creator.type = 'Person';
+		author.endDate = json.death_date;
+		author.type = 'Person';
 	}
 
 
 	// Bio is used for diambiguation, tags can be used too?
 	if (!isNotDefined(_.get(json, 'bio.value'))) {
-		creator.disambiguation = json.bio.value;
+		author.disambiguation = json.bio.value;
 	}
 
 
@@ -262,7 +268,7 @@ function processAuthor(json) {
 	if (!isNotDefined(json.links) && (json.links instanceof Array)) {
 		json.links.forEach(link => {
 			if (!isNotDefined(link.title && link.url)) {
-				creator.metadata.links.push({
+				author.metadata.links.push({
 					title: link.title,
 					url: link.url
 				});
@@ -272,7 +278,7 @@ function processAuthor(json) {
 	const linkKeys = ['wikipedia', 'website', 'website_name'];
 	linkKeys.forEach(linkKey => {
 		if (!isNotDefined(json[linkKey])) {
-			creator.metadata.links.push({
+			author.metadata.links.push({
 				title: linkKey,
 				url: json[linkKey]
 			});
@@ -284,7 +290,7 @@ function processAuthor(json) {
 	if (!isNotDefined(json.source_records) &&
 			(json.source_records instanceof Array)) {
 		json.source_records.forEach(record => {
-			creator.metadata.originId.push(record);
+			author.metadata.originId.push(record);
 		});
 	}
 
@@ -293,7 +299,7 @@ function processAuthor(json) {
 	if (!isNotDefined(json.works) && (json.works instanceof Array)) {
 		json.works.forEach(work => {
 			if (!isNotDefined(work.key)) {
-				creator.metadata.relationships.push({
+				author.metadata.relationships.push({
 					type: 'hasAuthored',
 					value: work.key
 				});
@@ -303,7 +309,7 @@ function processAuthor(json) {
 
 
 	/* eslint-disable */
-	// Supported Identifiers for creators:
+	// Supported Identifiers for authors:
 	// 		MusicBrainz Artist ID
 	// 		VIAF
 	// 		ISNI
@@ -311,14 +317,14 @@ function processAuthor(json) {
 	// 		Wikidata ID
 	const identifierKeyMapping = {
 		'id_librarything': identifiers.libraryThingAuthor,
-		'id_wikidata': identifiers.wikidataIdCreator,
-		'id_viaf': identifiers.VIAFCreator
+		'id_wikidata': identifiers.wikidataIdAuthor,
+		'id_viaf': identifiers.VIAFAuthor
 	};
 	/* eslint-enable */
 
 	Object.keys(identifierKeyMapping).forEach(key => {
 		if (!isNotDefined(json[key])) {
-			creator.identifiers.push({
+			author.identifiers.push({
 				typeId: identifierKeyMapping[key],
 				value: json[key]
 			});
@@ -338,7 +344,7 @@ function processAuthor(json) {
 		'remote_ids',
 		'title',
 		'location',
-		// This fields gives random details about the creator
+		// This fields gives random details about the author
 		'entity_type',
 		'role',
 		'numeration',
@@ -384,11 +390,11 @@ function processAuthor(json) {
 
 	metadataFields.forEach(field => {
 		if (!isNotDefined(json[field])) {
-			creator.metadata[field] = json[field];
+			author.metadata[field] = json[field];
 		}
 	});
 
-	return creator;
+	return author;
 }
 
 function processEdition(json) {

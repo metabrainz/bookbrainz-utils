@@ -18,15 +18,14 @@
  */
 
 
-// @flow
-
-import {get, validateDate, validatePositiveInteger} from './base';
 import {
+	type AreaStub,
 	validateAliases, validateIdentifiers, validateNameSection
-} from './common';
+} from './common.ts';
+import {get, validateDate, validatePositiveInteger} from './base.ts';
 import _ from 'lodash';
-import type {_IdentifierType} from './types';
-import log from '../../helpers/logger';
+import type {_IdentifierType} from './types.ts';
+import log from '../../helpers/logger.ts';
 
 
 export function validatePublisherSectionArea(value: any): boolean {
@@ -65,15 +64,13 @@ export function validatePublisherSection(data: any): boolean {
 }
 
 export function validatePublisher(
-	validationObject: any,
-	identifierTypes?: ?Array<_IdentifierType>
+	publisherValidationObject: any,
+	identifierTypes?: Array<_IdentifierType>
 ): boolean {
 	let success = true;
 
-	const {workerId, ...publisherValidationObject} = validationObject;
 	if (_.isEmpty(publisherValidationObject)) {
-		log.warning(`[CONSUMER::${workerId}] PUBLISHER Incoming validation\
-			\r object empty`);
+		log.warn('[CONSUMER] PUBLISHER Incoming validation object empty');
 		return false;
 	}
 
@@ -90,8 +87,7 @@ export function validatePublisher(
 		{}
 	);
 
-	log.info(`[CONSUMER::${workerId}] \
-		\r PUBLISHER - Calling validation functions.`);
+	log.info('[CONSUMER] PUBLISHER - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'PUBLISHER - Failed validate alias section failed. \n';
@@ -114,8 +110,16 @@ export function validatePublisher(
 	}
 
 	if (!success) {
-		log.error(`[CONSUMER::${workerId}]:: ${err} Record for reference:
-			\r${JSON.stringify(validationObject, null, 4)}`);
+		log.error(`[CONSUMER]:: ${err} Record for reference: ${JSON.stringify(publisherValidationObject, null, 4)}`);
 	}
 	return success;
 }
+
+
+export type PublisherSection = Partial<{
+	area: AreaStub;
+	beginDate: string;
+	endDate: string;
+	ended: boolean;
+	type: number;
+}>;

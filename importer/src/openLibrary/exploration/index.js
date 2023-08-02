@@ -18,35 +18,33 @@
 
 
 import _ from 'lodash';
-import asyncCluster from '../../asyncCluster';
-import config from '../../helpers/config';
-import explorePromise from './read';
-import log from '../../helpers/logger';
-import {mergeSets} from '../../helpers/utils';
-import util from 'util';
+import asyncCluster from '../../asyncCluster/index.js';
+import config from '../../helpers/config.js';
+import explorePromise from './read.js';
+// eslint-disable-next-line import/no-internal-modules
+import {hideBin} from 'yargs/helpers';
+import log from '../../helpers/logger.js';
+import {mergeSets} from '../../helpers/utils.ts';
+import process from 'node:process';
+import util from 'node:util';
 import yargs from 'yargs';
 
-
-/* eslint-disable */
 
 /**
  * @type {Object} Command line args parsed by yargs library
  **/
-const argv = yargs.usage('Usage: $0 [options]')
+const {argv} = yargs(hideBin(process.argv)).usage('Usage: $0 [options]')
 	.help('h')
 	.option('dump', {
-		alias : 'd',
-		describe: 'Name of the dump key in OpenLibrary object.'
-		+ 'Can take values `works`, `editions` or `authors`',
-		type: 'string',
-		nargs: 1,
+		alias: 'd',
 		demand: 'dump name key is required',
-		requiresArg:true
+		describe: 'Name of the dump key in OpenLibrary object. Can take values `works`, `editions` or `authors`',
+		nargs: 1,
+		requiresArg: true,
+		type: 'string'
 	})
 	.alias('h', 'help')
-	.epilog('BookBrainz Data Import Project')
-	.argv;
-/* eslint-enable */
+	.epilog('BookBrainz Data Import Project');
 
 /**
  * @type {Object} configOL - Object containing openLibrary dump import

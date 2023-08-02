@@ -17,13 +17,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-// @flow
 
-export type _Creator = {
+export type _Author = {
 
 };
 
-export type _CreatorType = {
+export type _AuthorType = {
 
 };
 
