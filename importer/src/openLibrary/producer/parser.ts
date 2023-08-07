@@ -24,9 +24,14 @@ import _ from 'lodash';
 import {franc} from 'franc-min';
 
 
-const WORK = 'work';
-const EDITION = 'edition';
-const AUTHOR = 'author';
+/** OpenLibrary entity types which are handled by the parser. */
+export const OL_ENTITY_TYPES = [
+	'author',
+	'edition',
+	'work'
+] as const;
+
+export type OLEntityType = typeof OL_ENTITY_TYPES[number];
 
 
 function detectLanguage(name: string): number {
@@ -401,11 +406,11 @@ function processEdition(json) {
 	return json;
 }
 
-export default function parser(type, json) {
+export default function parser(type: OLEntityType, json) {
 	switch (type) {
-		case WORK: return processWork(json);
-		case EDITION: return processEdition(json);
-		case AUTHOR: return processAuthor(json);
+		case 'work': return processWork(json);
+		case 'edition': return processEdition(json);
+		case 'author': return processAuthor(json);
 		default: return null;
 	}
 }
