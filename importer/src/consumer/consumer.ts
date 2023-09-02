@@ -88,8 +88,10 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 						}
 					}
 				}
-				catch {
+				catch (err) {
+					log.error(`[UNCAUGHT] ${err}`);
 					log.error(`${Errors.IMPORT_ERROR}\n ${JSON.stringify(record)}`);
+					attemptsLeft--;
 				}
 			}
 
