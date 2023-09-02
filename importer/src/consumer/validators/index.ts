@@ -21,10 +21,11 @@ import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
 import {type AuthorSection, validateAuthor} from './author.ts';
 import {type EditionGroupSection, validateEditionGroup} from './edition-group.ts';
 import {type EditionSection, validateEdition} from './edition.ts';
-import type {ParsedAlias, ParsedEntity} from '../../parser.ts';
 import {type PublisherSection, validatePublisher} from './publisher.ts';
 import {type WorkSection, validateWork} from './work.ts';
+import type {AliasWithDefaultT} from 'bookbrainz-data/lib/types/aliases.d.ts';
 import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
+import type {ParsedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import _ from 'lodash';
 
 
@@ -42,7 +43,7 @@ function getAliasSection(record: ParsedEntity): AliasSection {
 	return aliasSection;
 }
 
-function getDefaultAlias(aliasList: ParsedAlias[]): ParsedAlias {
+function getDefaultAlias(aliasList: AliasWithDefaultT[]): AliasWithDefaultT {
 	return aliasList?.find((alias) => alias.default);
 }
 

@@ -18,7 +18,7 @@
 
 
 import {Buffer} from 'node:buffer';
-import {type ParsedEntity} from './parser.ts';
+import type {ParsedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import amqp from 'amqplib';
 import {delay} from './helpers/utils.ts';
 import log from './helpers/logger.ts';

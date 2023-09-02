@@ -17,7 +17,7 @@
  */
 
 
-import type {ParsedAuthor, ParsedWork} from '../../parser.ts';
+import type {ParsedAuthor, ParsedWork} from 'bookbrainz-data/lib/types/parser.d.ts';
 import {identifiers, mapLanguage} from '../../helpers/mapping.ts';
 import {isNotDefined, sortName} from '../../helpers/utils.ts';
 import _ from 'lodash';
@@ -203,8 +203,7 @@ function processAuthor(json) {
 		});
 		defaultAlias = false;
 	}
-	if (!isNotDefined(json.alternate_names) &&
-			(json.alternate_names instanceof Array)) {
+	if (!isNotDefined(json.alternate_names) && (json.alternate_names instanceof Array)) {
 		json.alternate_names.forEach(name => {
 			if (!isNotDefined(name)) {
 				const lang = detectLanguage(name);
@@ -292,8 +291,7 @@ function processAuthor(json) {
 
 
 	// Origin Ids for other sources
-	if (!isNotDefined(json.source_records) &&
-			(json.source_records instanceof Array)) {
+	if (!isNotDefined(json.source_records) && (json.source_records instanceof Array)) {
 		json.source_records.forEach(record => {
 			author.metadata.originId.push(record);
 		});
