@@ -38,7 +38,6 @@
 	"license": "GPL-2.0+",
 	"dependencies": {
 		"amqplib": "^0.10.3",
-		"async": "^2.6.0",
 		"bookbrainz-data": "^4.0.1",
 		"franc-min": "^6.1.0",
 		"immutable": "^4.3.0",
