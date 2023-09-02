@@ -10,11 +10,7 @@
 		"build": "rimraf lib/* && babel src --out-dir lib --extensions .js,.ts && tsc",
 		"nodemon": "nodemon --watch './src/' --exec 'npm run build'",
 		"lint": "eslint ./src",
-		"lint-staged": "lint-staged",
-		"consumer": "node ./lib/consumer/index.js",
-		"importOLWorks": "node ./lib/openLibrary/producer/index.js -d works",
-		"importOLAuthors": "node ./lib/openLibrary/producer/index.js -d authors",
-		"importOLEditions": "node ./lib/openLibrary/producer/index.js -d editions"
+		"lint-staged": "lint-staged"
 	},
 	"lint-staged": {
 		"*.js": [
