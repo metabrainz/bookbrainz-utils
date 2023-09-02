@@ -68,13 +68,13 @@ export class ImportQueue {
 			log.info(`${this.pendingMessages} pending messages still have to be acknowledged before closing...`);
 			// limit accumulated delay for hopeless cases (no idea why these occur)
 			let gracePeriods = 10;
-			// eslint-disable-next-line no-await-in-loop -- polling loop
 			do {
+				// eslint-disable-next-line no-await-in-loop -- polling loop
 				await delay(200);
 			} while (this.pendingMessages && --gracePeriods);
 
 			if (this.pendingMessages) {
-				log.info(`Force-closing, ${this.pendingMessages} messages are still pending...`)
+				log.info(`Force-closing, ${this.pendingMessages} messages are still pending...`);
 			}
 		}
 

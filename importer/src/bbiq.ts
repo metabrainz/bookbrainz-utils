@@ -104,7 +104,6 @@ const {argv} = yargs(hideBin(process.argv))
 			log.info('Consumer has been terminated');
 			await queue.close();
 			log.debug('Import queue has been force-closed');
-			process.exit(0);
 		});
 		useQueue(queue, (q) => consumerPromise({id: 0, queue: q}), 'Failed to consume queue').then(process.exit);
 	})
