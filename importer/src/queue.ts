@@ -18,7 +18,7 @@
 
 
 import {Buffer} from 'node:buffer';
-import type {ParsedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
+import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import amqp from 'amqplib';
 import {delay} from './helpers/utils.ts';
 import log from './helpers/logger.ts';
@@ -180,9 +180,3 @@ export interface ImportQueueOptions {
 	/** Name of the queue which stores messages of failed imports. Set to `false` to discard these immediately. */
 	failureQueue: string | false;
 }
-
-
-// TODO: drop redundant properties which are present in `data` and at the top level
-export type QueuedEntity = {
-	data: ParsedEntity;
-} & Pick<ParsedEntity, 'entityType' | 'lastEdited' | 'originId' | 'source'>;

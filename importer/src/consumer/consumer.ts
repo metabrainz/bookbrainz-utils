@@ -18,7 +18,8 @@
 
 
 import * as Errors from '../helpers/errors.ts';
-import type {ImportQueue, QueuedEntity} from '../queue.ts';
+import type {ImportQueue} from '../queue.ts';
+import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import config from '../helpers/config.ts';
 import consumeRecord from './consumeRecord.ts';
 import log from '../helpers/logger.ts';
@@ -55,6 +56,8 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 				// Manages async record consumption
 				try {
 					if (attemptsLeft < retryLimit) {
+						// TODO: we are only repeating a single import, which usually fails again
+						// -> drop in favor of the failureQueue?
 						log.info('--- Restarting import process... ---');
 					}
 
