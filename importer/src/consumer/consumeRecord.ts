@@ -43,7 +43,7 @@ export default async function consumeRecord(record: QueuedEntity) {
 	}
 
 	try {
-		await importRecord({entityType, ...record.data});
+		await importRecord(record);
 	}
 	catch (err) {
 		log.warn(`[TRANSACTION::${entityType}] ${err}`);
