@@ -66,7 +66,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 
 					switch (errorType) {
 						case Errors.NONE:
-							log.info(`[CONSUMER::${id}] Read message successfully:\n${record}`);
+							log.info(`[CONSUMER::${id}] Read message successfully:\n${JSON.stringify(record)}`);
 							return true;
 
 						case Errors.INVALID_RECORD:
