@@ -18,7 +18,7 @@
 
 
 import {Buffer} from 'node:buffer';
-import {type ParsedEntity} from './parser.ts';
+import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import amqp from 'amqplib';
 import {delay} from './helpers/utils.ts';
 import log from './helpers/logger.ts';
@@ -68,13 +68,13 @@ export class ImportQueue {
 			log.info(`${this.pendingMessages} pending messages still have to be acknowledged before closing...`);
 			// limit accumulated delay for hopeless cases (no idea why these occur)
 			let gracePeriods = 10;
-			// eslint-disable-next-line no-await-in-loop -- polling loop
 			do {
+				// eslint-disable-next-line no-await-in-loop -- polling loop
 				await delay(200);
 			} while (this.pendingMessages && --gracePeriods);
 
 			if (this.pendingMessages) {
-				log.info(`Force-closing, ${this.pendingMessages} messages are still pending...`)
+				log.info(`Force-closing, ${this.pendingMessages} messages are still pending...`);
 			}
 		}
 
@@ -180,9 +180,3 @@ export interface ImportQueueOptions {
 	/** Name of the queue which stores messages of failed imports. Set to `false` to discard these immediately. */
 	failureQueue: string | false;
 }
-
-
-// TODO: drop redundant properties which are present in `data` and at the top level
-export type QueuedEntity = {
-	data: ParsedEntity;
-} & Pick<ParsedEntity, 'entityType' | 'lastEdited' | 'originId' | 'source'>;

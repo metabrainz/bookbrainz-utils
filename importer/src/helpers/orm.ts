@@ -16,12 +16,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-import BookBrainzData from 'bookbrainz-data';
+import BookBrainzData, {type ORM} from 'bookbrainz-data';
 import config from './config.ts';
 import partial from 'lodash/partial.js';
 
 
-export const orm = BookBrainzData.default(config.database);
+export const orm: ORM = BookBrainzData.default(config.database);
 
 export const importRecord = partial(orm.func.imports.createImport, orm);
 

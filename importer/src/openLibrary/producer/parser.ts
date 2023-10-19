@@ -17,16 +17,21 @@
  */
 
 
-import type {ParsedAuthor, ParsedWork} from '../../parser.ts';
+import type {ParsedAuthor, ParsedWork} from 'bookbrainz-data/lib/types/parser.d.ts';
 import {identifiers, mapLanguage} from '../../helpers/mapping.ts';
 import {isNotDefined, sortName} from '../../helpers/utils.ts';
 import _ from 'lodash';
 import {franc} from 'franc-min';
 
 
-const WORK = 'work';
-const EDITION = 'edition';
-const AUTHOR = 'author';
+/** OpenLibrary entity types which are handled by the parser. */
+export const OL_ENTITY_TYPES = [
+	'author',
+	'edition',
+	'work'
+] as const;
+
+export type OLEntityType = typeof OL_ENTITY_TYPES[number];
 
 
 function detectLanguage(name: string): number {
@@ -198,8 +203,7 @@ function processAuthor(json) {
 		});
 		defaultAlias = false;
 	}
-	if (!isNotDefined(json.alternate_names) &&
-			(json.alternate_names instanceof Array)) {
+	if (!isNotDefined(json.alternate_names) && (json.alternate_names instanceof Array)) {
 		json.alternate_names.forEach(name => {
 			if (!isNotDefined(name)) {
 				const lang = detectLanguage(name);
@@ -287,8 +291,7 @@ function processAuthor(json) {
 
 
 	// Origin Ids for other sources
-	if (!isNotDefined(json.source_records) &&
-			(json.source_records instanceof Array)) {
+	if (!isNotDefined(json.source_records) && (json.source_records instanceof Array)) {
 		json.source_records.forEach(record => {
 			author.metadata.originId.push(record);
 		});
@@ -401,11 +404,11 @@ function processEdition(json) {
 	return json;
 }
 
-export default function parser(type, json) {
+export default function parser(type: OLEntityType, json) {
 	switch (type) {
-		case WORK: return processWork(json);
-		case EDITION: return processEdition(json);
-		case AUTHOR: return processAuthor(json);
+		case 'work': return processWork(json);
+		case 'edition': return processEdition(json);
+		case 'author': return processAuthor(json);
 		default: return null;
 	}
 }

@@ -17,7 +17,7 @@
  */
 
 
-import {type QueuedEntity} from '../queue.ts';
+import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import _ from 'lodash';
 import {importErrors} from '../helpers/errors.ts';
 import {importRecord} from '../helpers/orm.ts';
@@ -43,7 +43,7 @@ export default async function consumeRecord(record: QueuedEntity) {
 	}
 
 	try {
-		await importRecord({entityType, ...record.data});
+		await importRecord(record);
 	}
 	catch (err) {
 		log.warn(`[TRANSACTION::${entityType}] ${err}`);

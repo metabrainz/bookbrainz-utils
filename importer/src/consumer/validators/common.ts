@@ -18,10 +18,11 @@
  */
 
 
-import type {ParsedAlias, ParsedIdentifier} from '../../parser.ts';
 import {
 	get, validateOptionalString, validatePositiveInteger, validateRequiredString
 } from './base.ts';
+import type {AliasWithDefaultT} from 'bookbrainz-data/lib/types/aliases.d.ts';
+import type {IdentifierT} from 'bookbrainz-data/lib/types/identifiers.d.ts';
 import _ from 'lodash';
 import {isCollection} from 'immutable';
 import log from '../../helpers/logger.ts';
@@ -246,9 +247,9 @@ export type NameSection = {
 	disambiguation?: string;
 };
 
-export type AliasSection = Record<string, ParsedAlias>;
+export type AliasSection = Record<string, AliasWithDefaultT>;
 
-export type IdentifierSection = Record<string, ParsedIdentifier>;
+export type IdentifierSection = Record<string, IdentifierT>;
 
 /** Incomplete area type definition for validation functions. */
 export type AreaStub = {
