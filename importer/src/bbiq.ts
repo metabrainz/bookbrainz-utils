@@ -30,14 +30,19 @@ import yargs from 'yargs';
 function createQueue({connection, test, failureQueue, queue}: BBIQArguments) {
 	const queueOptions: Partial<ImportQueueOptions> = {
 		connectionUrl: connection || config.queue?.connection,
-		failureQueue: failureQueue || false,
+		failureQueue: failureQueue === 'none' ? false : failureQueue,
 		isPersistent: !test,
 		queueName: queue
 	};
 
-	if (test && !queue) {
-		// AMQP does not allow us to re-declare the same default queue `bookbrainz-import` as non-persistent
-		queueOptions.queueName = 'bookbrainz-import-test';
+	if (test) {
+		// AMQP does not allow us to re-declare the same default queues `bookbrainz-import(-failures)` as non-persistent
+		if (!queue) {
+			queueOptions.queueName = 'bookbrainz-import-test';
+		}
+		if (!failureQueue) {
+			queueOptions.failureQueue = 'bookbrainz-import-test-failures';
+		}
 	}
 
 	return new ImportQueue(queueOptions);
@@ -88,7 +93,7 @@ const {argv} = yargs(hideBin(process.argv))
 	})
 	.option('failure-queue', {
 		alias: 'f',
-		describe: 'Name of the queue which stores failed imports (discarded by default)',
+		describe: 'Name of the queue which stores failed imports ("none" to discard them)',
 		requiresArg: true,
 		type: 'string'
 	})

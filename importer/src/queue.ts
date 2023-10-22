@@ -31,7 +31,7 @@ export class ImportQueue {
 		isPersistent = true,
 		prefetchLimit = 5,
 		queueName = 'bookbrainz-import',
-		failureQueue = false
+		failureQueue = 'bookbrainz-import-failures'
 	}: Partial<ImportQueueOptions> = {}) {
 		this.connectionUrl = connectionUrl;
 		this.isPersistent = isPersistent;
