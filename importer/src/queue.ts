@@ -51,11 +51,13 @@ export class ImportQueue {
 		this.channel = await this.connection.createChannel();
 		await this.channel.prefetch(this.prefetchLimit);
 
+		const queueInfo = [this.channel.assertQueue(this.queueName, {durable: this.isPersistent})];
+
 		if (this.failureQueueName) {
-			this.channel.assertQueue(this.failureQueueName, {durable: this.isPersistent});
+			queueInfo.push(this.channel.assertQueue(this.failureQueueName, {durable: this.isPersistent}));
 		}
 
-		return this.channel.assertQueue(this.queueName, {durable: this.isPersistent});
+		return Promise.all(queueInfo);
 	}
 
 	/** Closes the connection to the AMQP server. */
