@@ -49,7 +49,6 @@ function processWork(json: any) {
 	// Base skeleton, remaining keys are added as and when they are extracted
 	const work: ParsedWork = {
 		alias: [],
-		entityType: 'Work',
 		identifiers: [],
 		metadata: {
 			links: [],
@@ -163,7 +162,7 @@ function processAuthor(json) {
 	// Base skeleton, remaining keys are added as and when they are extracted
 	const author: ParsedAuthor = {
 		alias: [],
-		entityType: 'Author',
+		ended: false,
 		identifiers: [],
 		metadata: {
 			identifiers: [],
@@ -258,6 +257,7 @@ function processAuthor(json) {
 	}
 	if (!isNotDefined(json.death_date)) {
 		author.endDate = json.death_date;
+		author.ended = true;
 		author.type = 'Person';
 	}
 
