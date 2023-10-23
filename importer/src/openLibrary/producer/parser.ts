@@ -17,9 +17,10 @@
  */
 
 
-import type {ParsedAuthor, ParsedWork} from 'bookbrainz-data/lib/types/parser.d.ts';
+import type {ParsedAuthor, ParsedEntity, ParsedWork} from 'bookbrainz-data/lib/types/parser.d.ts';
 import {identifiers, mapLanguage} from '../../helpers/mapping.ts';
 import {isNotDefined, sortName} from '../../helpers/utils.ts';
+import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
 import _ from 'lodash';
 import {franc} from 'franc-min';
 
@@ -33,6 +34,16 @@ export const OL_ENTITY_TYPES = [
 
 export type OLEntityType = typeof OL_ENTITY_TYPES[number];
 
+
+/** Maps a supported OpenLibrary entity type to a BookBrainz entity type. */
+export function mapEntityType(sourceType: OLEntityType): EntityTypeString | null {
+	switch (sourceType) {
+		case 'author': return 'Author';
+		case 'edition': return 'Edition';
+		case 'work': return 'Work';
+		default: return null;
+	}
+}
 
 function detectLanguage(name: string): number {
 	let lang = franc(name);
@@ -404,7 +415,7 @@ function processEdition(json) {
 	return json;
 }
 
-export default function parser(type: OLEntityType, json) {
+export default function parser(type: OLEntityType, json): ParsedEntity | null {
 	switch (type) {
 		case 'work': return processWork(json);
 		case 'edition': return processEdition(json);

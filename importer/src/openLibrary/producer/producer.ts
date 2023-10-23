@@ -17,10 +17,10 @@
  */
 
 
+import parser, {type OLEntityType, mapEntityType} from './parser.ts';
 import {type ImportQueue} from '../../queue.ts';
 import fs from 'node:fs';
 import log from '../../helpers/logger.ts';
-import parser from './parser.ts';
 import readline from 'node:readline';
 
 
@@ -56,14 +56,20 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 
 			const source = 'OPENLIBRARY';
 			const json = JSON.parse(record[4]);
-			const OLType = record[0].split('/')[2];
+			const OLType = record[0].split('/')[2] as OLEntityType;
+			const entityType = mapEntityType(OLType);
+
+			if (!entityType) {
+				throw new Error(`Unsupported OpenLibrary entity type '${OLType}'`);
+			}
+
 			const data = parser(OLType, json);
 			const originId = record[1].split('/')[2];
 			const lastEdited = record[3];
 
 			const success = queue.push({
 				data,
-				entityType: data.entityType,
+				entityType,
 				lastEdited: lastEdited || data.lastEdited,
 				originId: originId || data.originId,
 				source
@@ -77,11 +83,8 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 			}
 		}
 		catch (err) {
-			log.warn(
-				`Error in ${fileName} in line number ${count}.`,
-				'Skipping. Record for reference: \n [[',
-				line, ']]'
-			);
+			log.error(`Parsing error: ${err}\n at ${fileName}:${count}`);
+			log.debug(`Skipped: ${line}`);
 		}
 	});
 
