@@ -17,6 +17,7 @@
  */
 
 
+import {ENTITY_TYPES} from 'bookbrainz-data/lib/types/entity.js';
 import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import _ from 'lodash';
 import {importErrors} from '../helpers/errors.ts';
@@ -33,8 +34,13 @@ function getValidationData(record: QueuedEntity) {
 	return record.data;
 }
 
-export default async function consumeRecord(record: QueuedEntity) {
+// TODO: throw instead of returning errors
+export default async function consumeRecord(record: QueuedEntity): Promise<{errMsg?: string, errorType: string}> {
 	const {entityType} = record;
+	if (!entityType || !ENTITY_TYPES.includes(entityType)) {
+		return {errorType: importErrors.RECORD_ENTITY_NOT_FOUND, errMsg: `Invalid entity type '${entityType}'`};
+	}
+
 	const validationData = getValidationData(record);
 	const validationFunction = validate[entityType];
 
