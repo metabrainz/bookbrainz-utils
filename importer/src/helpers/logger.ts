@@ -38,7 +38,11 @@ const log = createLogger({
 			format: format.combine(
 				format.colorize(),
 				format.timestamp(),
-				format.printf((info) => `${info.timestamp} - ${info.level}: ${info.message}`)
+				format.printf(({message, level, timestamp, ...metadata}) => {
+					let output = `${timestamp} ${level}: ${message}`;
+					if (Object.keys(metadata).length) output += ` ${JSON.stringify(metadata, null, 2)}`;
+					return output;
+				})
 			),
 			handleExceptions: true,
 			level: 'debug'
