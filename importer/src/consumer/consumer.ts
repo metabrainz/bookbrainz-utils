@@ -92,8 +92,8 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 					}
 				}
 				catch (err) {
-					log.error(`[UNCAUGHT] ${err}`);
-					log.error(`${Errors.IMPORT_ERROR}\n ${JSON.stringify(record)}`);
+					log.error(err instanceof Error ? err.stack : err.toString());
+					log.debug(`Error occurred during import of ${JSON.stringify(record)}`);
 					attemptsLeft--;
 				}
 			}
