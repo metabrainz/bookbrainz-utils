@@ -66,13 +66,13 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 
 					switch (errorType) {
 						case Errors.NONE:
-							log.info(`[CONSUMER::${id}] Read message successfully:\n${JSON.stringify(record)}`);
+							log.info(`[CONSUMER::${id}] Successfully imported entity ${record.originId}`);
 							return true;
 
 						case Errors.INVALID_RECORD:
 						case Errors.RECORD_ENTITY_NOT_FOUND:
 							// In case of invalid records, we don't try again
-							log.warn(`[CONSUMER::${id}] ${errorType} :: ${errMsg} [skipping]`);
+							log.error(`[CONSUMER::${id}] ${errorType} :: ${errMsg} [skipping entity ${record.originId}]`);
 							return false;
 
 						case Errors.TRANSACTION_ERROR:
