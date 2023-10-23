@@ -55,6 +55,7 @@ const {dump, test, connection} = yargs(hideBin(process.argv))
 async function importDump(dumpPath: string) {
 	const queueOptions: Partial<ImportQueueOptions> = {
 		connectionUrl: connection || config.queue?.connection,
+		failureQueue: false,
 		isPersistent: !test
 	};
 
