@@ -79,8 +79,7 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 		const validationObject: EntityValidationSections = {
 			aliasSection: getAliasSection(validationData),
 			identifierSection: getIdentifierSection(validationData),
-			nameSection: getNameSection(validationData),
-			workerId: validationData.workerId
+			nameSection: getNameSection(validationData)
 		};
 
 		// Add entity specific validation data
@@ -154,7 +153,6 @@ type CommonValidationSections = {
 	aliasSection: AliasSection;
 	identifierSection: IdentifierSection;
 	nameSection: NameSection;
-	workerId: number;
 };
 
 type EntityValidationSections = CommonValidationSections & Partial<{
