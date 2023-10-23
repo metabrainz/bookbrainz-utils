@@ -273,9 +273,9 @@ function processAuthor(json) {
 	}
 
 
-	// Bio is used for diambiguation, tags can be used too?
+	// Biography field is used for annotation, tags could be used too?
 	if (!isNotDefined(_.get(json, 'bio.value'))) {
-		author.disambiguation = json.bio.value;
+		author.annotation = json.bio.value;
 	}
 
 
