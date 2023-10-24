@@ -17,11 +17,11 @@
  */
 
 
+import log, {logError} from './helpers/logger.ts';
 import {Buffer} from 'node:buffer';
 import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import amqp from 'amqplib';
 import {delay} from './helpers/utils.ts';
-import log from './helpers/logger.ts';
 
 
 /** Queue which stores parsed entities that have to be imported into the BookBrainz database. */
@@ -112,11 +112,14 @@ export class ImportQueue {
 			let entity: QueuedEntity;
 			this.consumedMessages++;
 			this.pendingMessages++;
+
+			const content = message.content.toString();
 			try {
-				entity = JSON.parse(message.content.toString());
+				entity = JSON.parse(content);
 			}
 			catch (error) {
-				log.warn('Skipping invalid message:', error.message);
+				logError(error, 'Skipping invalid message');
+				log.debug(`Skipped content: ${content}`);
 				// acknowledge invalid message, otherwise it will be requeued
 				this.channel.ack(message);
 				this.pendingMessages--;
