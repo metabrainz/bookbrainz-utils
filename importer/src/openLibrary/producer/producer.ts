@@ -17,10 +17,10 @@
  */
 
 
+import log, {logError} from '../../helpers/logger.ts';
 import parser, {type OLEntityType, mapEntityType} from './parser.ts';
 import {type ImportQueue} from '../../queue.ts';
-import fs from 'node:fs';
-import log from '../../helpers/logger.ts';
+import {createReadStream} from 'node:fs';
 import readline from 'node:readline';
 
 
@@ -36,14 +36,10 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 	const fileName = base.split('/').pop();
 	log.info(`[WORKER::${id}] Processing dump file '${fileName}'`);
 
-	const rl = readline.createInterface({
-		input: fs.createReadStream(base)
-	});
+	let lineNumber = 0;
 
-	let count = 0;
-
-	rl.on('line', line => {
-		count++;
+	function parseLine(line: string): void {
+		lineNumber++;
 		try {
 			// According to details at https://openlibrary.org/developers/dumps
 			// Tab separated values in the following order
@@ -76,24 +72,41 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 			});
 
 			if (success) {
-				log.debug(`[WORKER::${id}] Pushing record #${count} (${originId})`);
+				log.debug(`[WORKER::${id}] Pushing record #${lineNumber} (${originId})`);
 			}
 			else {
-				log.error(`[WORKER::${id}] Failed to push record #${count} (${originId})`);
+				log.error(`[WORKER::${id}] Failed to push record #${lineNumber} (${originId})`);
 			}
 		}
 		catch (err) {
-			log.error(`Parsing error: ${err}\n at ${fileName}:${count}`);
+			log.error(`Parsing error: ${err}\n at ${fileName}:${lineNumber}`);
 			log.debug(`Skipped: ${line}`);
 		}
-	});
+	}
 
-	return new Promise((resolve) => {
-		rl.on('close', () => resolve({
+	try {
+		const inputStream = createReadStream(base);
+		const rl = readline.createInterface({
+			input: inputStream
+		});
+
+		rl.on('line', parseLine);
+
+		return new Promise((resolve) => {
+			// TODO: improve return value, we do no longer have worker threads
+			rl.on('close', () => resolve({
+				id,
+				workerCount: lineNumber
+			}));
+		});
+	}
+	catch (error) {
+		logError(error, `Failed to process '${fileName}'`);
+		return Promise.resolve({
 			id,
-			workerCount: count
-		}));
-	});
+			workerCount: lineNumber
+		});
+	}
 }
 
 export default readLine;
