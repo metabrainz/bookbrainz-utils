@@ -19,32 +19,21 @@
 
 import {ENTITY_TYPES} from 'bookbrainz-data/lib/types/entity.js';
 import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
-import _ from 'lodash';
 import {importErrors} from '../helpers/errors.ts';
 import {importRecord} from '../helpers/orm.ts';
 import {logError} from '../helpers/logger.ts';
 import validate from './validators/index.ts';
 
 
-function getValidationData(record: QueuedEntity) {
-	if (_.isEmpty(record)) {
-		return null;
-	}
-
-	return record.data;
-}
-
 // TODO: throw instead of returning errors
 export default async function consumeRecord(record: QueuedEntity): Promise<{errMsg?: string, errorType: string}> {
 	const {entityType} = record;
 	if (!entityType || !ENTITY_TYPES.includes(entityType)) {
-		return {errorType: importErrors.RECORD_ENTITY_NOT_FOUND, errMsg: `Invalid entity type '${entityType}'`};
+		return {errMsg: `Invalid entity type '${entityType}'`, errorType: importErrors.RECORD_ENTITY_NOT_FOUND};
 	}
 
-	const validationData = getValidationData(record);
 	const validationFunction = validate[entityType];
-
-	if (!validationFunction(validationData)) {
+	if (!validationFunction(record.data)) {
 		return {errorType: importErrors.INVALID_RECORD};
 	}
 
