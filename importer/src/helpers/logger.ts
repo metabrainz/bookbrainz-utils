@@ -51,3 +51,16 @@ const log = createLogger({
 });
 
 export default log;
+
+/**
+ * Logs an error with stack trace (if present) and context.
+ * @param {any} error - `Error` object or an error of arbitrary type.
+ * @param {string} messagePrefix - Optional prefix to add context to the error message.
+ */
+export function logError(error: any, messagePrefix?: string) {
+	const message = [
+		messagePrefix,
+		error instanceof Error ? error.stack : error.toString()
+	].filter(Boolean).join(': ');
+	log.error(message);
+}

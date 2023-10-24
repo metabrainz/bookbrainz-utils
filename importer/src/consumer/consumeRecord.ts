@@ -22,7 +22,7 @@ import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import _ from 'lodash';
 import {importErrors} from '../helpers/errors.ts';
 import {importRecord} from '../helpers/orm.ts';
-import log from '../helpers/logger.ts';
+import {logError} from '../helpers/logger.ts';
 import validate from './validators/index.ts';
 
 
@@ -52,7 +52,7 @@ export default async function consumeRecord(record: QueuedEntity): Promise<{errM
 		await importRecord(record);
 	}
 	catch (err) {
-		log.warn(`[TRANSACTION::${entityType}] ${err}`);
+		logError(err, `Transaction for ${entityType} ${record.originId} failed`);
 		return {errMsg: err, errorType: importErrors.TRANSACTION_ERROR};
 	}
 

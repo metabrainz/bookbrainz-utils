@@ -18,11 +18,11 @@
 
 
 import {ImportQueue, type ImportQueueOptions} from './queue.ts';
+import log, {logError} from './helpers/logger.ts';
 import config from './helpers/config.ts';
 import consumerPromise from './consumer/consumer.ts';
 // eslint-disable-next-line import/no-internal-modules
 import {hideBin} from 'yargs/helpers';
-import log from './helpers/logger.ts';
 import process from 'node:process';
 import yargs from 'yargs';
 
@@ -61,7 +61,7 @@ async function useQueue(
 		await task(queue);
 	}
 	catch (error) {
-		log.error(`${errorMessage}:`, error);
+		logError(error, errorMessage);
 		exitCode = 1;
 	}
 	finally {

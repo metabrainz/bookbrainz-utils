@@ -18,7 +18,7 @@
  */
 
 import {fileURLToPath} from 'node:url';
-import log from './logger.ts';
+import {logError} from './logger.ts';
 import {readFileSync} from 'node:fs';
 
 
@@ -50,7 +50,7 @@ try {
 	config = JSON.parse(readFileSync(configPath).toString());
 }
 catch (error) {
-	log.error('[ERROR::CONFIG] Failed to parse configuration file');
+	logError(error, 'Failed to parse configuration file');
 	throw error;
 }
 
