@@ -18,11 +18,13 @@
 
 
 import type {ParsedAuthor, ParsedEntity, ParsedWork} from 'bookbrainz-data/lib/types/parser.d.ts';
-import {identifiers, mapLanguage} from '../../helpers/mapping.ts';
+import {francMinMapping, identifiers, mapLanguage} from '../../helpers/mapping.ts';
 import {isNotDefined, sortName} from '../../helpers/utils.ts';
 import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
 import _ from 'lodash';
 import {franc} from 'franc-min';
+import lande from 'lande';
+import log from '../../helpers/logger.ts';
 
 
 /** OpenLibrary entity types which are handled by the parser. */
@@ -45,11 +47,24 @@ export function mapEntityType(sourceType: OLEntityType): EntityTypeString | null
 	}
 }
 
-function detectLanguage(name: string): number {
-	let lang = franc(name);
-	lang = lang !== 'und' ? lang : 'eng';
+function detectLanguage(name: string, confidenceMinimum = 0.7): number {
+	// lande already sorts the results by decreasing confidence
+	const topLanguages = lande(name)
+		.filter(([_lang, confidence]) => confidence > 0.1)
+		.slice(0, 5);
+	const [topLanguage, confidence] = topLanguages[0];
 
-	return mapLanguage(lang);
+	const topLanguagesString = topLanguages.map(
+		([lang, confidence]) => `${francMinMapping[lang] ?? lang} (${confidence.toFixed(2)})`
+	).join(', ');
+	log.debug(`Detected top languages of '${name}': ${topLanguagesString}`);
+
+	// Also log the result with franc for comparison, TODO: drop later
+	const francLanguage = franc(name);
+	log.debug(`Detected language (franc): ${francMinMapping[francLanguage] ?? francLanguage}`);
+
+	// In case we have no idea about the (mandatory) language, better fallback to [Multiple languages]
+	return mapLanguage(confidence > confidenceMinimum ? topLanguage : 'mul');
 }
 
 function processWork(json: any) {
