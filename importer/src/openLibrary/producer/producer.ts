@@ -17,9 +17,10 @@
  */
 
 
+import {type ImportQueue, queuedEntityRepresentation} from '../../queue.ts';
 import log, {logError} from '../../helpers/logger.ts';
 import parser, {type OLEntityType, mapEntityType} from './parser.ts';
-import {type ImportQueue} from '../../queue.ts';
+import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import {createReadStream} from 'node:fs';
 import readline from 'node:readline';
 
@@ -63,19 +64,20 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 			const originId = record[1].split('/')[2];
 			const lastEdited = record[3];
 
-			const success = queue.push({
+			const entity: QueuedEntity = {
 				data,
 				entityType,
 				lastEdited: lastEdited || data.lastEdited,
 				originId: originId || data.originId,
 				source
-			});
+			};
+			const success = queue.push(entity);
 
 			if (success) {
-				log.debug(`[WORKER::${id}] Pushing record #${lineNumber} (${originId})`);
+				log.debug(`[WORKER::${id}] Pushing record #${lineNumber} ${queuedEntityRepresentation(entity)}`);
 			}
 			else {
-				log.error(`[WORKER::${id}] Failed to push record #${lineNumber} (${originId})`);
+				log.error(`[WORKER::${id}] Failed to push record #${lineNumber} ${queuedEntityRepresentation(entity)}`);
 			}
 		}
 		catch (err) {

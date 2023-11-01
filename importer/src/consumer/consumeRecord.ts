@@ -22,6 +22,7 @@ import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import {importErrors} from '../helpers/errors.ts';
 import {importRecord} from '../helpers/orm.ts';
 import {logError} from '../helpers/logger.ts';
+import {queuedEntityRepresentation} from '../queue.ts';
 import validate from './validators/index.ts';
 
 
@@ -34,14 +35,14 @@ export default async function consumeRecord(record: QueuedEntity): Promise<{errM
 
 	const validationFunction = validate[entityType];
 	if (!validationFunction(record.data)) {
-		return {errorType: importErrors.INVALID_RECORD};
+		return {errMsg: 'Validation of the parsed entity failed', errorType: importErrors.INVALID_RECORD};
 	}
 
 	try {
 		await importRecord(record);
 	}
 	catch (err) {
-		logError(err, `Transaction for ${entityType} ${record.originId} failed`);
+		logError(err, `Transaction for ${queuedEntityRepresentation(record)} failed`);
 		return {errMsg: err, errorType: importErrors.TRANSACTION_ERROR};
 	}
 

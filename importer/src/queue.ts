@@ -24,6 +24,13 @@ import amqp from 'amqplib';
 import {delay} from './helpers/utils.ts';
 
 
+/** Equivalent of `QueuedEntity.toString()`. */
+export function queuedEntityRepresentation(entity: QueuedEntity): string {
+	const defaultAlias = entity.data.alias.find((alias) => alias.default) ?? entity.data.alias[0];
+	return `'${defaultAlias?.name ?? '[unknown]'}' (${entity.entityType} ${entity.originId})`;
+}
+
+
 /** Queue which stores parsed entities that have to be imported into the BookBrainz database. */
 export class ImportQueue {
 	constructor({
@@ -94,7 +101,7 @@ export class ImportQueue {
 			message = JSON.stringify(entity);
 		}
 		catch (error) {
-			log.error(`Failed to serialize entity ${entity.originId}: ${error}`);
+			log.error(`Failed to serialize ${queuedEntityRepresentation(entity)}: ${error}`);
 			return false;
 		}
 

@@ -18,8 +18,8 @@
 
 
 import * as Errors from '../helpers/errors.ts';
+import {type ImportQueue, queuedEntityRepresentation} from '../queue.ts';
 import log, {logError} from '../helpers/logger.ts';
-import type {ImportQueue} from '../queue.ts';
 import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import config from '../helpers/config.ts';
 import consumeRecord from './consumeRecord.ts';
@@ -45,7 +45,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 		}
 
 		async function entityHandler(record: QueuedEntity) {
-			log.info(`[CONSUMER::${id}] Received entity ${record.originId}, running handler...`);
+			log.info(`[CONSUMER::${id}] Received ${queuedEntityRepresentation(record)}, running handler...`);
 
 			// Attempts left for this message
 			let attemptsLeft = retryLimit;
@@ -66,13 +66,13 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 
 					switch (errorType) {
 						case Errors.NONE:
-							log.info(`[CONSUMER::${id}] Successfully imported entity ${record.originId}`);
+							log.info(`[CONSUMER::${id}] Successfully imported ${queuedEntityRepresentation(record)}`);
 							return true;
 
 						case Errors.INVALID_RECORD:
 						case Errors.RECORD_ENTITY_NOT_FOUND:
 							// In case of invalid records, we don't try again
-							log.error(`[CONSUMER::${id}] ${errorType} :: ${errMsg} [skipping entity ${record.originId}]`);
+							log.error(`[CONSUMER::${id}] ${errMsg} [skipping ${queuedEntityRepresentation(record)}]`);
 							return false;
 
 						case Errors.TRANSACTION_ERROR:
@@ -93,7 +93,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 				}
 				catch (err) {
 					logError(err);
-					log.debug(`Error occurred during import of ${JSON.stringify(record)}`);
+					log.debug(`Error occurred during import of ${queuedEntityRepresentation(record)}`);
 					attemptsLeft--;
 				}
 			}
