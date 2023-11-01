@@ -24,10 +24,13 @@ import amqp from 'amqplib';
 import {delay} from './helpers/utils.ts';
 
 
-/** Equivalent of `QueuedEntity.toString()`. */
+/**
+ * Generate a string representation of a queued entity (for logging purposes).
+ * Although we expect a `QueuedEntity`, we may get arbitrary JSON from the queue which we have to handle for error logs.
+ */
 export function queuedEntityRepresentation(entity: QueuedEntity): string {
-	const defaultAlias = entity.data.alias.find((alias) => alias.default) ?? entity.data.alias[0];
-	return `'${defaultAlias?.name ?? '[unknown]'}' (${entity.entityType} ${entity.originId})`;
+	const defaultAlias = entity.data?.alias?.find((alias) => alias.default) ?? entity.data?.alias?.[0];
+	return `'${defaultAlias?.name ?? '[unknown]'}' (${entity.entityType} ${entity.originId ?? '[unknown ID]'})`;
 }
 
 
