@@ -80,9 +80,7 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 							attemptsLeft--;
 
 							// Issue a warning in case of transaction error
-							log.warn(
-								`[CONSUMER::${id}] ${errorType} :: ${errMsg} [retry, ${attemptsLeft} attempts left]`
-							);
+							log.warn(`[CONSUMER::${id}] ${errorType} [retry, ${attemptsLeft} attempts left]`);
 
 							break;
 
