@@ -40,7 +40,9 @@ const log = createLogger({
 				format.timestamp(),
 				format.printf(({message, level, timestamp, ...metadata}) => {
 					let output = `${timestamp} ${level}: ${message}`;
-					if (Object.keys(metadata).length) output += ` ${JSON.stringify(metadata, null, 2)}`;
+					if (Object.keys(metadata).length) {
+						output += ` ${JSON.stringify(metadata, null, 2)}`;
+					}
 					return output;
 				})
 			),
