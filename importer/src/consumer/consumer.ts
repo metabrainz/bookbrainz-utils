@@ -37,18 +37,19 @@ export default function consumeImportQueue(queue: ImportQueue, id = 0): Promise<
 
 	return new Promise<never>(() => {
 		async function entityHandler(record: QueuedEntity) {
-			log.debug(`[CONSUMER::${id}] Received ${queuedEntityRepresentation(record)}, running handler...`);
+			const entityRepresentation = queuedEntityRepresentation(record);
+			log.debug(`[CONSUMER::${id}] Received ${entityRepresentation}, running handler...`);
 
 			try {
 				const {entityType} = record;
 				if (!entityType || !ENTITY_TYPES.includes(entityType)) {
-					log.error(`Invalid entity type '${entityType}', skipping ${queuedEntityRepresentation(record)}`);
+					log.error(`Invalid entity type '${entityType}', skipping ${entityRepresentation}`);
 					return false;
 				}
 
 				const validationFunction = validate[entityType];
 				if (!validationFunction(record.data)) {
-					log.error(`Validation of the parsed entity failed, skipping ${queuedEntityRepresentation(record)}`);
+					log.error(`Validation of the parsed entity failed, skipping ${entityRepresentation}`);
 					return false;
 				}
 
@@ -56,17 +57,16 @@ export default function consumeImportQueue(queue: ImportQueue, id = 0): Promise<
 					await importRecord(record);
 				}
 				catch (err) {
-					logError(err, `Transaction for ${queuedEntityRepresentation(record)} failed`);
+					logError(err, `Transaction for ${entityRepresentation} failed`);
 					return false;
 				}
 			}
 			catch (err) {
-				logError(err);
-				log.debug(`Error occurred during import of ${queuedEntityRepresentation(record)}`);
+				logError(err, `Unexpected error occurred during import of ${entityRepresentation}`);
 				return false;
 			}
 
-			log.info(`Successfully imported ${queuedEntityRepresentation(record)}`);
+			log.info(`Successfully imported ${entityRepresentation}`);
 			return true;
 		}
 
