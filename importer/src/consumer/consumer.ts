@@ -21,7 +21,6 @@ import * as Errors from '../helpers/errors.ts';
 import {type ImportQueue, queuedEntityRepresentation} from '../queue.ts';
 import log, {logError} from '../helpers/logger.ts';
 import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
-import config from '../helpers/config.ts';
 import consumeRecord from './consumeRecord.ts';
 
 
@@ -36,8 +35,6 @@ import consumeRecord from './consumeRecord.ts';
 function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 	log.info(`[WORKER::${id}] Running consumer number ${id}`);
 
-	const retryLimit = config.import?.retryLimit ?? 1;
-
 	// A never resolving promise as consumer is supposed to run forever
 	return new Promise<never>(() => {
 		if (id !== 0 && !id) {
@@ -47,56 +44,33 @@ function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
 		async function entityHandler(record: QueuedEntity) {
 			log.info(`[CONSUMER::${id}] Received ${queuedEntityRepresentation(record)}, running handler...`);
 
-			// Attempts left for this message
-			let attemptsLeft = retryLimit;
+			try {
+				const {errorType, errMsg} = await consumeRecord(record);
 
-			// Manages consume record retries
-			while (attemptsLeft > 0) {
-				// Function repeated upon transaction error for retries times
-				// Manages async record consumption
-				try {
-					if (attemptsLeft < retryLimit) {
-						// TODO: we are only repeating a single import, which usually fails again
-						// -> drop in favor of the failureQueue?
-						log.info('--- Restarting import process... ---');
+				switch (errorType) {
+					case Errors.NONE:
+						log.info(`[CONSUMER::${id}] Successfully imported ${queuedEntityRepresentation(record)}`);
+						return true;
+
+					case Errors.INVALID_RECORD:
+					case Errors.RECORD_ENTITY_NOT_FOUND:
+						// In case of invalid records, we don't try again
+						log.error(`[CONSUMER::${id}] ${errMsg} [skipping ${queuedEntityRepresentation(record)}]`);
+						return false;
+
+					case Errors.TRANSACTION_ERROR:
+						return false;
+
+					default: {
+						throw new Error('Undefined response while importing');
 					}
-
-					// eslint-disable-next-line no-await-in-loop -- this is a retry loop
-					const {errorType, errMsg} = await consumeRecord(record);
-
-					switch (errorType) {
-						case Errors.NONE:
-							log.info(`[CONSUMER::${id}] Successfully imported ${queuedEntityRepresentation(record)}`);
-							return true;
-
-						case Errors.INVALID_RECORD:
-						case Errors.RECORD_ENTITY_NOT_FOUND:
-							// In case of invalid records, we don't try again
-							log.error(`[CONSUMER::${id}] ${errMsg} [skipping ${queuedEntityRepresentation(record)}]`);
-							return false;
-
-						case Errors.TRANSACTION_ERROR:
-							// In case of transaction errors, we retry a number of times before giving up
-							attemptsLeft--;
-
-							// Issue a warning in case of transaction error
-							log.warn(`[CONSUMER::${id}] ${errorType} [retry, ${attemptsLeft} attempts left]`);
-
-							break;
-
-						default: {
-							throw new Error('Undefined response while importing');
-						}
-					}
-				}
-				catch (err) {
-					logError(err);
-					log.debug(`Error occurred during import of ${queuedEntityRepresentation(record)}`);
-					attemptsLeft--;
 				}
 			}
+			catch (err) {
+				logError(err);
+				log.debug(`Error occurred during import of ${queuedEntityRepresentation(record)}`);
+			}
 
-			log.info('No more attempts left, giving up');
 			return false;
 		}
 

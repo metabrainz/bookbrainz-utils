@@ -33,9 +33,6 @@ export type Configuration = {
 			password: string;
 		};
 	};
-	import: {
-		retryLimit: number;
-	};
 	queue: {
 		connection: string;
 	}
