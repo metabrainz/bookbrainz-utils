@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018  Shivam Tripathi
+ *               2023  David Kellner
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,67 +18,59 @@
  */
 
 
-import * as Errors from '../helpers/errors.ts';
 import {type ImportQueue, queuedEntityRepresentation} from '../queue.ts';
 import log, {logError} from '../helpers/logger.ts';
+import {ENTITY_TYPES} from 'bookbrainz-data/lib/types/entity.js';
 import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
-import consumeRecord from './consumeRecord.ts';
+import {importRecord} from '../helpers/orm.ts';
+import validate from './validators/index.ts';
 
 
 /**
- * consumerPromise - Instance function called to consume from the RMQ queues
- * @param {Object} objArgs - Arguments passed
- * @param {number} objArgs.id - Worker Id
- * @param {ImportQueue} objArgs.queue - Message queue connection
- * @returns {Promise} - A never fulfilling promise, as consumer is supposed to
- * 		run forever
- **/
-function consumerPromise({id, queue}: {id: number; queue: ImportQueue}) {
-	log.info(`[WORKER::${id}] Running consumer number ${id}`);
+ * Infinitely running import queue consumer function which registers an entity import handler.
+ * @param {ImportQueue} queue - The import queue the consumer should listen to.
+ * @param {number} [id] - Consumer ID (in case there are multiple consumers running simultaneously, unused).
+ * @returns {Promise<never>} A never fulfilling promise, as consumer is supposed to run forever.
+ */
+export default function consumeImportQueue(queue: ImportQueue, id = 0): Promise<never> {
+	log.debug(`Running consumer #${id}`);
 
-	// A never resolving promise as consumer is supposed to run forever
 	return new Promise<never>(() => {
-		if (id !== 0 && !id) {
-			Errors.undefinedValue('Consumer instance:: Worker Id undefined');
-		}
-
 		async function entityHandler(record: QueuedEntity) {
-			log.info(`[CONSUMER::${id}] Received ${queuedEntityRepresentation(record)}, running handler...`);
+			log.debug(`[CONSUMER::${id}] Received ${queuedEntityRepresentation(record)}, running handler...`);
 
 			try {
-				const {errorType, errMsg} = await consumeRecord(record);
+				const {entityType} = record;
+				if (!entityType || !ENTITY_TYPES.includes(entityType)) {
+					log.error(`Invalid entity type '${entityType}', skipping ${queuedEntityRepresentation(record)}`);
+					return false;
+				}
 
-				switch (errorType) {
-					case Errors.NONE:
-						log.info(`[CONSUMER::${id}] Successfully imported ${queuedEntityRepresentation(record)}`);
-						return true;
+				const validationFunction = validate[entityType];
+				if (!validationFunction(record.data)) {
+					log.error(`Validation of the parsed entity failed, skipping ${queuedEntityRepresentation(record)}`);
+					return false;
+				}
 
-					case Errors.INVALID_RECORD:
-					case Errors.RECORD_ENTITY_NOT_FOUND:
-						// In case of invalid records, we don't try again
-						log.error(`[CONSUMER::${id}] ${errMsg} [skipping ${queuedEntityRepresentation(record)}]`);
-						return false;
-
-					case Errors.TRANSACTION_ERROR:
-						return false;
-
-					default: {
-						throw new Error('Undefined response while importing');
-					}
+				try {
+					await importRecord(record);
+				}
+				catch (err) {
+					logError(err, `Transaction for ${queuedEntityRepresentation(record)} failed`);
+					return false;
 				}
 			}
 			catch (err) {
 				logError(err);
 				log.debug(`Error occurred during import of ${queuedEntityRepresentation(record)}`);
+				return false;
 			}
 
-			return false;
+			log.info(`Successfully imported ${queuedEntityRepresentation(record)}`);
+			return true;
 		}
 
-		// Connection related errors would be handled on the queue side
 		queue.onData(entityHandler);
-		log.debug('Consumer registered, waiting for messages...');
+		log.info('Consumer registered, waiting for messages...');
 	});
 }
-
-export default consumerPromise;

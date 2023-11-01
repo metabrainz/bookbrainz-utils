@@ -20,7 +20,7 @@
 import {ImportQueue, type ImportQueueOptions} from './queue.ts';
 import log, {logError} from './helpers/logger.ts';
 import config from './helpers/config.ts';
-import consumerPromise from './consumer/consumer.ts';
+import consumeImportQueue from './consumer/consumer.ts';
 // eslint-disable-next-line import/no-internal-modules
 import {hideBin} from 'yargs/helpers';
 import process from 'node:process';
@@ -110,7 +110,7 @@ const {argv} = yargs(hideBin(process.argv))
 			await queue.close();
 			log.debug('Import queue has been force-closed');
 		});
-		useQueue(queue, (q) => consumerPromise({id: 0, queue: q}), 'Failed to consume queue').then(process.exit);
+		useQueue(queue, (q) => consumeImportQueue(q), 'Failed to consume queue').then(process.exit);
 	})
 	.command('info', 'Show information about the import queue', {}, (args) => {
 		const queue = createQueue(args as BBIQArguments);
