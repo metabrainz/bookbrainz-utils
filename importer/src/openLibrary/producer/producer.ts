@@ -74,7 +74,7 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 			const success = queue.push(entity);
 
 			if (success) {
-				log.debug(`[WORKER::${id}] Pushing record #${lineNumber} ${queuedEntityRepresentation(entity)}`);
+				log.info(`[WORKER::${id}] Queued record #${lineNumber} ${queuedEntityRepresentation(entity)}`);
 			}
 			else {
 				log.error(`[WORKER::${id}] Failed to push record #${lineNumber} ${queuedEntityRepresentation(entity)}`);
