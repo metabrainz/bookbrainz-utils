@@ -21,6 +21,7 @@
 import {type ImportQueue, queuedEntityRepresentation} from '../queue.ts';
 import log, {logError} from '../helpers/logger.ts';
 import {ENTITY_TYPES} from 'bookbrainz-data/lib/types/entity.js';
+import type {ImportOptions} from 'bookbrainz-data/lib/func/imports/create-import.js';
 import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import {importRecord} from '../helpers/orm.ts';
 import validate from './validators/index.ts';
@@ -29,16 +30,16 @@ import validate from './validators/index.ts';
 /**
  * Infinitely running import queue consumer function which registers an entity import handler.
  * @param {ImportQueue} queue - The import queue the consumer should listen to.
- * @param {number} [id] - Consumer ID (in case there are multiple consumers running simultaneously, unused).
+ * @param {ImportOptions} [importOptions] - Options which should be passed to the importer function.
  * @returns {Promise<never>} A never fulfilling promise, as consumer is supposed to run forever.
  */
-export default function consumeImportQueue(queue: ImportQueue, id = 0): Promise<never> {
-	log.debug(`Running consumer #${id}`);
+export default function consumeImportQueue(queue: ImportQueue, importOptions?: ImportOptions): Promise<never> {
+	log.debug('Running consumer...');
 
 	return new Promise<never>(() => {
 		async function entityHandler(record: QueuedEntity) {
 			const entityRepresentation = queuedEntityRepresentation(record);
-			log.debug(`[CONSUMER::${id}] Received ${entityRepresentation}, running handler...`);
+			log.debug(`Received ${entityRepresentation}, running handler...`);
 
 			try {
 				const {entityType} = record;
@@ -54,7 +55,7 @@ export default function consumeImportQueue(queue: ImportQueue, id = 0): Promise<
 				}
 
 				try {
-					const {status, importId} = await importRecord(record);
+					const {status, importId} = await importRecord(record, importOptions);
 					if (status === 'created pending' || status === 'updated pending' || status === 'updated accepted') {
 						log.info(`Successfully ${status} import #${importId} ${entityRepresentation}`);
 					}
