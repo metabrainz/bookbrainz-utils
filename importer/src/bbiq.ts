@@ -103,6 +103,12 @@ const {argv} = yargs(hideBin(process.argv))
 		describe: 'Use the non-persistent test import queue',
 		type: 'boolean'
 	})
+	.option('update', {
+		alias: 'u',
+		default: false,
+		describe: 'Update existing imports which are still pending',
+		type: 'boolean'
+	})
 	.command('consume', 'Await queued entities and insert them into the BB database', {}, (args) => {
 		const queue = createQueue(args as BBIQArguments);
 		process.on('SIGINT', async () => {
@@ -110,7 +116,9 @@ const {argv} = yargs(hideBin(process.argv))
 			await queue.close();
 			log.debug('Import queue has been force-closed');
 		});
-		useQueue(queue, (q) => consumeImportQueue(q), 'Failed to consume queue').then(process.exit);
+		useQueue(queue, (q) => consumeImportQueue(q, {
+			existingImportAction: args.update ? 'update pending' : 'skip'
+		}), 'Failed to consume queue').then(process.exit);
 	})
 	.command('info', 'Show information about the import queue', {}, (args) => {
 		const queue = createQueue(args as BBIQArguments);
