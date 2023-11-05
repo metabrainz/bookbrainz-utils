@@ -54,7 +54,14 @@ export default function consumeImportQueue(queue: ImportQueue, id = 0): Promise<
 				}
 
 				try {
-					await importRecord(record);
+					const {status, importId} = await importRecord(record);
+					if (status === 'created pending' || status === 'updated pending' || status === 'updated accepted') {
+						log.info(`Successfully ${status} import #${importId} ${entityRepresentation}`);
+					}
+					else {
+						log.info(`${entityRepresentation} already exists as import #${importId} (${status})`);
+					}
+					return true;
 				}
 				catch (err) {
 					logError(err, `Transaction for ${entityRepresentation} failed`);
@@ -65,9 +72,6 @@ export default function consumeImportQueue(queue: ImportQueue, id = 0): Promise<
 				logError(err, `Unexpected error occurred during import of ${entityRepresentation}`);
 				return false;
 			}
-
-			log.info(`Successfully imported ${entityRepresentation}`);
-			return true;
 		}
 
 		queue.onData(entityHandler);
