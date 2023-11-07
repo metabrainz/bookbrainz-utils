@@ -51,7 +51,7 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 			// 		➜ JSON - the complete record in JSON format
 			const record = line.split('\t');
 
-			const source = 'OPENLIBRARY';
+			const source = 'OpenLibrary';
 			const json = JSON.parse(record[4]);
 			const OLType = record[0].split('/')[2] as OLEntityType;
 			const entityType = mapEntityType(OLType);

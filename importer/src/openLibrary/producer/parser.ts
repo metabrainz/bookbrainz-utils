@@ -80,7 +80,7 @@ function processWork(json: any) {
 			links: [],
 			relationships: []
 		},
-		source: 'OPENLIBRARY'
+		source: 'OpenLibrary'
 	};
 
 	// Set up aliases
@@ -196,7 +196,7 @@ function processAuthor(json) {
 			originId: [],
 			relationships: []
 		},
-		source: 'OPENLIBRARY'
+		source: 'OpenLibrary'
 	};
 
 	// Set up aliases
