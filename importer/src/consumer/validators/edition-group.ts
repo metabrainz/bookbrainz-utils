@@ -58,7 +58,7 @@ export function validateEditionGroup(
 		{}
 	);
 
-	log.info('[CONSUMER] EDITION GROUP - Calling validation functions.');
+	log.debug('[CONSUMER] EDITION GROUP - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'EDITION GROUP - Failed validate alias section. \n';

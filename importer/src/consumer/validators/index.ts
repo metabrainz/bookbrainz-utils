@@ -21,11 +21,13 @@ import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
 import {type AuthorSection, validateAuthor} from './author.ts';
 import {type EditionGroupSection, validateEditionGroup} from './edition-group.ts';
 import {type EditionSection, validateEdition} from './edition.ts';
+import type {
+	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedWork
+} from 'bookbrainz-data/lib/types/parser.d.ts';
 import {type PublisherSection, validatePublisher} from './publisher.ts';
 import {type WorkSection, validateWork} from './work.ts';
 import type {AliasWithDefaultT} from 'bookbrainz-data/lib/types/aliases.d.ts';
 import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
-import type {ParsedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import _ from 'lodash';
 
 
@@ -70,8 +72,12 @@ function getNameSection(record: ParsedEntity): NameSection {
 	return nameSection;
 }
 
+function idToEntityStub<T>(id: T) {
+	return id ? {id} : null;
+}
+
 function validateEntity(validationFunction, entityType: EntityTypeString) {
-	return function validate(validationData) {
+	return function validate(validationData: ParsedEntity) {
 		if (_.isEmpty(validationData)) {
 			return false;
 		}
@@ -79,56 +85,64 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 		const validationObject: EntityValidationSections = {
 			aliasSection: getAliasSection(validationData),
 			identifierSection: getIdentifierSection(validationData),
-			nameSection: getNameSection(validationData),
-			workerId: validationData.workerId
+			nameSection: getNameSection(validationData)
 		};
 
 		// Add entity specific validation data
 		switch (entityType) {
 			case 'Author':
+				/* eslint-disable no-case-declarations */
+				// TODO: The code would be much cleaner if we could add the `entityType` property back to `ParsedEntity`
+				// for type inference after the conflicting property of `ParsedSeries` has been renamed.
+				const authorData = validationData as ParsedAuthor;
 				validationObject.authorSection = {
-					beginArea: validationData.beginArea,
-					beginDate: validationData.beginDate,
-					endArea: validationData.endArea,
-					endDate: validationData.endDate,
-					ended: validationData.ended,
-					gender: validationData.gender,
-					type: validationData.type
+					beginArea: idToEntityStub(authorData.beginAreaId),
+					beginDate: authorData.beginDate,
+					endArea: idToEntityStub(authorData.endAreaId),
+					endDate: authorData.endDate,
+					ended: authorData.ended,
+					gender: authorData.genderId,
+					type: authorData.typeId
 				};
 				break;
 			case 'Edition':
+				const editionData = validationData as ParsedEdition;
 				validationObject.editionSection = {
-					depth: validationData.depth,
-					editionGroup: validationData.editionGroup,
-					format: validationData.format,
-					height: validationData.height,
-					languages: validationData.languages,
-					pages: validationData.pages,
-					publisher: validationData.publisher,
-					releaseDate: validationData.releaseDate,
-					status: validationData.status,
-					weight: validationData.weight,
-					width: validationData.width
+					depth: editionData.depth,
+					editionGroup: idToEntityStub(editionData.editionGroupBbid),
+					format: editionData.formatId,
+					height: editionData.height,
+					languages: editionData.languages.map(({id}) => ({value: id})),
+					pages: editionData.pages,
+					// TODO: publisher: idToEntityStub(editionData.publisher),
+					// TODO: release events (date and country) should not be mapped to just a date
+					// releaseDate: editionData.releaseDate,
+					status: editionData.statusId,
+					weight: editionData.weight,
+					width: editionData.width
 				};
 				break;
 			case 'EditionGroup':
+				const editionGroupData = validationData as ParsedEditionGroup;
 				validationObject.editionGroupSection = {
-					type: validationData.type
+					type: editionGroupData.typeId
 				};
 				break;
 			case 'Publisher':
+				const publisherData = validationData as ParsedPublisher;
 				validationObject.publisherSection = {
-					area: validationData.area,
-					beginDate: validationData.beginDate,
-					endDate: validationData.endDate,
-					ended: validationData.ended,
-					type: validationData.type
+					area: idToEntityStub(publisherData.areaId),
+					beginDate: publisherData.beginDate,
+					endDate: publisherData.endDate,
+					ended: publisherData.ended,
+					type: publisherData.typeId
 				};
 				break;
 			case 'Work':
+				const workData = validationData as ParsedWork;
 				validationObject.workSection = {
-					language: validationData.language,
-					type: validationData.type
+					// TODO: language: workData.language,
+					type: workData.typeId
 				};
 				break;
 			default:
@@ -154,7 +168,6 @@ type CommonValidationSections = {
 	aliasSection: AliasSection;
 	identifierSection: IdentifierSection;
 	nameSection: NameSection;
-	workerId: number;
 };
 
 type EntityValidationSections = CommonValidationSections & Partial<{

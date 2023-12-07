@@ -61,6 +61,7 @@ export const identifiers = {
 	wikidataIdWork
 };
 
+// TODO: adapt for lande, e.g. 'slk' is missing
 export const francMinMapping = {
 	amh: 'Amharic',
 	arb: 'Standard Arabic',
@@ -105,6 +106,7 @@ export const francMinMapping = {
 	mal: 'Malayalam',
 	mar: 'Marathi',
 	mya: 'Burmese',
+	mul: '[Multiple languages]',
 	nep: 'Nepali (macrolanguage)',
 	nld: 'Dutch',
 	nya: 'Nyanja',
@@ -142,6 +144,7 @@ export const francMinMapping = {
 };
 
 export const mbLanguageMapping = {
+	'[Multiple languages]': 284,
 	Amharic: 15,
 	Belarusian: 45,
 	Bengali: 47,
@@ -193,6 +196,7 @@ export const mbLanguageMapping = {
 	Somali: 390,
 	'Southern Qiandong Miao': 2728,
 	Spanish: 393,
+	// TODO: why not Arabic: 18? double check the entire list...
 	'Standard Arabic': 818,
 	Sundanese: 399,
 	'Swahili (individual language)': 6228,
@@ -211,8 +215,18 @@ export const mbLanguageMapping = {
 	Zulu: 470
 };
 
-export function mapLanguage(francCode: string): number {
-	const language = francMinMapping[francCode];
+
+/** Since alias languages are mandatory in BB, we need a safe fallback value. */
+export const fallbackLanguage = '[Multiple languages]';
+
+/**
+ * Maps the given language code to the corresponding MB/BB database ID.
+ * Falls back to `[Multiple languages]`.
+ * @param languageCode - ISO 639-3 three letter language code.
+ * @returns {number} Internal ID of the language in MB.
+ */
+export function mapLanguage(languageCode: string): number {
+	const language = francMinMapping[languageCode] || fallbackLanguage;
 	const code = mbLanguageMapping[language];
-	return code || mbLanguageMapping.English;
+	return code || mbLanguageMapping[fallbackLanguage];
 }

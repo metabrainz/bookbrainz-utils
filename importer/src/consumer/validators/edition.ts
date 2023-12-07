@@ -129,7 +129,7 @@ export function validateEdition(
 	const nameSection = get(editionValidationObject, 'nameSection', {});
 	const editionSection = get(editionValidationObject, 'editionSection', {});
 
-	log.info('[CONSUMER] EDITION - Calling validation functions.');
+	log.debug('[CONSUMER] EDITION - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'EDITION - Failed validate alias section failed. \n';

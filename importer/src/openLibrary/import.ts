@@ -18,10 +18,10 @@
 
 
 import {ImportQueue, type ImportQueueOptions} from '../queue.ts';
+import log, {logError} from '../helpers/logger.ts';
 import config from '../helpers/config.ts';
 // eslint-disable-next-line import/no-internal-modules
 import {hideBin} from 'yargs/helpers';
-import log from '../helpers/logger.ts';
 import process from 'node:process';
 import readLine from './producer/producer.ts';
 import yargs from 'yargs';
@@ -55,6 +55,7 @@ const {dump, test, connection} = yargs(hideBin(process.argv))
 async function importDump(dumpPath: string) {
 	const queueOptions: Partial<ImportQueueOptions> = {
 		connectionUrl: connection || config.queue?.connection,
+		failureQueue: false,
 		isPersistent: !test
 	};
 
@@ -73,7 +74,7 @@ async function importDump(dumpPath: string) {
 		log.info('Dump has been processed');
 	}
 	catch (error) {
-		log.error('Failed to process dump:', error);
+		logError(error, 'Failed to process dump');
 		exitCode = 1;
 	}
 	finally {

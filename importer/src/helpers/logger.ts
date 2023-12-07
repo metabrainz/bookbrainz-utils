@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018  Shivam Tripathi
+ *               2023  David Kellner
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,23 +31,38 @@ const log = createLogger({
 		error: 3,
 		info: 6,
 		notice: 5,
-		read: 8,
 		warn: 4
 	},
 	transports: [
-		// new transports.Console({
-		// 	// format: format.combine(
-		// 	// 	format.colorize(),
-		// 	// 	format.timestamp(),
-		// 	// 	format.printf((info) => `${info.timestamp} - ${info.level}: ${info.message}`)
-		// 	// ),
-		// 	// handleExceptions: true,
-		// 	// level: 'debug'
-		// })
+		new transports.Console({
+			format: format.combine(
+				format.colorize(),
+				format.timestamp(),
+				format.printf(({message, level, timestamp, ...metadata}) => {
+					let output = `${timestamp} ${level}: ${message}`;
+					if (Object.keys(metadata).length) {
+						output += ` ${JSON.stringify(metadata, null, 2)}`;
+					}
+					return output;
+				})
+			),
+			handleExceptions: true,
+			level: 'debug'
+		})
 	]
 });
 
-// Use standard console as drop-in replacement for winston for now.
-// TODO: Use a proper logging library again once it is clear why the transports setup code above caused amqplib to hang.
-// export default log;
-export default console;
+export default log;
+
+/**
+ * Logs an error with stack trace (if present) and context.
+ * @param {any} error - `Error` object or an error of arbitrary type.
+ * @param {string} messagePrefix - Optional prefix to add context to the error message.
+ */
+export function logError(error: any, messagePrefix?: string) {
+	const message = [
+		messagePrefix,
+		error instanceof Error ? error.stack : error.toString()
+	].filter(Boolean).join(': ');
+	log.error(message);
+}
