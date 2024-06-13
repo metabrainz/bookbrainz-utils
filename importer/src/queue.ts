@@ -17,11 +17,21 @@
  */
 
 
+import log, {logError} from './helpers/logger.ts';
 import {Buffer} from 'node:buffer';
 import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
 import amqp from 'amqplib';
 import {delay} from './helpers/utils.ts';
-import log from './helpers/logger.ts';
+
+
+/**
+ * Generate a string representation of a queued entity (for logging purposes).
+ * Although we expect a `QueuedEntity`, we may get arbitrary JSON from the queue which we have to handle for error logs.
+ */
+export function queuedEntityRepresentation(entity: QueuedEntity): string {
+	const defaultAlias = entity.data?.alias?.find((alias) => alias.default) ?? entity.data?.alias?.[0];
+	return `'${defaultAlias?.name ?? '[unknown]'}' (${entity.entityType} ${entity.originId ?? '[unknown ID]'})`;
+}
 
 
 /** Queue which stores parsed entities that have to be imported into the BookBrainz database. */
@@ -31,7 +41,7 @@ export class ImportQueue {
 		isPersistent = true,
 		prefetchLimit = 5,
 		queueName = 'bookbrainz-import',
-		failureQueue = false
+		failureQueue = 'bookbrainz-import-failures'
 	}: Partial<ImportQueueOptions> = {}) {
 		this.connectionUrl = connectionUrl;
 		this.isPersistent = isPersistent;
@@ -51,11 +61,13 @@ export class ImportQueue {
 		this.channel = await this.connection.createChannel();
 		await this.channel.prefetch(this.prefetchLimit);
 
+		const queueInfo = [this.channel.assertQueue(this.queueName, {durable: this.isPersistent})];
+
 		if (this.failureQueueName) {
-			this.channel.assertQueue(this.failureQueueName, {durable: this.isPersistent});
+			queueInfo.push(this.channel.assertQueue(this.failureQueueName, {durable: this.isPersistent}));
 		}
 
-		return this.channel.assertQueue(this.queueName, {durable: this.isPersistent});
+		return Promise.all(queueInfo);
 	}
 
 	/** Closes the connection to the AMQP server. */
@@ -92,7 +104,7 @@ export class ImportQueue {
 			message = JSON.stringify(entity);
 		}
 		catch (error) {
-			log.error(`Failed to serialize entity ${entity.originId}: ${error}`);
+			log.error(`Failed to serialize ${queuedEntityRepresentation(entity)}: ${error}`);
 			return false;
 		}
 
@@ -110,11 +122,14 @@ export class ImportQueue {
 			let entity: QueuedEntity;
 			this.consumedMessages++;
 			this.pendingMessages++;
+
+			const content = message.content.toString();
 			try {
-				entity = JSON.parse(message.content.toString());
+				entity = JSON.parse(content);
 			}
 			catch (error) {
-				log.warn('Skipping invalid message:', error.message);
+				logError(error, 'Skipping invalid message');
+				log.debug(`Skipped content: ${content}`);
 				// acknowledge invalid message, otherwise it will be requeued
 				this.channel.ack(message);
 				this.pendingMessages--;

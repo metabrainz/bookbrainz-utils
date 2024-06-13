@@ -67,7 +67,7 @@ export function validateWork(
 	const nameSection = get(workValidationObject, 'nameSection', {});
 	const workSection = get(workValidationObject, 'workSection', {});
 
-	log.info('[CONSUMER] WORK - Calling validation functions.');
+	log.debug('[CONSUMER] WORK - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'WORK - Failed validate alias section failed. \n';

@@ -99,7 +99,7 @@ export function validateAuthor(
 		{}
 	);
 
-	log.info('[CONSUMER] AUTHOR - Calling validation functions.');
+	log.debug('[CONSUMER] AUTHOR - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'AUTHOR - Validate alias section failed. \n';

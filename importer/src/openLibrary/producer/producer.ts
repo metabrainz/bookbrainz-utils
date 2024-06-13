@@ -17,10 +17,11 @@
  */
 
 
-import {type ImportQueue} from '../../queue.ts';
-import fs from 'node:fs';
-import log from '../../helpers/logger.ts';
-import parser from './parser.ts';
+import {type ImportQueue, queuedEntityRepresentation} from '../../queue.ts';
+import log, {logError} from '../../helpers/logger.ts';
+import parser, {type OLEntityType, mapEntityType} from './parser.ts';
+import type {QueuedEntity} from 'bookbrainz-data/lib/types/parser.d.ts';
+import {createReadStream} from 'node:fs';
 import readline from 'node:readline';
 
 
@@ -36,14 +37,10 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 	const fileName = base.split('/').pop();
 	log.info(`[WORKER::${id}] Processing dump file '${fileName}'`);
 
-	const rl = readline.createInterface({
-		input: fs.createReadStream(base)
-	});
+	let lineNumber = 0;
 
-	let count = 0;
-
-	rl.on('line', line => {
-		count++;
+	function parseLine(line: string): void {
+		lineNumber++;
 		try {
 			// According to details at https://openlibrary.org/developers/dumps
 			// Tab separated values in the following order
@@ -54,43 +51,64 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 			// 		➜ JSON - the complete record in JSON format
 			const record = line.split('\t');
 
-			const source = 'OPENLIBRARY';
+			const source = 'OpenLibrary';
 			const json = JSON.parse(record[4]);
-			const OLType = record[0].split('/')[2];
+			const OLType = record[0].split('/')[2] as OLEntityType;
+			const entityType = mapEntityType(OLType);
+
+			if (!entityType) {
+				throw new Error(`Unsupported OpenLibrary entity type '${OLType}'`);
+			}
+
 			const data = parser(OLType, json);
 			const originId = record[1].split('/')[2];
 			const lastEdited = record[3];
 
-			const success = queue.push({
+			const entity: QueuedEntity = {
 				data,
-				entityType: data.entityType,
+				entityType,
 				lastEdited: lastEdited || data.lastEdited,
 				originId: originId || data.originId,
 				source
-			});
+			};
+			const success = queue.push(entity);
 
 			if (success) {
-				log.debug(`[WORKER::${id}] Pushing record #${count} (${originId})`);
+				log.info(`[WORKER::${id}] Queued record #${lineNumber} ${queuedEntityRepresentation(entity)}`);
 			}
 			else {
-				log.error(`[WORKER::${id}] Failed to push record #${count} (${originId})`);
+				log.error(`[WORKER::${id}] Failed to push record #${lineNumber} ${queuedEntityRepresentation(entity)}`);
 			}
 		}
 		catch (err) {
-			log.warn(
-				`Error in ${fileName} in line number ${count}.`,
-				'Skipping. Record for reference: \n [[',
-				line, ']]'
-			);
+			log.error(`Parsing error: ${err}\n at ${fileName}:${lineNumber}`);
+			log.debug(`Skipped: ${line}`);
 		}
-	});
+	}
 
-	return new Promise((resolve) => {
-		rl.on('close', () => resolve({
+	try {
+		const inputStream = createReadStream(base);
+		const rl = readline.createInterface({
+			input: inputStream
+		});
+
+		rl.on('line', parseLine);
+
+		return new Promise((resolve) => {
+			// TODO: improve return value, we do no longer have worker threads
+			rl.on('close', () => resolve({
+				id,
+				workerCount: lineNumber
+			}));
+		});
+	}
+	catch (error) {
+		logError(error, `Failed to process '${fileName}'`);
+		return Promise.resolve({
 			id,
-			workerCount: count
-		}));
-	});
+			workerCount: lineNumber
+		});
+	}
 }
 
 export default readLine;

@@ -17,11 +17,14 @@
  */
 
 
-import type {ParsedAuthor, ParsedWork} from 'bookbrainz-data/lib/types/parser.d.ts';
-import {identifiers, mapLanguage} from '../../helpers/mapping.ts';
+import type {ParsedAuthor, ParsedEntity, ParsedWork} from 'bookbrainz-data/lib/types/parser.d.ts';
+import {francMinMapping, identifiers, mapLanguage} from '../../helpers/mapping.ts';
 import {isNotDefined, sortName} from '../../helpers/utils.ts';
+import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
 import _ from 'lodash';
 import {franc} from 'franc-min';
+import lande from 'lande';
+import log from '../../helpers/logger.ts';
 
 
 /** OpenLibrary entity types which are handled by the parser. */
@@ -34,11 +37,34 @@ export const OL_ENTITY_TYPES = [
 export type OLEntityType = typeof OL_ENTITY_TYPES[number];
 
 
-function detectLanguage(name: string): number {
-	let lang = franc(name);
-	lang = lang !== 'und' ? lang : 'eng';
+/** Maps a supported OpenLibrary entity type to a BookBrainz entity type. */
+export function mapEntityType(sourceType: OLEntityType): EntityTypeString | null {
+	switch (sourceType) {
+		case 'author': return 'Author';
+		case 'edition': return 'Edition';
+		case 'work': return 'Work';
+		default: return null;
+	}
+}
 
-	return mapLanguage(lang);
+function detectLanguage(name: string, confidenceMinimum = 0.7): number {
+	// lande already sorts the results by decreasing confidence
+	const topLanguages = lande(name)
+		.filter(([_lang, confidence]) => confidence > 0.1)
+		.slice(0, 5);
+	const [topLanguage, confidence] = topLanguages[0];
+
+	const topLanguagesString = topLanguages.map(
+		([lang, confidence]) => `${francMinMapping[lang] ?? lang} (${confidence.toFixed(2)})`
+	).join(', ');
+	log.debug(`Detected top languages of '${name}': ${topLanguagesString}`);
+
+	// Also log the result with franc for comparison, TODO: drop later
+	const francLanguage = franc(name);
+	log.debug(`Detected language (franc): ${francMinMapping[francLanguage] ?? francLanguage}`);
+
+	// In case we have no idea about the (mandatory) language, better fallback to [Multiple languages]
+	return mapLanguage(confidence > confidenceMinimum ? topLanguage : 'mul');
 }
 
 function processWork(json: any) {
@@ -49,13 +75,12 @@ function processWork(json: any) {
 	// Base skeleton, remaining keys are added as and when they are extracted
 	const work: ParsedWork = {
 		alias: [],
-		entityType: 'Work',
 		identifiers: [],
 		metadata: {
 			links: [],
 			relationships: []
 		},
-		source: 'OPENLIBRARY'
+		source: 'OpenLibrary'
 	};
 
 	// Set up aliases
@@ -163,7 +188,7 @@ function processAuthor(json) {
 	// Base skeleton, remaining keys are added as and when they are extracted
 	const author: ParsedAuthor = {
 		alias: [],
-		entityType: 'Author',
+		ended: false,
 		identifiers: [],
 		metadata: {
 			identifiers: [],
@@ -171,7 +196,7 @@ function processAuthor(json) {
 			originId: [],
 			relationships: []
 		},
-		source: 'OPENLIBRARY'
+		source: 'OpenLibrary'
 	};
 
 	// Set up aliases
@@ -258,13 +283,14 @@ function processAuthor(json) {
 	}
 	if (!isNotDefined(json.death_date)) {
 		author.endDate = json.death_date;
+		author.ended = true;
 		author.type = 'Person';
 	}
 
 
-	// Bio is used for diambiguation, tags can be used too?
+	// Biography field is used for annotation, tags could be used too?
 	if (!isNotDefined(_.get(json, 'bio.value'))) {
-		author.disambiguation = json.bio.value;
+		author.annotation = json.bio.value;
 	}
 
 
@@ -404,7 +430,7 @@ function processEdition(json) {
 	return json;
 }
 
-export default function parser(type: OLEntityType, json) {
+export default function parser(type: OLEntityType, json): ParsedEntity | null {
 	switch (type) {
 		case 'work': return processWork(json);
 		case 'edition': return processEdition(json);

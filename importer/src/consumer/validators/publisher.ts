@@ -87,7 +87,7 @@ export function validatePublisher(
 		{}
 	);
 
-	log.info('[CONSUMER] PUBLISHER - Calling validation functions.');
+	log.debug('[CONSUMER] PUBLISHER - Calling validation functions.');
 
 	if (!validateAliases(aliasSection)) {
 		err += 'PUBLISHER - Failed validate alias section failed. \n';
