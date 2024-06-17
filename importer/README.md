@@ -82,6 +82,12 @@ Create the database inside your `postgres` container and execute the SQL files t
 ```sh
 docker exec postgres psql -c "CREATE DATABASE bookbrainz_min;" -U bookbrainz
 cat local/minimal_test_database.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+
+# Add support for series entities if the minimal DB dump does not have them.
+cat sql/migrations/series/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+cat sql/migrations/series-identifiers/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+cat sql/migrations/series-achievement/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+
 cat local/minimal_test_database_import_patch.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 ```
 
