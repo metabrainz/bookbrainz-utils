@@ -165,7 +165,7 @@ export type EditionSection = {
 	languages?: LanguageStub[];
 	pages?: number;
 	editionGroup: EntityStub;
-	publisher?: EntityStub;
+	publisher?: Record<string, EntityStub>;
 	releaseDate?: string;
 	status?: number;
 	weight?: number;
