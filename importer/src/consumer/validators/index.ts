@@ -43,9 +43,12 @@ function getAliasSection(record: ParsedEntity): AliasSection {
 	const aliasSection: AliasSection = {};
 	let index = 0;
 	if (record.alias) {
-		record.alias.forEach(element => {
-			if (!element.primary) {
-				aliasSection[`n${index++}`] = element;
+		record.alias.forEach(alias => {
+			if (!alias.primary) {
+				aliasSection[`n${index++}`] = {
+					language: alias.languageId,
+					...alias
+				};
 			}
 		});
 	}
@@ -61,8 +64,11 @@ function getIdentifierSection(record: ParsedEntity): IdentifierSection {
 	const identifierSection: IdentifierSection = {};
 	let index = 0;
 	if (record.identifiers) {
-		record.identifiers.forEach(element => {
-			identifierSection[`n${index++}`] = element;
+		record.identifiers.forEach(identifier => {
+			identifierSection[`n${index++}`] = {
+				type: identifier.typeId,
+				...identifier
+			};
 		});
 	}
 
@@ -72,8 +78,9 @@ function getIdentifierSection(record: ParsedEntity): IdentifierSection {
 function getNameSection(record: ParsedEntity): NameSection {
 	const defaultAlias = getDefaultAlias(record.alias);
 
-	const nameSection = {
+	const nameSection: NameSection = {
 		disambiguation: record.disambiguation,
+		language: defaultAlias.languageId,
 		...defaultAlias
 	};
 
@@ -91,8 +98,8 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 		}
 		// Construct generic validation object from data set for validation
 		const validationObject: EntityValidationSections = {
-			aliasSection: getAliasSection(validationData),
-			identifierSection: getIdentifierSection(validationData),
+			aliasEditor: getAliasSection(validationData),
+			identifierEditor: getIdentifierSection(validationData),
 			nameSection: getNameSection(validationData)
 		};
 
@@ -186,8 +193,8 @@ export default validate;
 
 
 type CommonValidationSections = {
-	aliasSection: AliasSection;
-	identifierSection: IdentifierSection;
+	aliasEditor: AliasSection;
+	identifierEditor: IdentifierSection;
 	nameSection: NameSection;
 };
 

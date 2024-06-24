@@ -241,15 +241,21 @@ export function validateSubmissionSection(
 export type NameSection = {
 	name: string;
 	sortName: string;
-	languageId: number;
+	language: number;
 	default?: boolean;
 	primary: boolean;
 	disambiguation?: string;
 };
 
-export type AliasSection = Record<string, AliasWithDefaultT>;
+// TODO: Change website and validators to use `languageId` instead of `language` to make code cleaner?
+export type AliasSection = Record<string, AliasWithDefaultT & {
+	language: number;
+}>;
 
-export type IdentifierSection = Record<string, IdentifierT>;
+// TODO: Change website and validators to use `typeId` instead of `type` to make code cleaner?
+export type IdentifierSection = Record<string, IdentifierT & {
+	type: number;
+}>;
 
 /** Incomplete area type definition for validation functions. */
 export type AreaStub = {
