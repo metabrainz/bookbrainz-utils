@@ -35,6 +35,7 @@ import {validateAuthor} from 'bookbrainz-data/lib/validators/author.js';
 import {validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
 import {validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
 import {validatePublisher} from 'bookbrainz-data/lib/validators/publisher.js';
+import {validateSeries} from 'bookbrainz-data/lib/validators/series.js';
 import {validateWork} from 'bookbrainz-data/lib/validators/work.js';
 
 
@@ -177,6 +178,7 @@ const validate: Record<EntityTypeString, ReturnType<typeof validateEntity>> = {
 	Edition: validateEntity(validateEdition, 'Edition'),
 	EditionGroup: validateEntity(validateEditionGroup, 'EditionGroup'),
 	Publisher: validateEntity(validatePublisher, 'Publisher'),
+	Series: validateEntity(validateSeries, 'Series'),
 	Work: validateEntity(validateWork, 'Work')
 };
 
