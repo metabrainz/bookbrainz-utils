@@ -88,5 +88,6 @@ export function validateEditionGroup(
 
 
 export type EditionGroupSection = {
+	authorCreditEnable?: boolean;
 	type?: number;
 };

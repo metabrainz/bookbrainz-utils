@@ -159,6 +159,7 @@ export function validateEdition(
 
 
 export type EditionSection = {
+	authorCreditEnable?: boolean;
 	depth?: number;
 	format?: number;
 	height?: number;

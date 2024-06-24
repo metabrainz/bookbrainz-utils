@@ -123,6 +123,8 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 			case 'Edition':
 				const editionData = validationData as ParsedEdition;
 				validationObject.editionSection = {
+					// TODO: Support 'authorCreditEditor' section
+					authorCreditEnable: false,
 					depth: editionData.depth,
 					editionGroup: idToEntityStub(editionData.editionGroupBbid),
 					format: editionData.formatId,
@@ -140,6 +142,8 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 			case 'EditionGroup':
 				const editionGroupData = validationData as ParsedEditionGroup;
 				validationObject.editionGroupSection = {
+					// TODO: Support 'authorCreditEditor' section
+					authorCreditEnable: false,
 					type: editionGroupData.typeId
 				};
 				break;
