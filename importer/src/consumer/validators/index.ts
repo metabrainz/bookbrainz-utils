@@ -18,17 +18,24 @@
 
 
 import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
-import {type AuthorSection, validateAuthor} from './author.ts';
-import {type EditionGroupSection, validateEditionGroup} from './edition-group.ts';
-import {type EditionSection, validateEdition} from './edition.ts';
 import type {
 	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedWork
 } from 'bookbrainz-data/lib/types/parser.d.ts';
-import {type PublisherSection, validatePublisher} from './publisher.ts';
-import {type WorkSection, validateWork} from './work.ts';
 import type {AliasWithDefaultT} from 'bookbrainz-data/lib/types/aliases.d.ts';
+import {type AuthorSection} from './author.ts';
+import {type EditionGroupSection} from './edition-group.ts';
+import {type EditionSection} from './edition.ts';
 import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
+import {type PublisherSection} from './publisher.ts';
+import {ValidationError} from 'bookbrainz-data/lib/validators/base.js';
+import {type WorkSection} from './work.ts';
 import _ from 'lodash';
+import log from '../../helpers/logger.ts';
+import {validateAuthor} from 'bookbrainz-data/lib/validators/author.js';
+import {validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
+import {validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
+import {validatePublisher} from 'bookbrainz-data/lib/validators/publisher.js';
+import {validateWork} from 'bookbrainz-data/lib/validators/work.js';
 
 
 function getAliasSection(record: ParsedEntity): AliasSection {
@@ -149,7 +156,19 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 				break;
 		}
 
-		return validationFunction(validationObject);
+		try {
+			validationFunction(validationObject);
+			return true;
+		}
+		catch (error) {
+			if (error instanceof ValidationError) {
+				log.error(`Invalid ${entityType} data: ${
+					error.field ? [`${error.field}: ${error.message}`] : error.message
+				}`);
+				return false;
+			}
+			throw error;
+		}
 	};
 }
 
