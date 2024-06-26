@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018  Shivam Tripathi
+ *               2024  David Kellner
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +18,21 @@
  */
 
 
-import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
+import type {AliasSection, IdentifierSection, NameSection} from 'bookbrainz-data/lib/validators/common.d.ts';
+import {type AuthorSection, validateAuthor} from 'bookbrainz-data/lib/validators/author.js';
+import {type EditionSection, validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
+import {type EditionGroupSection, validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
 import type {
 	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedWork
 } from 'bookbrainz-data/lib/types/parser.d.ts';
+import {type PublisherSection, validatePublisher} from 'bookbrainz-data/lib/validators/publisher.js';
+import {type WorkSection, validateWork} from 'bookbrainz-data/lib/validators/work.js';
 import type {AliasWithDefaultT} from 'bookbrainz-data/lib/types/aliases.d.ts';
-import {type AuthorSection} from './author.ts';
-import {type EditionGroupSection} from './edition-group.ts';
-import {type EditionSection} from './edition.ts';
 import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
-import {type PublisherSection} from './publisher.ts';
 import {ValidationError} from 'bookbrainz-data/lib/validators/base.js';
-import {type WorkSection} from './work.ts';
 import _ from 'lodash';
 import log from '../../helpers/logger.ts';
-import {validateAuthor} from 'bookbrainz-data/lib/validators/author.js';
-import {validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
-import {validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
-import {validatePublisher} from 'bookbrainz-data/lib/validators/publisher.js';
 import {validateSeries} from 'bookbrainz-data/lib/validators/series.js';
-import {validateWork} from 'bookbrainz-data/lib/validators/work.js';
 
 
 function getAliasSection(record: ParsedEntity): AliasSection {
