@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2018  Shivam Tripathi
+ *               2024  David Kellner
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,27 +18,33 @@
  */
 
 
-import type {AliasSection, IdentifierSection, NameSection} from './common.ts';
-import {type AuthorSection, validateAuthor} from './author.ts';
-import {type EditionGroupSection, validateEditionGroup} from './edition-group.ts';
-import {type EditionSection, validateEdition} from './edition.ts';
+import type {AliasSection, IdentifierSection, NameSection} from 'bookbrainz-data/lib/validators/common.d.ts';
+import {type AuthorSection, validateAuthor} from 'bookbrainz-data/lib/validators/author.js';
+import {type EditionSection, validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
+import {type EditionGroupSection, validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
 import type {
 	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedWork
 } from 'bookbrainz-data/lib/types/parser.d.ts';
-import {type PublisherSection, validatePublisher} from './publisher.ts';
-import {type WorkSection, validateWork} from './work.ts';
+import {type PublisherSection, validatePublisher} from 'bookbrainz-data/lib/validators/publisher.js';
+import {type WorkSection, validateWork} from 'bookbrainz-data/lib/validators/work.js';
 import type {AliasWithDefaultT} from 'bookbrainz-data/lib/types/aliases.d.ts';
 import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
+import {ValidationError} from 'bookbrainz-data/lib/validators/base.js';
 import _ from 'lodash';
+import log from '../../helpers/logger.ts';
+import {validateSeries} from 'bookbrainz-data/lib/validators/series.js';
 
 
 function getAliasSection(record: ParsedEntity): AliasSection {
 	const aliasSection: AliasSection = {};
 	let index = 0;
 	if (record.alias) {
-		record.alias.forEach(element => {
-			if (!element.primary) {
-				aliasSection[`n${index++}`] = element;
+		record.alias.forEach(alias => {
+			if (!alias.primary) {
+				aliasSection[`n${index++}`] = {
+					language: alias.languageId,
+					...alias
+				};
 			}
 		});
 	}
@@ -53,8 +60,11 @@ function getIdentifierSection(record: ParsedEntity): IdentifierSection {
 	const identifierSection: IdentifierSection = {};
 	let index = 0;
 	if (record.identifiers) {
-		record.identifiers.forEach(element => {
-			identifierSection[`n${index++}`] = element;
+		record.identifiers.forEach(identifier => {
+			identifierSection[`n${index++}`] = {
+				type: identifier.typeId,
+				...identifier
+			};
 		});
 	}
 
@@ -64,8 +74,9 @@ function getIdentifierSection(record: ParsedEntity): IdentifierSection {
 function getNameSection(record: ParsedEntity): NameSection {
 	const defaultAlias = getDefaultAlias(record.alias);
 
-	const nameSection = {
+	const nameSection: NameSection = {
 		disambiguation: record.disambiguation,
+		language: defaultAlias.languageId,
 		...defaultAlias
 	};
 
@@ -83,8 +94,8 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 		}
 		// Construct generic validation object from data set for validation
 		const validationObject: EntityValidationSections = {
-			aliasSection: getAliasSection(validationData),
-			identifierSection: getIdentifierSection(validationData),
+			aliasEditor: getAliasSection(validationData),
+			identifierEditor: getIdentifierSection(validationData),
 			nameSection: getNameSection(validationData)
 		};
 
@@ -108,6 +119,8 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 			case 'Edition':
 				const editionData = validationData as ParsedEdition;
 				validationObject.editionSection = {
+					// TODO: Support 'authorCreditEditor' section
+					authorCreditEnable: false,
 					depth: editionData.depth,
 					editionGroup: idToEntityStub(editionData.editionGroupBbid),
 					format: editionData.formatId,
@@ -125,6 +138,8 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 			case 'EditionGroup':
 				const editionGroupData = validationData as ParsedEditionGroup;
 				validationObject.editionGroupSection = {
+					// TODO: Support 'authorCreditEditor' section
+					authorCreditEnable: false,
 					type: editionGroupData.typeId
 				};
 				break;
@@ -149,7 +164,19 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 				break;
 		}
 
-		return validationFunction(validationObject);
+		try {
+			validationFunction(validationObject);
+			return true;
+		}
+		catch (error) {
+			if (error instanceof ValidationError) {
+				log.error(`Invalid ${entityType} data: ${
+					error.field ? [`${error.field}: ${error.message}`] : error.message
+				}`);
+				return false;
+			}
+			throw error;
+		}
 	};
 }
 
@@ -158,6 +185,7 @@ const validate: Record<EntityTypeString, ReturnType<typeof validateEntity>> = {
 	Edition: validateEntity(validateEdition, 'Edition'),
 	EditionGroup: validateEntity(validateEditionGroup, 'EditionGroup'),
 	Publisher: validateEntity(validatePublisher, 'Publisher'),
+	Series: validateEntity(validateSeries, 'Series'),
 	Work: validateEntity(validateWork, 'Work')
 };
 
@@ -165,8 +193,8 @@ export default validate;
 
 
 type CommonValidationSections = {
-	aliasSection: AliasSection;
-	identifierSection: IdentifierSection;
+	aliasEditor: AliasSection;
+	identifierEditor: IdentifierSection;
 	nameSection: NameSection;
 };
 

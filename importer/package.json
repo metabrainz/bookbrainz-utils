@@ -34,7 +34,7 @@
 	"license": "GPL-2.0+",
 	"dependencies": {
 		"amqplib": "^0.10.3",
-		"bookbrainz-data": "^5.0.0",
+		"bookbrainz-data": "^5.2.0",
 		"franc-min": "^6.1.0",
 		"immutable": "^4.3.0",
 		"lande": "^1.0.10",
@@ -61,7 +61,6 @@
 		"eslint-plugin-node": "^11.1.0",
 		"husky": "^8.0.0",
 		"lint-staged": "^13.1.0",
-		"nodemon": "^2.0.4",
 		"rimraf": "^2.6.2",
 		"typescript": "^4.2.4"
 	}
