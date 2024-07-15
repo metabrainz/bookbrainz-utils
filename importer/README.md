@@ -89,6 +89,10 @@ cat sql/migrations/series-identifiers/up.sql | docker exec -i postgres psql -U b
 cat sql/migrations/series-achievement/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 
 cat local/minimal_test_database_import_patch.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+
+# Other migrations which might be missing from the minimal DB dump.
+# Apply them to avoid unrelated errors while browsing the website.
+cat sql/migrations/user-collection/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 ```
 
 Do not forget to change the target database to `bookbrainz_min` in your `config/config.json` file.
