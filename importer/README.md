@@ -93,6 +93,8 @@ cat local/minimal_test_database_import_patch.sql | docker exec -i postgres psql 
 # Other migrations which might be missing from the minimal DB dump.
 # Apply them to avoid unrelated errors while browsing the website.
 cat sql/migrations/user-collection/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+# CritiqueBrainz OAuth
+cat sql/migrations/2022-07-19/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 ```
 
 Do not forget to change the target database to `bookbrainz_min` in your `config/config.json` file.
