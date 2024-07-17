@@ -17,13 +17,14 @@
  */
 
 
-import {ImportQueue, type ImportQueueOptions} from './queue.ts';
+import {ImportQueue, type ImportQueueOptions, queuedEntityRepresentation} from './queue.ts';
 import log, {logError} from './helpers/logger.ts';
 import config from './helpers/config.ts';
 import consumeImportQueue from './consumer/consumer.ts';
 // eslint-disable-next-line import/no-internal-modules
 import {hideBin} from 'yargs/helpers';
 import process from 'node:process';
+import {readFile} from 'node:fs/promises';
 import yargs from 'yargs';
 
 
@@ -130,6 +131,28 @@ const {argv} = yargs(hideBin(process.argv))
 			const result = await q.purge();
 			log.info('Purged messages:', result.messageCount);
 		}, 'Failed to purge queue').then(process.exit);
+	})
+	.command('push <files..>', 'Push JSON files into the import queue', {}, (args) => {
+		const queue = createQueue(args as BBIQArguments);
+		useQueue(queue, async (q) => {
+			for (const path of args.files as string[]) {
+				try {
+					// eslint-disable-next-line no-await-in-loop -- Process multiple files
+					const content = await readFile(path, {encoding: 'utf-8'});
+					const entity = JSON.parse(content);
+					const success = q.push(entity);
+					if (success) {
+						log.info(`Queued ${queuedEntityRepresentation(entity)}`);
+					}
+					else {
+						log.error(`Failed to push ${queuedEntityRepresentation(entity)}`);
+					}
+				}
+				catch (error) {
+					logError(error, `Failed to read ${path}`);
+				}
+			}
+		}).then(process.exit);
 	})
 	.demandCommand();
 
