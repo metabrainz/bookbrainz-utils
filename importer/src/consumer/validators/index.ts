@@ -18,10 +18,15 @@
  */
 
 
-import type {AliasSection, IdentifierSection, NameSection} from 'bookbrainz-data/lib/validators/common.d.ts';
+import type {
+	AliasSection,
+	AnnotationSection,
+	IdentifierSection,
+	NameSection
+} from 'bookbrainz-data/lib/validators/common.d.ts';
 import {type AuthorSection, validateAuthor} from 'bookbrainz-data/lib/validators/author.js';
-import {type EditionSection, validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
 import {type EditionGroupSection, validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
+import {type EditionSection, validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
 import type {
 	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedWork
 } from 'bookbrainz-data/lib/types/parser.d.ts';
@@ -50,6 +55,12 @@ function getAliasSection(record: ParsedEntity): AliasSection {
 	}
 
 	return aliasSection;
+}
+
+function getAnnotationSection(record: ParsedEntity): AnnotationSection {
+	return {
+		content: record.annotation
+	};
 }
 
 function getDefaultAlias(aliasList: AliasWithDefaultT[]): AliasWithDefaultT {
@@ -95,6 +106,7 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 		// Construct generic validation object from data set for validation
 		const validationObject: EntityValidationSections = {
 			aliasEditor: getAliasSection(validationData),
+			annotationSection: getAnnotationSection(validationData),
 			identifierEditor: getIdentifierSection(validationData),
 			nameSection: getNameSection(validationData)
 		};
@@ -194,6 +206,7 @@ export default validate;
 
 type CommonValidationSections = {
 	aliasEditor: AliasSection;
+	annotationSection: AnnotationSection;
 	identifierEditor: IdentifierSection;
 	nameSection: NameSection;
 };
