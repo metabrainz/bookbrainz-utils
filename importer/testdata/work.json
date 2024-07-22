@@ -1,0 +1,27 @@
+{
+	"data": {
+		"alias": [{
+			"name": "The Fairytale Test",
+			"sortName": "Fairytale Test, The",
+			"languageId": 120,
+			"default": true,
+			"primary": true
+		}],
+		"disambiguation": "import test",
+		"typeId": 2,
+		"identifiers": [],
+		"annotation": "Once upon a time...",
+		"metadata": {
+			"links": [{
+				"title": "Example link",
+				"url": "https://example.com/work"
+			}],
+			"relationships": []
+		},
+		"source": "Testdata"
+	},
+	"entityType": "Work",
+	"lastEdited": "2024-07-17",
+	"originId": "W123",
+	"source": "Testdata"
+}
