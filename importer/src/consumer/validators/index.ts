@@ -28,16 +28,16 @@ import {type AuthorSection, validateAuthor} from 'bookbrainz-data/lib/validators
 import {type EditionGroupSection, validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
 import {type EditionSection, validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
 import type {
-	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedWork
+	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedSeries, ParsedWork
 } from 'bookbrainz-data/lib/types/parser.d.ts';
 import {type PublisherSection, validatePublisher} from 'bookbrainz-data/lib/validators/publisher.js';
+import {type SeriesSection, validateSeries} from 'bookbrainz-data/lib/validators/series.js';
 import {type WorkSection, validateWork} from 'bookbrainz-data/lib/validators/work.js';
 import type {AliasWithDefaultT} from 'bookbrainz-data/lib/types/aliases.d.ts';
 import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
 import {ValidationError} from 'bookbrainz-data/lib/validators/base.js';
 import _ from 'lodash';
 import log from '../../helpers/logger.ts';
-import {validateSeries} from 'bookbrainz-data/lib/validators/series.js';
 
 
 function getAliasSection(record: ParsedEntity): AliasSection {
@@ -165,6 +165,12 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 					type: publisherData.typeId
 				};
 				break;
+			case 'Series':
+				const seriesData = validationData as ParsedSeries;
+				validationObject.seriesSection = {
+					orderType: seriesData.orderingTypeId,
+					seriesType: seriesData.entityType
+				};
 			case 'Work':
 				const workData = validationData as ParsedWork;
 				validationObject.workSection = {
@@ -216,5 +222,6 @@ type EntityValidationSections = CommonValidationSections & Partial<{
 	editionSection: EditionSection;
 	editionGroupSection: EditionGroupSection;
 	publisherSection: PublisherSection;
+	seriesSection: SeriesSection;
 	workSection: WorkSection;
 }>;
