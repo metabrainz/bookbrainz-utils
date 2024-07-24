@@ -141,7 +141,7 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 					pages: editionData.pages,
 					// TODO: publisher: idToEntityStub(editionData.publisher),
 					// TODO: release events (date and country) should not be mapped to just a date
-					// releaseDate: editionData.releaseDate,
+					releaseDate: editionData.releaseEvents?.[0]?.date,
 					status: editionData.statusId,
 					weight: editionData.weight,
 					width: editionData.width
