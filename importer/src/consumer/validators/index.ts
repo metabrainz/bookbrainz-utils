@@ -137,7 +137,7 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 					editionGroup: idToEntityStub(editionData.editionGroupBbid),
 					format: editionData.formatId,
 					height: editionData.height,
-					languages: editionData.languages.map(({id}) => ({value: id})),
+					languages: editionData.languages?.map(({id}) => ({value: id})),
 					pages: editionData.pages,
 					// TODO: publisher: idToEntityStub(editionData.publisher),
 					// TODO: release events (date and country) should not be mapped to just a date
