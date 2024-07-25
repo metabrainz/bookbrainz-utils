@@ -87,6 +87,7 @@ cat local/minimal_test_database.sql | docker exec -i postgres psql -U bookbrainz
 cat sql/migrations/series/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 cat sql/migrations/series-identifiers/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 cat sql/migrations/series-achievement/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+cat sql/scripts/create_triggers.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 
 cat local/minimal_test_database_import_patch.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 
