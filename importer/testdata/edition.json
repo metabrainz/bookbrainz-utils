@@ -1,0 +1,36 @@
+{
+	"data": {
+		"alias": [{
+			"name": "The Complete Test Collection",
+			"sortName": "Complete Test Collection, The",
+			"languageId": 120,
+			"default": true,
+			"primary": true
+		}],
+		"disambiguation": "import test",
+		"editionGroupBbid": "PLEASE-FILL-WITH-VALID-BBID",
+		"formatId": 2,
+		"statusId": 1,
+		"releaseEvents": [{"date": "2024-04-23"}],
+		"languages": [{"id": 134}, {"id": 145}],
+		"pages": 987,
+		"weight": 450,
+		"width": 150,
+		"height": 270,
+		"depth": 75,
+		"identifiers": [],
+		"annotation": "Unabridged edition with illustrations.",
+		"metadata": {
+			"links": [{
+				"title": "Example link",
+				"url": "https://example.com/edition"
+			}],
+			"relationships": []
+		},
+		"source": "Testdata"
+	},
+	"entityType": "Edition",
+	"lastEdited": "2024-07-24",
+	"originId": "E123",
+	"source": "Testdata"
+}

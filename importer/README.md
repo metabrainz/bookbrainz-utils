@@ -87,6 +87,7 @@ cat local/minimal_test_database.sql | docker exec -i postgres psql -U bookbrainz
 cat sql/migrations/series/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 cat sql/migrations/series-identifiers/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 cat sql/migrations/series-achievement/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+cat sql/scripts/create_triggers.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 
 cat local/minimal_test_database_import_patch.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 
@@ -96,6 +97,7 @@ cat sql/migrations/user-collection/up.sql | docker exec -i postgres psql -U book
 cat sql/migrations/2023-05-29-user_privileges/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 cat sql/migrations/2023-05-29-admin_logs/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 cat sql/migrations/relationship-attributes/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
+cat sql/migrations/2021-author-credits/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 # CritiqueBrainz OAuth
 cat sql/migrations/2022-07-19/up.sql | docker exec -i postgres psql -U bookbrainz -d bookbrainz_min
 ```

@@ -1,0 +1,30 @@
+{
+	"data": {
+		"alias": [{
+			"name": "BookBrainz Press",
+			"sortName": "BookBrainz Press",
+			"languageId": 120,
+			"default": true,
+			"primary": true
+		}],
+		"disambiguation": "import test",
+		"typeId": 1,
+		"areaId": 8,
+		"beginDate": "2014",
+		"ended": false,
+		"identifiers": [],
+		"annotation": "Imagine a book which is only published in its BookBrainz annotation",
+		"metadata": {
+			"links": [{
+				"title": "Example link",
+				"url": "https://example.com/publisher"
+			}],
+			"relationships": []
+		},
+		"source": "Testdata"
+	},
+	"entityType": "Publisher",
+	"lastEdited": "2024-07-24",
+	"originId": "P123",
+	"source": "Testdata"
+}

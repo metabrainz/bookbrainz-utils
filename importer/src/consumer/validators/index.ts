@@ -18,21 +18,26 @@
  */
 
 
-import type {AliasSection, IdentifierSection, NameSection} from 'bookbrainz-data/lib/validators/common.d.ts';
-import {type AuthorSection, validateAuthor} from 'bookbrainz-data/lib/validators/author.js';
-import {type EditionSection, validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
-import {type EditionGroupSection, validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
 import type {
-	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedWork
+	AliasSection,
+	AnnotationSection,
+	IdentifierSection,
+	NameSection
+} from 'bookbrainz-data/lib/validators/common.d.ts';
+import {type AuthorSection, validateAuthor} from 'bookbrainz-data/lib/validators/author.js';
+import {type EditionGroupSection, validateEditionGroup} from 'bookbrainz-data/lib/validators/edition-group.js';
+import {type EditionSection, validateEdition} from 'bookbrainz-data/lib/validators/edition.js';
+import type {
+	ParsedAuthor, ParsedEdition, ParsedEditionGroup, ParsedEntity, ParsedPublisher, ParsedSeries, ParsedWork
 } from 'bookbrainz-data/lib/types/parser.d.ts';
 import {type PublisherSection, validatePublisher} from 'bookbrainz-data/lib/validators/publisher.js';
+import {type SeriesSection, validateSeries} from 'bookbrainz-data/lib/validators/series.js';
 import {type WorkSection, validateWork} from 'bookbrainz-data/lib/validators/work.js';
 import type {AliasWithDefaultT} from 'bookbrainz-data/lib/types/aliases.d.ts';
 import type {EntityTypeString} from 'bookbrainz-data/lib/types/entity.d.ts';
 import {ValidationError} from 'bookbrainz-data/lib/validators/base.js';
 import _ from 'lodash';
 import log from '../../helpers/logger.ts';
-import {validateSeries} from 'bookbrainz-data/lib/validators/series.js';
 
 
 function getAliasSection(record: ParsedEntity): AliasSection {
@@ -50,6 +55,12 @@ function getAliasSection(record: ParsedEntity): AliasSection {
 	}
 
 	return aliasSection;
+}
+
+function getAnnotationSection(record: ParsedEntity): AnnotationSection {
+	return {
+		content: record.annotation
+	};
 }
 
 function getDefaultAlias(aliasList: AliasWithDefaultT[]): AliasWithDefaultT {
@@ -95,6 +106,7 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 		// Construct generic validation object from data set for validation
 		const validationObject: EntityValidationSections = {
 			aliasEditor: getAliasSection(validationData),
+			annotationSection: getAnnotationSection(validationData),
 			identifierEditor: getIdentifierSection(validationData),
 			nameSection: getNameSection(validationData)
 		};
@@ -125,11 +137,11 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 					editionGroup: idToEntityStub(editionData.editionGroupBbid),
 					format: editionData.formatId,
 					height: editionData.height,
-					languages: editionData.languages.map(({id}) => ({value: id})),
+					languages: editionData.languages?.map(({id}) => ({value: id})),
 					pages: editionData.pages,
 					// TODO: publisher: idToEntityStub(editionData.publisher),
 					// TODO: release events (date and country) should not be mapped to just a date
-					// releaseDate: editionData.releaseDate,
+					releaseDate: editionData.releaseEvents?.[0]?.date,
 					status: editionData.statusId,
 					weight: editionData.weight,
 					width: editionData.width
@@ -153,6 +165,12 @@ function validateEntity(validationFunction, entityType: EntityTypeString) {
 					type: publisherData.typeId
 				};
 				break;
+			case 'Series':
+				const seriesData = validationData as ParsedSeries;
+				validationObject.seriesSection = {
+					orderType: seriesData.orderingTypeId,
+					seriesType: seriesData.entityType
+				};
 			case 'Work':
 				const workData = validationData as ParsedWork;
 				validationObject.workSection = {
@@ -194,6 +212,7 @@ export default validate;
 
 type CommonValidationSections = {
 	aliasEditor: AliasSection;
+	annotationSection: AnnotationSection;
 	identifierEditor: IdentifierSection;
 	nameSection: NameSection;
 };
@@ -203,5 +222,6 @@ type EntityValidationSections = CommonValidationSections & Partial<{
 	editionSection: EditionSection;
 	editionGroupSection: EditionGroupSection;
 	publisherSection: PublisherSection;
+	seriesSection: SeriesSection;
 	workSection: WorkSection;
 }>;

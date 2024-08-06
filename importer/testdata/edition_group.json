@@ -1,0 +1,27 @@
+{
+	"data": {
+		"alias": [{
+			"name": "The Complete Test Collection",
+			"sortName": "Complete Test Collection, The",
+			"languageId": 120,
+			"default": true,
+			"primary": true
+		}],
+		"disambiguation": "import test",
+		"typeId": 1,
+		"identifiers": [],
+		"annotation": "Empty edition group",
+		"metadata": {
+			"links": [{
+				"title": "Example link",
+				"url": "https://example.com/edition-group"
+			}],
+			"relationships": []
+		},
+		"source": "Testdata"
+	},
+	"entityType": "EditionGroup",
+	"lastEdited": "2024-07-22",
+	"originId": "G123",
+	"source": "Testdata"
+}
