@@ -43,10 +43,10 @@ export const entity: QueuedEntity<ParsedAuthor> = {
 			}],
 			"relationships": []
 		},
-		"source": "Testdata"
+		"externalSource": "Testdata"
 	},
 	"entityType": "Author",
 	"lastEdited": "2024-07-25",
-	"originId": "A1234", // change this to import another dummy entity
-	"source": "Testdata"
+	"externalIdentifier": "A1234", // change this to import another dummy entity
+	"externalSource": "Testdata"
 };

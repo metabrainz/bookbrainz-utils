@@ -30,7 +30,7 @@ import {delay} from './helpers/utils.ts';
  */
 export function queuedEntityRepresentation(entity: QueuedEntity): string {
 	const defaultAlias = entity.data?.alias?.find((alias) => alias.default) ?? entity.data?.alias?.[0];
-	return `'${defaultAlias?.name ?? '[unknown]'}' (${entity.entityType} ${entity.originId ?? '[unknown ID]'})`;
+	return `'${defaultAlias?.name ?? '[unknown]'}' (${entity.entityType} ${entity.externalIdentifier ?? '[unknown ID]'})`;
 }
 
 

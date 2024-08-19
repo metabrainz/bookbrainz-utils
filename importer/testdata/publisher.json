@@ -21,10 +21,10 @@
 			}],
 			"relationships": []
 		},
-		"source": "Testdata"
+		"externalSource": "Testdata"
 	},
 	"entityType": "Publisher",
 	"lastEdited": "2024-07-24",
-	"originId": "P123",
-	"source": "Testdata"
+	"externalIdentifier": "P123",
+	"externalSource": "Testdata"
 }

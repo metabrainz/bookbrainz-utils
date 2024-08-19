@@ -27,10 +27,10 @@
 			}],
 			"relationships": []
 		},
-		"source": "Testdata"
+		"externalSource": "Testdata"
 	},
 	"entityType": "Edition",
 	"lastEdited": "2024-07-24",
-	"originId": "E123",
-	"source": "Testdata"
+	"externalIdentifier": "E123",
+	"externalSource": "Testdata"
 }
