@@ -10,7 +10,7 @@ export const entity: QueuedEntity<ParsedEdition> = {
 			"primary": true
 		}],
 		"disambiguation": "import test",
-		"editionGroupBbid": "PLEASE-FILL-WITH-VALID-BBID", // has to exist
+		// "editionGroupBbid": "PLEASE-FILL-WITH-VALID-BBID",
 		"formatId": 2, // Hardcover
 		"statusId": 1, // Official
 		"releaseEvents": [{"date": "2024-04-23"}],

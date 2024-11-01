@@ -7,8 +7,7 @@
 			"default": true,
 			"primary": true
 		}],
-		"disambiguation": "import test",
-		"editionGroupBbid": "PLEASE-FILL-WITH-VALID-BBID",
+		"disambiguation": "import test, without edition group",
 		"formatId": 2,
 		"statusId": 1,
 		"releaseEvents": [{"date": "2024-04-23"}],
