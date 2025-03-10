@@ -41,10 +41,10 @@
 			}],
 			"relationships": []
 		},
-		"source": "Testdata"
+		"externalSource": "Testdata"
 	},
 	"entityType": "Author",
 	"lastEdited": "2024-07-25",
-	"originId": "A1234",
-	"source": "Testdata"
+	"externalIdentifier": "A1234",
+	"externalSource": "Testdata"
 }

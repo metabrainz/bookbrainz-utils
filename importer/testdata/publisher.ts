@@ -23,10 +23,10 @@ export const entity: QueuedEntity<ParsedPublisher> = {
 			}],
 			"relationships": []
 		},
-		"source": "Testdata"
+		"externalSource": "Testdata"
 	},
 	"entityType": "Publisher",
 	"lastEdited": "2024-07-24",
-	"originId": "P123", // change this to import another dummy entity
-	"source": "Testdata"
+	"externalIdentifier": "P123", // change this to import another dummy entity
+	"externalSource": "Testdata"
 };

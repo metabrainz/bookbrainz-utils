@@ -51,7 +51,7 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 			// 		➜ JSON - the complete record in JSON format
 			const record = line.split('\t');
 
-			const source = 'OpenLibrary';
+			const externalSource = 'OpenLibrary';
 			const json = JSON.parse(record[4]);
 			const OLType = record[0].split('/')[2] as OLEntityType;
 			const entityType = mapEntityType(OLType);
@@ -68,8 +68,8 @@ function readLine({base, id, queue}: {id: number; base: string; queue: ImportQue
 				data,
 				entityType,
 				lastEdited: lastEdited || data.lastEdited,
-				originId: originId || data.originId,
-				source
+				externalIdentifier: originId || data.externalIdentifier,
+				externalSource
 			};
 			const success = queue.push(entity);
 

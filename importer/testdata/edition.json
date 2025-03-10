@@ -7,8 +7,7 @@
 			"default": true,
 			"primary": true
 		}],
-		"disambiguation": "import test",
-		"editionGroupBbid": "PLEASE-FILL-WITH-VALID-BBID",
+		"disambiguation": "import test, without edition group",
 		"formatId": 2,
 		"statusId": 1,
 		"releaseEvents": [{"date": "2024-04-23"}],
@@ -27,10 +26,10 @@
 			}],
 			"relationships": []
 		},
-		"source": "Testdata"
+		"externalSource": "Testdata"
 	},
 	"entityType": "Edition",
 	"lastEdited": "2024-07-24",
-	"originId": "E123",
-	"source": "Testdata"
+	"externalIdentifier": "E123",
+	"externalSource": "Testdata"
 }

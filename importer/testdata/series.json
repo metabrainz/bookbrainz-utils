@@ -19,10 +19,10 @@
 			}],
 			"relationships": []
 		},
-		"source": "Testdata"
+		"externalSource": "Testdata"
 	},
 	"entityType": "Series",
 	"lastEdited": "2024-07-24",
-	"originId": "S123",
-	"source": "Testdata"
+	"externalIdentifier": "S123",
+	"externalSource": "Testdata"
 }

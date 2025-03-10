@@ -18,10 +18,10 @@
 			}],
 			"relationships": []
 		},
-		"source": "Testdata"
+		"externalSource": "Testdata"
 	},
 	"entityType": "EditionGroup",
 	"lastEdited": "2024-07-22",
-	"originId": "G123",
-	"source": "Testdata"
+	"externalIdentifier": "G123",
+	"externalSource": "Testdata"
 }

@@ -80,7 +80,7 @@ function processWork(json: any) {
 			links: [],
 			relationships: []
 		},
-		source: 'OpenLibrary'
+		externalSource: 'OpenLibrary'
 	};
 
 	// Set up aliases
@@ -125,7 +125,7 @@ function processWork(json: any) {
 			typeId: identifiers.openLibraryWorkId,
 			value: openLibraryWorkId
 		});
-		work.originId = openLibraryWorkId;
+		work.externalIdentifier = openLibraryWorkId;
 	}
 
 	if (!isNotDefined(json.authors) && (json.authors instanceof Array)) {
@@ -196,7 +196,7 @@ function processAuthor(json) {
 			originId: [],
 			relationships: []
 		},
-		source: 'OpenLibrary'
+		externalSource: 'OpenLibrary'
 	};
 
 	// Set up aliases
@@ -267,7 +267,7 @@ function processAuthor(json) {
 		const openLibraryAuthorId = json.key.split('/')[2];
 
 		// No identifier for OL author exists, so only setting up origin Id
-		author.originId = openLibraryAuthorId;
+		author.externalIdentifier = openLibraryAuthorId;
 
 		author.metadata.identifiers.push({
 			typeId: identifiers.openLibraryAuthorId,
