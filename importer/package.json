@@ -39,7 +39,7 @@
 		"immutable": "^4.3.0",
 		"lande": "^1.0.10",
 		"lodash": "^4.17.21",
-		"validator": "^13.9.0",
+		"validator": "^13.15.23",
 		"winston": "^3.9.0",
 		"yargs": "^17.7.2"
 	},
